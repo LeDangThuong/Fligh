@@ -1,35 +1,49 @@
-# SE100.O21 - About Employee Management 📊
+# Hệ Thống Quản Lý Đặt Vé Máy Bay 🛫📊
 
-## 📝 Description
-Employee Management mobile app is being geared towards simplifying the management of employee data using robust technologies like Java and Spring Boot with a PostgreSQL database backend.
+## Mô tả
+Hệ thống quản lý đặt vé máy bay là một ứng dụng web được thiết kế để đơn giản hóa quá trình đặt vé máy bay. Nó cung cấp một giao diện thân thiện với người dùng cho khách hàng tìm kiếm chuyến bay, đặt vé và quản lý đặt chỗ của họ. Ngoài ra, các quản trị viên có thể quản lý lịch trình chuyến bay, xem chi tiết đặt chỗ và thực hiện các nhiệm vụ quản trị khác thông qua bảng điều khiển dành riêng.
 
-## 👨‍💼 Development Team
-- **Project Leader:** Le Dang Thuong - 21522654 - *Piller*
-- **Project Desginer:** Le Dang Thuong - 21522654 - *Piller*
-- **Project Developer:** Le Dang Thuong - 21522654 - *Piller*
-## 🛠 Technologies Used
+## Công nghệ Sử Dụng
 - ![Java](https://img.shields.io/badge/Java-%23ED8B00.svg?&style=for-the-badge&logo=java&logoColor=white)
 - ![Spring Boot](https://img.shields.io/badge/Spring_Boot-%236DB33F.svg?&style=for-the-badge&logo=spring&logoColor=white)
 - ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-%23316192.svg?&style=for-the-badge&logo=postgresql&logoColor=white)
 
-## 🏃‍♂️ How to Run
-Here, you would explain the required steps developers need to follow to get the mobile app running on their local development environment. This might include:
+## Tính Năng
+- Xác thực và ủy quyền người dùng
+- Chức năng tìm kiếm và đặt vé chuyến bay
+- Bảng điều khiển quản trị cho việc quản lý chuyến bay và đặt vé
+- Quản lý hồ sơ khách hàng
 
-1. Cloning the repository:
-2. Navigating to the app's directory.
-3. Installing dependencies.
-4. Setting up local databases if required.
-5. Running the application.
+## Cài Đặt và Thiết Lập
+Để chạy Hệ Thống Quản Lý Đặt Vé Máy Bay trên máy cục bộ, làm theo các bước sau:
 
-## 🤝 Contribution Guidelines
-We welcome contributions of all kinds from the open-source community. Detailed guidelines could be listed here, which could include coding conventions, branching strategies, pull requests, and other relevant information.
+1. Sao chép kho lưu trữ:
+   ```bash
+   git clone https://github.com/your-username/flight-booking-system.git
+2. Di chuyển đến thư mục dự án:
+   ```bash
+   cd flight-booking-system
+3. Đảm bảo rằng JDK 17 được cài đặt trên máy của bạn. Đồng thời, hãy đảm bảo Gradle 8.5 và PostgreSQL đã được cài đặt.
 
-## ⚖️ License
-Include details about the project's licensing here. If the project is open-source, you might want to use licenses like MIT, GPL, or Apache.
+4. Thiết lập cơ sở dữ liệu PostgreSQL:
+   - Tạo một cơ sở dữ liệu PostgreSQL mới cho ứng dụng.
+   - Cập nhật cấu hình cơ sở dữ liệu trong application.properties với thông tin đăng nhập của cơ sở dữ liệu của bạn.
+5. Chạy ứng dụng bằng Gradle:
+   ```bash
+   ./gradlew bootRun
+6. Truy cập ứng dụng tại http://localhost:8080 trong trình duyệt web của bạn.
 
-## 📬 Additional Information
-Any additional details or contact information for users or potential contributors can be placed here.
+## Hướng Dẫn Đóng Góp
+Chúng tôi hoan nghênh sự đóng góp từ cộng đồng. Nếu bạn muốn đóng góp vào dự án, vui lòng tuân thủ các hướng dẫn sau:
 
----
+- Fork kho lưu trữ
+- Tạo nhánh tính năng của bạn (git checkout -b feature/YourFeature)
+- Commit các thay đổi (git commit -m 'Thêm một số tính năng')
+- Push lên nhánh (git push origin feature/YourFeature)
+- Tạo Pull Request mới
 
-For more details or inquiries, please contact [Le Dang Thuong's email](mailto:ledangthuongsp@gmail.com).
+## Giấy Phép
+Dự án này được cấp phép theo Giấy Phép MIT. Xem tập tin LICENSE để biết chi tiết.
+
+## Thông Tin Bổ Sung
+Để biết thêm chi tiết hoặc yêu cầu, vui lòng liên hệ Lê Đăng Thường qua email.
