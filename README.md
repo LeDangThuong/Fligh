@@ -19,10 +19,10 @@ Hệ thống quản lý đặt vé máy bay là một ứng dụng web được 
 
 1. Sao chép kho lưu trữ:
    ```bash
-   git clone https://github.com/your-username/flight-booking-system.git
+   git clone https://github.com/LeDangThuong/FlightBooking_BE.git
 2. Di chuyển đến thư mục dự án:
    ```bash
-   cd flight-booking-system
+   cd FlightBooking_BE
 3. Đảm bảo rằng JDK 17 được cài đặt trên máy của bạn. Đồng thời, hãy đảm bảo Gradle 8.5 và PostgreSQL đã được cài đặt.
 
 4. Thiết lập cơ sở dữ liệu PostgreSQL:
