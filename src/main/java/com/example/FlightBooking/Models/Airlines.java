@@ -11,8 +11,16 @@ import lombok.Generated;
 @Data
 @Entity
 @Table(name = "airlines")
+
+/*Annotation @Table là một annotation JPA được sử dụng
+để chỉ định tên bảng database mà một entity class liên kết đến.*/
+
 public class Airlines {
-    @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    @Id  //Khóa chính
+    @GeneratedValue (strategy = GenerationType.IDENTITY) // Sử dụng sequence hoặc auto-increment trong database để tự động tạo giá trị.
+    // thường thì nó sẽ có giá trị 1 ++ lên dân
     private Long id;
+
+
+
 }
