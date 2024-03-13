@@ -4,7 +4,6 @@ package com.example.FlightBooking.Models;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 
 import jakarta.persistence.Column;
@@ -15,29 +14,20 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.Generated;
 
 @Data
+
 @Entity
-@Table(name = "booking")
-public class Booking {
+@Table(name = "chats")
+
+public class Chats {
     @Id
-    @GeneratedValue (strategy = GenerationType.IDENTITY)
-
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
+    private String message;
 
     @OneToOne
-    private Airlines airlines;
-
-    private Long passengers;
-
-    private Double price;
-    private String departLocation;
-    private String arrivalLocation;
-
-    private Timestamp departTime;
-    private Timestamp returnTime;
+    private Users users;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

@@ -21,6 +21,4 @@ public class Airlines {
     // thường thì nó sẽ có giá trị 1 ++ lên dân
     private Long id;
 
-
-
 }
