@@ -1,4 +1,4 @@
 package com.example.FlightBooking.Models;
 
-public class AIChat {
+public class Chat {
 }
