@@ -1,115 +1,67 @@
 package com.example.FlightBooking.Services;
 
-import com.devteria.identityservice.dto.request.AuthenticationRequest;
-import com.devteria.identityservice.dto.request.IntrospectRequest;
-import com.devteria.identityservice.dto.response.AuthenticationResponse;
-import com.devteria.identityservice.dto.response.IntrospectResponse;
-import com.devteria.identityservice.entity.User;
-import com.devteria.identityservice.exception.AppException;
-import com.devteria.identityservice.exception.ErrorCode;
-import com.devteria.identityservice.repository.UserRepository;
+
+import com.example.FlightBooking.DTOs.SignInDTO;
+import com.example.FlightBooking.DTOs.SignUpDTO;
+import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.UserRepository;
-import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.StringJoiner;
+import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-@Slf4j
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @NonFinal
-    @Value("${jwt.signerKey}")
-    protected String SIGNER_KEY;
+    private final PasswordEncoder passwordEncoder;
 
-    public IntrospectResponse introspect(IntrospectRequest request)
-            throws JOSEException, ParseException {
-        var token = request.getToken();
+    private final AuthenticationManager authenticationManager;
 
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-
-        SignedJWT signedJWT = SignedJWT.parse(token);
-
-        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-
-        var verified = signedJWT.verify(verifier);
-
-        return IntrospectResponse.builder()
-                .valid(verified && expiryTime.after(new Date()))
-                .build();
+    public AuthenticationService(
+            UserRepository userRepository,
+            AuthenticationManager authenticationManager,
+            PasswordEncoder passwordEncoder
+    ) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public AuthenticationResponse authenticate(AuthenticationRequest request){
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        var user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+    public Users signup(SignUpDTO input) {
+        Optional<Users> existingUser = userRepository.findByUsername(input.getUsername());
 
-        boolean authenticated = passwordEncoder.matches(request.getPassword(),
-                user.getPassword());
-
-        if (!authenticated)
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-
-        var token = generateToken(user);
-
-        return AuthenticationResponse.builder()
-                .token(token)
-                .authenticated(true)
-                .build();
-    }
-
-    private String generateToken(User user) {
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
-
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getUsername())
-                .issuer("devteria.com")
-                .issueTime(new Date())
-                .expirationTime(new Date(
-                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
-                ))
-                .claim("scope", buildScope(user))
-                .build();
-
-        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
-
-        JWSObject jwsObject = new JWSObject(header, payload);
-
-        try {
-            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
-            return jwsObject.serialize();
-        } catch (JOSEException e) {
-            log.error("Cannot create token", e);
-            throw new RuntimeException(e);
+        if (existingUser.isPresent()) {
+            throw new IllegalArgumentException("Username '" + input.getUsername() + "' already exists. Please choose a different username.");
         }
+        Users user = new Users();
+        user.setUsername(input.getUsername());
+        user.setEmail(input.getEmail());
+        user.setPassword(passwordEncoder.encode(input.getPassword()));
+        user.setFullName(input.getFullName());
+        user.setDayOfBirth(input.getDayOfBirth());
+        return userRepository.save(user);
     }
 
-    private String buildScope(User user){
-        StringJoiner stringJoiner = new StringJoiner(" ");
-        if (!CollectionUtils.isEmpty(user.getRoles()))
-            user.getRoles().forEach(stringJoiner::add);
+    public Users authenticate(SignInDTO input) {
+        try {
+            Authentication authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            input.getUsername(),
+                            input.getPassword()
+                    )
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid username or password. Please check your credentials.");
+        }
 
-        return stringJoiner.toString();
+        return userRepository.findByUsername(input.getUsername())
+                .orElseThrow(() -> new IllegalArgumentException("User not found. Please check your username."));
     }
-
 }
