@@ -24,16 +24,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
         return new Docket(DocumentationType.SWAGGER_2).select()
                 .apis(RequestHandlerSelectors.any())
                 .paths(PathSelectors.any())
-                .build().apiInfo(apiInfoMetaData());
-    }
-
-    private ApiInfo apiInfoMetaData() {
-        return new ApiInfoBuilder().title("FlightBooking")
-                .description("API for FlightBooking app")
-                .contact(new Contact("Dev-Team", "https://www.dev-team.com/", "dev-team@gmail.com"))
-                .license("Apache 2.0")
-                .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
-                .version("1.0.0")
                 .build();
     }
+
 }

@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.info.Info;
 
 
 @SpringBootApplication
+@OpenAPIDefinition(info = @Info(title = "FlightBooking API Document", version = "1.0.0", description = "This is OpenAPI for Flight Booking Management apis."))
 public class FlightBookingApplication {
 
 	public static void main(String[] args) {
