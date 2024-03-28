@@ -1,8 +1,8 @@
 package com.example.FlightBooking.Controller;
 
-import com.example.FlightBooking.DTOs.Request.LoginResponse;
-import com.example.FlightBooking.DTOs.SignInDTO;
-import com.example.FlightBooking.DTOs.SignUpDTO;
+import com.example.FlightBooking.DTOs.Response.LoginResponse;
+import com.example.FlightBooking.DTOs.Request.SignInDTO;
+import com.example.FlightBooking.DTOs.Request.SignUpDTO;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Services.AuthenticationService;
 import com.example.FlightBooking.Services.JwtService;

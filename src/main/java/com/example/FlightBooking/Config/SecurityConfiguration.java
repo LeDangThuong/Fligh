@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -37,7 +38,19 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(
                         (request)->
                                 request
-                                        .requestMatchers("/auth/**").permitAll().anyRequest().authenticated());
+                                        .requestMatchers("/auth/**",
+                                                "/v2/api-docs",
+                                                "/v3/api-docs",
+                                                "/v3/api-docs/**",
+                                                "/swagger-resources",
+                                                "/swagger-resources/**",
+                                                "configuration/ui",
+                                                "configuration/security",
+                                                "/swagger-ui.html",
+                                                "/swagger-ui/**",
+                                                "/webjars/**" ,
+                                                "/swagger.json")
+                                        .permitAll().anyRequest().authenticated());
         http
                 .sessionManagement(
                         (session)->
@@ -49,7 +62,6 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
