@@ -1,10 +1,9 @@
-package com.example.FlightBooking.Config;
+package com.example.FlightBooking.Config.SpringSecurity;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -39,7 +38,6 @@ public class SecurityConfiguration {
                         (request)->
                                 request
                                         .requestMatchers("/auth/**",
-                                                "/v2/api-docs",
                                                 "/v3/api-docs",
                                                 "/v3/api-docs/**",
                                                 "/swagger-resources",

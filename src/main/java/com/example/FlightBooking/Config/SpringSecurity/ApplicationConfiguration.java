@@ -1,4 +1,4 @@
-package com.example.FlightBooking.Config;
+package com.example.FlightBooking.Config.SpringSecurity;
 
 
 import com.example.FlightBooking.Repositories.UserRepository;
