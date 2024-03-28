@@ -46,4 +46,7 @@ Chúng tôi hoan nghênh sự đóng góp từ cộng đồng. Nếu bạn muố
 Dự án này được cấp phép theo Giấy Phép MIT. Xem tập tin LICENSE để biết chi tiết.
 
 ## Thông Tin Bổ Sung
-Để biết thêm chi tiết hoặc yêu cầu, vui lòng liên hệ Lê Đăng Thường qua email.
+Để biết thêm chi tiết hoặc yêu cầu, vui lòng liên hệ Lê Đăng Thương qua email.
+
+## Server 
+https://flightbookingbe-production.up.railway.app/swagger-ui/index.html
