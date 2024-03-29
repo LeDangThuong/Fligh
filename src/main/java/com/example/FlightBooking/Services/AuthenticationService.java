@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.mail.MessagingException;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Service
 public class AuthenticationService {

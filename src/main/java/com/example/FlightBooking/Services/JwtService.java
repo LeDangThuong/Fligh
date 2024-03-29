@@ -16,6 +16,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import io.swagger.v3.oas.annotations.Hidden;
+import springfox.documentation.annotations.ApiIgnore;
+
 import java.security.Key;
 
 import javax.crypto.SecretKey;

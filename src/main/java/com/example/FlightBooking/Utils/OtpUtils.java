@@ -6,7 +6,11 @@ import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import springfox.documentation.annotations.ApiIgnore;
+
 @Component
+@Hidden
 public class OtpUtils {
     private final Set<String> otpSet = new HashSet<>();
 

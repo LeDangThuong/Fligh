@@ -18,12 +18,15 @@ import java.util.Optional;
 
 import javax.imageio.ImageIO;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.util.ByteArrayDataSource;
 import jakarta.transaction.Transactional;
+import springfox.documentation.annotations.ApiIgnore;
 
 @Component
+@Hidden
 public class EmailUtils {
 
     @Autowired

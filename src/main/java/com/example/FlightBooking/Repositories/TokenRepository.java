@@ -9,8 +9,12 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
+import io.swagger.v3.oas.annotations.Hidden;
+import springfox.documentation.annotations.ApiIgnore;
+
 @Repository
 @RepositoryRestResource
+@Hidden
 public interface TokenRepository extends JpaRepository<Tokens, Long> {
     Optional<Tokens> findByUser(Users user);
 }

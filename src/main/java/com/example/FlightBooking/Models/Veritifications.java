@@ -3,8 +3,13 @@ package com.example.FlightBooking.Models;
 
 import com.example.FlightBooking.Enum.VeritificationStatus;
 
+import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Set;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,17 +24,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+
+@Table(name = "veritification")
 @Data
 @Entity
-@Table(name = "veritification")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
 @Setter
-public class Veritifications {
 
+
+@ApiModel
+public class Veritifications {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;

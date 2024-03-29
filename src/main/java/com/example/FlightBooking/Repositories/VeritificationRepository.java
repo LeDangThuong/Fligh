@@ -9,8 +9,13 @@ import org.springframework.stereotype.Repository;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
+
+import io.swagger.v3.oas.annotations.Hidden;
+import springfox.documentation.annotations.ApiIgnore;
+
 @Repository
 @RepositoryRestResource
+@Hidden
 public interface VeritificationRepository extends JpaRepository<Veritifications, Long> {
     Optional<Veritifications> findByCodeOTP(Long codeOTP);
     List<Veritifications> deleteByExpireTime(Long expireTime);
