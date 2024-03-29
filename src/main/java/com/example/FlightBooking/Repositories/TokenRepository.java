@@ -1,6 +1,6 @@
 package com.example.FlightBooking.Repositories;
 
-
+import com.example.FlightBooking.Models.Tokens;
 import com.example.FlightBooking.Models.Users;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,10 +11,6 @@ import java.util.Optional;
 
 @Repository
 @RepositoryRestResource
-public interface UserRepository extends JpaRepository<Users, Long> {
-
-    Optional<Users> findByUsername(String username);
-    Optional<Users> findByEmail (String email);
+public interface TokenRepository extends JpaRepository<Tokens, Long> {
+    Optional<Tokens> findByUserId(Long userId);
 }
-
-

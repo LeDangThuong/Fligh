@@ -58,8 +58,6 @@ public class Users implements UserDetails {
     @Column(nullable=false)
     private String password;
 
-    private String token;
-
     private String fullName;
     private String phoneNumber;
     private String address;
