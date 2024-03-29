@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Utils;
 
+import com.example.FlightBooking.Models.Veritifications;
 import com.example.FlightBooking.Repositories.UserRepository;
 import com.example.FlightBooking.Repositories.VeritificationRepository;
 
@@ -23,7 +24,7 @@ import jakarta.mail.util.ByteArrayDataSource;
 import jakarta.transaction.Transactional;
 
 @Component
-public class EmailUtil {
+public class EmailUtils {
 
     @Autowired
     private JavaMailSender javaMailSender;
@@ -38,7 +39,7 @@ public class EmailUtil {
     @Transactional
     public void sendSetPasswordEmail (String email) throws MessagingException
     {
-        String otp = otpUtil.generateOtp();
+        Long otp = Long.valueOf(otpUtil.generateOtp());
         saveOTPInDatabase(email, otp);
 
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -53,30 +54,14 @@ public class EmailUtil {
         javaMailSender.send(mimeMessage);
     }
 
-    @Transactional
-    public void sendQRCodeToEmail(String email, BufferedImage qrImage) throws MessagingException, IOException {
-        // Chuyển đổi BufferedImage thành byte array
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(qrImage, "png", byteArrayOutputStream);
-        byte[] qrImageData = byteArrayOutputStream.toByteArray();
-
-        // Gửi email với attachment là hình ảnh QR code
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, true);
-        mimeMessageHelper.setTo(email);
-        mimeMessageHelper.setSubject("QR Code");
-        mimeMessageHelper.setText("Please find your QR Code attached below.");
-        mimeMessageHelper.addAttachment("qrcode.png", new ByteArrayDataSource(qrImageData, "image/png"));
-        javaMailSender.send(mimeMessage);
-    }
-    private void saveOTPInDatabase(String email, String otp) {
+    private void saveOTPInDatabase(String email, Long otp) {
         // Trước khi thêm OTP mới, xóa các OTP cũ của email này
         veritificationRepository.deleteByEmail(email);
-        Timestamp expirationTime = Timestamp.valueOf(LocalDateTime.now().plusMinutes(1));
-        OtpVerification otpVerification = new OtpVerification();
+        Long expirationTime = 360000L;
+        Veritifications otpVerification = new Veritifications();
         otpVerification.setEmail(email);
-        otpVerification.setOtp(otp);
-        otpVerification.setExpirationTime(expirationTime);
-        otpVerificationRepository.save(otpVerification);
+        otpVerification.setCodeOTP(otp);
+        otpVerification.setExpireTime(expirationTime);
+        veritificationRepository.save(otpVerification);
     }
 }

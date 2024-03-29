@@ -36,5 +36,4 @@ public class Veritifications {
     private Long codeOTP;
     private Long expireTime;
     private String email;
-    private Set<VeritificationStatus> status;
 }

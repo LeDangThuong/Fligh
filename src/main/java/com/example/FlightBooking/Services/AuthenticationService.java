@@ -5,7 +5,9 @@ import com.example.FlightBooking.DTOs.Request.SignInDTO;
 import com.example.FlightBooking.DTOs.Request.SignUpDTO;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.UserRepository;
+import com.example.FlightBooking.Utils.EmailUtils;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +17,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import jakarta.mail.MessagingException;
+
 @Service
 public class AuthenticationService {
     private final UserRepository userRepository;
@@ -23,6 +27,8 @@ public class AuthenticationService {
 
     private final AuthenticationManager authenticationManager;
 
+    @Autowired
+    private EmailUtils emailUtil;
     public AuthenticationService(
             UserRepository userRepository,
             AuthenticationManager authenticationManager,
@@ -63,5 +69,16 @@ public class AuthenticationService {
 
         return userRepository.findByUsername(input.getUsername())
                 .orElseThrow(() -> new IllegalArgumentException("User not found. Please check your username."));
+    }
+    public String forgot_password(String email) {
+        Users user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+
+        try {
+            emailUtil.sendSetPasswordEmail(user.getEmail());
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
+        return "Successful! Please check your email";
     }
 }
