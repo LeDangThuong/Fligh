@@ -40,7 +40,7 @@ public class Tokens {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private Users userId;
+    private Users user;
 
     private String token;
     private Long expireTime;

@@ -32,10 +32,10 @@ public class SignInController {
         String jwtToken = jwtService.generateToken(authenticatedUser);
 
         Tokens tokens = new Tokens();
-        tokens.setUserId(authenticatedUser);
+        tokens.setUser(authenticatedUser);
         tokens.setToken(jwtToken);
         tokens.setExpireTime(jwtService.getExpirationTime());
-        Tokens savedToken = tokenRepository.save(tokens);
+        tokenRepository.save(tokens);
 
         //
         LoginResponse loginResponse = new LoginResponse();

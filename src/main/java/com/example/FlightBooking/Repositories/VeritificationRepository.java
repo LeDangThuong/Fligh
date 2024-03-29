@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 @RepositoryRestResource
 public interface VeritificationRepository extends JpaRepository<Veritifications, Long> {
-    Optional<Veritifications> findByCodeOTP(String codeOTP);
+    Optional<Veritifications> findByCodeOTP(Long codeOTP);
 }
