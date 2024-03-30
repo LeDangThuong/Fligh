@@ -5,6 +5,7 @@ import com.example.FlightBooking.Enum.VeritificationStatus;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 import io.swagger.annotations.ApiModel;
@@ -42,6 +43,6 @@ public class Veritifications {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
     private Long codeOTP;
-    private Long expireTime;
+    private LocalDateTime expireTime;
     private String email;
 }
