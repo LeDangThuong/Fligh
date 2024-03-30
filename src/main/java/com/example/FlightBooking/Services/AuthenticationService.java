@@ -3,11 +3,15 @@ package com.example.FlightBooking.Services;
 
 import com.example.FlightBooking.DTOs.Request.SignInDTO;
 import com.example.FlightBooking.DTOs.Request.SignUpDTO;
+import com.example.FlightBooking.Enum.Roles;
+import com.example.FlightBooking.Models.Tokens;
 import com.example.FlightBooking.Models.Users;
+import com.example.FlightBooking.Repositories.TokenRepository;
 import com.example.FlightBooking.Repositories.UserRepository;
 import com.example.FlightBooking.Utils.EmailUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -15,6 +19,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import io.swagger.v3.oas.annotations.Hidden;
@@ -28,13 +34,13 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
-
     @Autowired
     private EmailUtils emailUtil;
     public AuthenticationService(
             UserRepository userRepository,
             AuthenticationManager authenticationManager,
-            PasswordEncoder passwordEncoder
+            PasswordEncoder passwordEncoder,
+            TokenRepository tokenRepository
     ) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
@@ -53,6 +59,7 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(input.getPassword()));
         user.setFullName(input.getFullName());
         user.setDayOfBirth(input.getDayOfBirth());
+        user.setRole(Roles.CUSTOMER.name());
         return userRepository.save(user);
     }
 

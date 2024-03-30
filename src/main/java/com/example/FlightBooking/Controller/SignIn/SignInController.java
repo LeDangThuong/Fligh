@@ -6,6 +6,7 @@ import com.example.FlightBooking.Models.Tokens;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.TokenRepository;
 import com.example.FlightBooking.Services.AuthenticationService;
+import com.example.FlightBooking.Services.JwtRefreshService;
 import com.example.FlightBooking.Services.JwtService;
 
 import org.springframework.http.HttpStatus;
@@ -17,11 +18,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class SignInController {
     private final JwtService jwtService;
-
+    private final JwtRefreshService jwtRefreshService;
     private final AuthenticationService authenticationService;
     private final TokenRepository tokenRepository;
-    public SignInController(JwtService jwtService, AuthenticationService authenticationService, TokenRepository tokenRepository) {
+    public SignInController(JwtService jwtService, JwtRefreshService jwtRefreshService, AuthenticationService authenticationService, TokenRepository tokenRepository) {
         this.jwtService = jwtService;
+        this.jwtRefreshService = jwtRefreshService;
         this.authenticationService = authenticationService;
         this.tokenRepository = tokenRepository;
     }
@@ -29,19 +31,24 @@ public class SignInController {
     public ResponseEntity<LoginResponse> authenticate(@RequestBody SignInDTO loginUserDto) {
         Users authenticatedUser = authenticationService.authenticate(loginUserDto);
 
-        String jwtToken = jwtService.generateToken(authenticatedUser);
-
+        String jwtTokenAccess = jwtService.generateToken(authenticatedUser);
+        String jwtTokenRefresh = jwtRefreshService.generateToken(authenticatedUser);
         Tokens tokens = new Tokens();
         tokens.setUser(authenticatedUser);
-        tokens.setToken(jwtToken);
+        tokens.setTokenRefresh(jwtTokenRefresh);
+        tokens.setTokenAccess(jwtTokenAccess);
         tokens.setExpireTime(jwtService.getExpirationTime());
+        tokens.setExpireRefreshTime(jwtRefreshService.getExpirationTime());
         tokenRepository.save(tokens);
 
         //
         LoginResponse loginResponse = new LoginResponse();
-        loginResponse.setToken(jwtToken);
+        loginResponse.setTokenAccess(jwtTokenAccess);
         loginResponse.setExpiresIn(jwtService.getExpirationTime());
-
+        loginResponse.setUsername(authenticatedUser.getUsername());
+        loginResponse.setRole(authenticatedUser.getRole());
+        loginResponse.setTokenRefresh(jwtTokenRefresh);
+        loginResponse.setExpiresRefreshIn(jwtRefreshService.getExpirationTime());
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
 }

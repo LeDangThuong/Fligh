@@ -65,7 +65,7 @@ public class Users implements UserDetails {
     private String personalId;
     private LocalDate dayOfBirth;
 
-    private Set<Roles> roles;
+    private String role;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;

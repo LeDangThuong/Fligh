@@ -4,6 +4,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,8 +44,10 @@ public class Tokens {
     @JoinColumn(name = "user_id")
     private Users user;
 
-    private String token;
+    private String tokenAccess;
+    private String tokenRefresh;
     private Long expireTime;
+    private Long expireRefreshTime;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;

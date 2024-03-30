@@ -1,6 +1,9 @@
 package com.example.FlightBooking.DTOs.Request;
 
+import com.example.FlightBooking.Enum.Roles;
+
 import java.time.LocalDate;
+import java.util.Set;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.Getter;
@@ -16,5 +19,5 @@ public class SignUpDTO {
     private String username;
     private String email;
     private LocalDate dayOfBirth;
-
+    private String role;
 }

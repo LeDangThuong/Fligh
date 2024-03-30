@@ -10,6 +10,10 @@ import springfox.documentation.annotations.ApiIgnore;
 @Setter
 @Hidden
 public class LoginResponse {
-    private String token;
+    private String tokenAccess;
+    private String tokenRefresh;
+    private long expiresRefreshIn;
     private long expiresIn;
+    private String username;
+    private String role;
 }
