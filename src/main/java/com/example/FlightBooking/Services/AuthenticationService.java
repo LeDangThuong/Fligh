@@ -6,8 +6,10 @@ import com.example.FlightBooking.DTOs.Request.SignUpDTO;
 import com.example.FlightBooking.Enum.Roles;
 import com.example.FlightBooking.Models.Tokens;
 import com.example.FlightBooking.Models.Users;
+import com.example.FlightBooking.Models.Veritifications;
 import com.example.FlightBooking.Repositories.TokenRepository;
 import com.example.FlightBooking.Repositories.UserRepository;
+import com.example.FlightBooking.Repositories.VeritificationRepository;
 import com.example.FlightBooking.Utils.EmailUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,8 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
+    @Autowired
+    private VeritificationRepository veritificationRepository;
     @Autowired
     private EmailUtils emailUtil;
     public AuthenticationService(
@@ -89,5 +93,26 @@ public class AuthenticationService {
             throw new RuntimeException(e);
         }
         return "Successful! Please check your email";
+    }
+    public String reset_password(String email, Long otp, String newPassword, String confirmPassword){
+        Users user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+
+        Veritifications veritifications = veritificationRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Ver not found with this email "));
+
+            if(veritifications.getCodeOTP().equals(otp)){
+                if(newPassword.equals(confirmPassword)){
+
+                    user.setPassword(passwordEncoder.encode(newPassword));
+                    userRepository.save(user);
+                    return "Successful!";
+                }else {
+                    return "Password do not match";
+                }
+            }else {
+                return "OTP wrong";
+            }
+
+
+
     }
 }
