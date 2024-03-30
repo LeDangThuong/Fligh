@@ -24,7 +24,7 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.util.ByteArrayDataSource;
 import jakarta.transaction.Transactional;
 import springfox.documentation.annotations.ApiIgnore;
-
+import java.time.temporal.ChronoUnit;
 @Component
 @Hidden
 public class EmailUtils {
@@ -58,13 +58,11 @@ public class EmailUtils {
     }
 
     private void saveOTPInDatabase(String email, Long otp) {
-        // Trước khi thêm OTP mới, xóa các OTP cũ của email này
-        veritificationRepository.deleteByEmail(email);
-        Long expirationTime = 360000L;
+        LocalDateTime expireTime = LocalDateTime.now().plus(1, ChronoUnit.MINUTES);
         Veritifications otpVerification = new Veritifications();
         otpVerification.setEmail(email);
         otpVerification.setCodeOTP(otp);
-        otpVerification.setExpireTime(expirationTime);
+        otpVerification.setExpireTime(expireTime);
         veritificationRepository.save(otpVerification);
     }
 }

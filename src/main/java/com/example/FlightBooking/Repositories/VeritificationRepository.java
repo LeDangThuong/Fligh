@@ -7,6 +7,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +19,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @Hidden
 public interface VeritificationRepository extends JpaRepository<Veritifications, Long> {
     Optional<Veritifications> findByCodeOTP(Long codeOTP);
-    List<Veritifications> deleteByExpireTime(Long expireTime);
+    List<Veritifications> deleteByExpireTime(LocalDateTime expireTime);
     Optional<Veritifications> findByEmail(String email);
-    void deleteByEmail(String email);
+
 }

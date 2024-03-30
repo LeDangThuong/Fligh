@@ -9,6 +9,7 @@ import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Models.Veritifications;
 import com.example.FlightBooking.Repositories.TokenRepository;
 import com.example.FlightBooking.Repositories.UserRepository;
+import com.example.FlightBooking.Repositories.VerificationRepository;
 import com.example.FlightBooking.Repositories.VeritificationRepository;
 import com.example.FlightBooking.Utils.EmailUtils;
 
@@ -36,6 +37,8 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
 
     private final AuthenticationManager authenticationManager;
+
+
     @Autowired
     private VeritificationRepository veritificationRepository;
     @Autowired
@@ -101,15 +104,14 @@ public class AuthenticationService {
 
             if(veritifications.getCodeOTP().equals(otp)){
                 if(newPassword.equals(confirmPassword)){
-
                     user.setPassword(passwordEncoder.encode(newPassword));
                     userRepository.save(user);
-                    return "Successful!";
+                    return "Successful! Password was reset";
                 }else {
-                    return "Password do not match";
+                    return "Password do not match! Please fill again";
                 }
             }else {
-                return "OTP wrong";
+                return "OTP wrong! Please fill again";
             }
 
 
