@@ -19,5 +19,6 @@ import springfox.documentation.annotations.ApiIgnore;
 public interface VeritificationRepository extends JpaRepository<Veritifications, Long> {
     Optional<Veritifications> findByCodeOTP(Long codeOTP);
     List<Veritifications> deleteByExpireTime(Long expireTime);
+    Optional<Veritifications> findByEmail(String email);
     void deleteByEmail(String email);
 }
