@@ -64,8 +64,8 @@ public class SecurityConfiguration {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        configuration.setAllowedOrigins(List.of("http://localhost:7050"));
-        configuration.setAllowedMethods(List.of("GET","POST"));
+        configuration.setAllowedOrigins(List.of("http://localhost:7050", "http://localhost:5173"));
+        configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE"));
         configuration.setAllowedHeaders(List.of("Authorization","Content-Type"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -74,4 +74,5 @@ public class SecurityConfiguration {
 
         return source;
     }
+
 }
