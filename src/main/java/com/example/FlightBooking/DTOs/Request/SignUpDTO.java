@@ -19,5 +19,4 @@ public class SignUpDTO {
     private String username;
     private String email;
     private LocalDate dayOfBirth;
-    private String role;
 }
