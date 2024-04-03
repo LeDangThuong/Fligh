@@ -1,4 +1,4 @@
-package com.example.FlightBooking.Controller.Veritification;
+package com.example.FlightBooking.Controller.Auth.Veritification;
 
 import org.springframework.stereotype.Controller;
 

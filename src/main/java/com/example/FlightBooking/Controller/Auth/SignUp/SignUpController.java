@@ -1,9 +1,9 @@
-package com.example.FlightBooking.Controller.SignUp;
+package com.example.FlightBooking.Controller.Auth.SignUp;
 
-import com.example.FlightBooking.DTOs.Request.SignUpDTO;
+import com.example.FlightBooking.DTOs.Request.Auth.SignUpDTO;
 import com.example.FlightBooking.Models.Users;
-import com.example.FlightBooking.Services.AuthenticationService;
-import com.example.FlightBooking.Services.JwtService;
+import com.example.FlightBooking.Services.AuthJWT.AuthenticationService;
+import com.example.FlightBooking.Services.AuthJWT.JwtService;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;

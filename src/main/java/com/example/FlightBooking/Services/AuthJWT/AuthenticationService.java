@@ -1,20 +1,17 @@
-package com.example.FlightBooking.Services;
+package com.example.FlightBooking.Services.AuthJWT;
 
 
-import com.example.FlightBooking.DTOs.Request.SignInDTO;
-import com.example.FlightBooking.DTOs.Request.SignUpDTO;
+import com.example.FlightBooking.DTOs.Request.Auth.SignInDTO;
+import com.example.FlightBooking.DTOs.Request.Auth.SignUpDTO;
 import com.example.FlightBooking.Enum.Roles;
-import com.example.FlightBooking.Models.Tokens;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Models.Veritifications;
 import com.example.FlightBooking.Repositories.TokenRepository;
 import com.example.FlightBooking.Repositories.UserRepository;
-import com.example.FlightBooking.Repositories.VerificationRepository;
 import com.example.FlightBooking.Repositories.VeritificationRepository;
 import com.example.FlightBooking.Utils.EmailUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,13 +19,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
-import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.mail.MessagingException;
-import springfox.documentation.annotations.ApiIgnore;
 
 @Service
 public class AuthenticationService {

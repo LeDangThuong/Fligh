@@ -1,4 +1,4 @@
-package com.example.FlightBooking.DTOs.Response;
+package com.example.FlightBooking.DTOs.Request.Auth;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.Getter;
@@ -7,7 +7,8 @@ import springfox.documentation.annotations.ApiIgnore;
 
 @Getter
 @Setter
-@Hidden
-public class ForgotPasswordResponse {
-    private Long code;
+
+public class SignInDTO {
+    private String username;
+    private String password;
 }

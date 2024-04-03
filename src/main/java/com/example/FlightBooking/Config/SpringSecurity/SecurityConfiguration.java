@@ -41,8 +41,9 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF
                 .cors(Customizer.withDefaults()) // Enable CORS with default settings
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/test").permitAll()
-                        .requestMatchers("/auth/signin", "/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
+                        .requestMatchers("/test", "/users").permitAll()
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
                                 "/swagger-resources/**", "configuration/ui", "configuration/security",
                                 "/swagger-ui.html", "/swagger-ui/**", "/webjars/**", "/swagger.json")
                         .permitAll() // Permit these paths without authentication

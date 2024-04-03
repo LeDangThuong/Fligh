@@ -1,4 +1,4 @@
-package com.example.FlightBooking.DTOs.Response;
+package com.example.FlightBooking.DTOs.Response.Auth;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;

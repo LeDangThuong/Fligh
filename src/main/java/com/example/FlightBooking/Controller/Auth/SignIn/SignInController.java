@@ -1,15 +1,14 @@
-    package com.example.FlightBooking.Controller.SignIn;
+    package com.example.FlightBooking.Controller.Auth.SignIn;
 
-    import com.example.FlightBooking.DTOs.Request.SignInDTO;
-    import com.example.FlightBooking.DTOs.Response.LoginResponse;
+    import com.example.FlightBooking.DTOs.Request.Auth.SignInDTO;
+    import com.example.FlightBooking.DTOs.Response.Auth.LoginResponse;
     import com.example.FlightBooking.Models.Tokens;
     import com.example.FlightBooking.Models.Users;
     import com.example.FlightBooking.Repositories.TokenRepository;
-    import com.example.FlightBooking.Services.AuthenticationService;
-    import com.example.FlightBooking.Services.JwtRefreshService;
-    import com.example.FlightBooking.Services.JwtService;
+    import com.example.FlightBooking.Services.AuthJWT.AuthenticationService;
+    import com.example.FlightBooking.Services.AuthJWT.JwtRefreshService;
+    import com.example.FlightBooking.Services.AuthJWT.JwtService;
 
-    import org.springframework.context.annotation.Configuration;
     import org.springframework.http.HttpStatus;
     import org.springframework.http.ResponseEntity;
     import org.springframework.web.bind.annotation.CrossOrigin;

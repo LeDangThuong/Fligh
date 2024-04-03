@@ -1,4 +1,4 @@
-package com.example.FlightBooking.Services;
+package com.example.FlightBooking.Services.AuthJWT;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -24,12 +24,12 @@ import java.security.Key;
 import javax.crypto.SecretKey;
 
 @Service
-public class JwtService {
+public class JwtRefreshService {
     @Value("${security.jwt.secret-key}")
     private String secretKey;
 
-    @Value("${security.jwt.expiration-time}")
-    private long jwtExpiration;
+    @Value("${security.jwt.expiration-long-time}")
+    private long jwtRefreshTokenExpiration;
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -45,11 +45,11 @@ public class JwtService {
     }
 
     public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+        return buildToken(extraClaims, userDetails, jwtRefreshTokenExpiration);
     }
 
     public long getExpirationTime() {
-        return jwtExpiration;
+        return jwtRefreshTokenExpiration;
     }
 
     private String buildToken(

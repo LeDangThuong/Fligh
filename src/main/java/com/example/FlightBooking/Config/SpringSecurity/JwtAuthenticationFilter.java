@@ -1,6 +1,6 @@
 package com.example.FlightBooking.Config.SpringSecurity;
 
-import com.example.FlightBooking.Services.JwtService;
+import com.example.FlightBooking.Services.AuthJWT.JwtService;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

@@ -1,4 +1,4 @@
-package com.example.FlightBooking.DTOs.Request;
+package com.example.FlightBooking.DTOs.Request.Auth;
 
 import lombok.Getter;
 import lombok.Setter;
