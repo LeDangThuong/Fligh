@@ -9,6 +9,7 @@ import com.example.FlightBooking.Services.AuthenticationService;
 import com.example.FlightBooking.Services.JwtRefreshService;
 import com.example.FlightBooking.Services.JwtService;
 
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -17,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(maxAge = 3600, origins = "*")
+@CrossOrigin(value = "*")
 public class SignInController {
     private final JwtService jwtService;
     private final JwtRefreshService jwtRefreshService;
