@@ -42,7 +42,7 @@ public class SecurityConfiguration {
                 .cors(Customizer.withDefaults()) // Enable CORS with default settings
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/test").permitAll()
-                        .requestMatchers("/auth/**", "/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
+                        .requestMatchers("/auth/signin", "/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
                                 "/swagger-resources/**", "configuration/ui", "configuration/security",
                                 "/swagger-ui.html", "/swagger-ui/**", "/webjars/**", "/swagger.json")
                         .permitAll() // Permit these paths without authentication

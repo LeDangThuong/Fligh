@@ -10,6 +10,6 @@ public class testController {
 
     @GetMapping("/test")
     public String welcome() {
-        return "WELCOME";
+        return "WELCOME MY API BACKEND SERVER";
     }
 }

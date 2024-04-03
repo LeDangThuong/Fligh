@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(maxAge = 3600)
+@CrossOrigin(value = "*")
 public class SignUpController {
     private final JwtService jwtService;
 

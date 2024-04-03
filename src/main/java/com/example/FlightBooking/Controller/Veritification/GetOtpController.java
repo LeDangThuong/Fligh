@@ -4,6 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 @Controller
-@CrossOrigin(maxAge = 3600)
+@CrossOrigin(value = "*")
 public class GetOtpController {
 }

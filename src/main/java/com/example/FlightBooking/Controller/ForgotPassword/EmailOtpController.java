@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Controller
-@CrossOrigin(maxAge = 3600)
+@CrossOrigin(value = "*")
 public class EmailOtpController {
     @Autowired
     private AuthenticationService authenticationService;
