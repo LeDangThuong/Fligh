@@ -53,7 +53,7 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-ui:1.8.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-mail:3.2.4'
-	implementation 'com.google.ai.client.generativeai:generativeai:0.2.2'
+	//implementation 'com.google.ai.client.generativeai:generativeai:0.2.2'
 }
 
 tasks.named('test') {

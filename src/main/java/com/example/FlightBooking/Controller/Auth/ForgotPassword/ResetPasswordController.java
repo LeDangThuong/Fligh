@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ResetPasswordController {
     @Autowired
     private AuthenticationService authenticationService;
+
+
     @PutMapping("/auth/reset-password")
     public ResponseEntity<String> ResetPassword(@ModelAttribute ResetPasswordDTO resetPasswordDTO){
         return new ResponseEntity<>(authenticationService.reset_password(resetPasswordDTO.getEmail(), resetPasswordDTO.getOtp(), resetPasswordDTO.getNewPassword(), resetPasswordDTO.getConfirmPassword()), HttpStatus.OK);
