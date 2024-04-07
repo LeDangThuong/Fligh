@@ -58,7 +58,7 @@ public class EmailUtils {
     }
 
     private void saveOTPInDatabase(String email, Long otp) {
-        LocalDateTime expireTime = LocalDateTime.now().plus(1, ChronoUnit.MINUTES);
+        LocalDateTime expireTime = LocalDateTime.now().plus(3, ChronoUnit.MINUTES);
         Veritifications otpVerification = new Veritifications();
         otpVerification.setEmail(email);
         otpVerification.setCodeOTP(otp);

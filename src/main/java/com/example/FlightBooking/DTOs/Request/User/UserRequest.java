@@ -1,5 +1,7 @@
 package com.example.FlightBooking.DTOs.Request.User;
 
+import java.time.LocalDate;
+
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,5 +10,8 @@ import lombok.Setter;
 @Setter
 @Data
 public class UserRequest {
-    private Long userId;
+    private String fullName;
+    private String phoneNumber;
+    private String address;
+    private LocalDate dayOfBirth;
 }
