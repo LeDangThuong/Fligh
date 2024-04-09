@@ -42,6 +42,9 @@ public class SecurityConfiguration {
         http
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF
                 .cors(Customizer.withDefaults()) // Enable CORS with default settings
+                .headers(headers -> headers
+                        .contentSecurityPolicy(csp-> csp
+                                .policyDirectives("upgrade-insecure-requests;")))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/**").permitAll() // Permit all GET requests
                         .requestMatchers(HttpMethod.POST, "/**").permitAll() // Permit all POST requests
