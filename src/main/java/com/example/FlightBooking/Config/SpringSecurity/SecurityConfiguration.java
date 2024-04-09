@@ -3,6 +3,7 @@ package com.example.FlightBooking.Config.SpringSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -41,6 +42,10 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable) // Disable CSRF
                 .cors(Customizer.withDefaults()) // Enable CORS with default settings
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(HttpMethod.GET, "/**").permitAll() // Permit all GET requests
+                        .requestMatchers(HttpMethod.POST, "/**").permitAll() // Permit all POST requests
+                        .requestMatchers(HttpMethod.PUT, "/**").permitAll() // Permit all PUT requests
+                        .requestMatchers(HttpMethod.DELETE, "/**").permitAll() // Permit all DELETE requests
                         .requestMatchers("/test", "/users/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
@@ -58,7 +63,7 @@ public class SecurityConfiguration {
         configuration.setAllowedOriginPatterns(List.of("*")); // Allow all origins
 
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow these methods
-        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Accept")); // Allow these headers
+        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Accept", "")); // Allow these headers
         configuration.setAllowCredentials(true); // Allow credentials
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
