@@ -53,19 +53,7 @@ public class SecurityConfiguration {
                                 "/swagger-resources/**", "configuration/ui", "configuration/security",
                                 "/swagger-ui.html", "/swagger-ui/**", "/webjars/**", "/swagger.json")
                         .permitAll() // Permit these paths without authentication
-                        .anyRequest().authenticated()) // All other requests need authentication
-                .headers(headers -> headers
-                        .contentSecurityPolicy(csp ->
-                                csp.policyDirectives("default-src 'self';" +
-                                        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://apis.google.com https://flightbookingbe-production.up.railway.app;" +
-                                        "style-src 'self' 'unsafe-inline';" +
-                                        "img-src 'self' data:;" +
-                                        "connect-src 'self' https://flightbookingbe-production.up.railway.app;" +
-                                        "font-src 'self';" +
-                                        "frame-src 'self';" +
-                                        "child-src 'self';")
-                        )
-                )
+                        .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
