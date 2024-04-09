@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin(value = "*")
+@CrossOrigin
 public class SignUpController {
     private final JwtService jwtService;
 

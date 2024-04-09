@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@CrossOrigin(value = "*")
+@CrossOrigin
 public class UserInfoController {
     private final UserService userService;
 
