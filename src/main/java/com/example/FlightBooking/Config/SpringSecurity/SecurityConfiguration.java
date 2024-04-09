@@ -61,10 +61,12 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
-        configuration.setAllowedOriginPatterns(List.of("*")); // Allow all origins
-        configuration.setAllowedMethods(List.of("*")); // Allow these methods
-        configuration.setAllowedHeaders(List.of("*")); // Allow these headers
-        configuration.setAllowCredentials(true); // Allow credentials
+        configuration.setAllowedOrigins(List.of("*","https://flightbookingbe-production.up.railway.app")); // Specify your server's origin
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Accept", "Access-Control-Allow-Origin"));
+        configuration.setExposedHeaders(List.of("Authorization"));
+        configuration.setAllowCredentials(true);
+        configuration.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // Apply this configuration to all paths
         return source;
