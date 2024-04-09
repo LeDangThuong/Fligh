@@ -62,11 +62,9 @@ public class SecurityConfiguration {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
         configuration.setAllowedOriginPatterns(List.of("*")); // Allow all origins
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow these methods
-        configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Accept", "Access-Control-Allow-Origin")); // Allow these headers
-        configuration.setExposedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Accept", "Access-Control-Allow-Origin"));
+        configuration.setAllowedMethods(List.of("*")); // Allow these methods
+        configuration.setAllowedHeaders(List.of("*")); // Allow these headers
         configuration.setAllowCredentials(true); // Allow credentials
-        configuration.addAllowedHeader("*"); // Cho phép Content-Type cụ thể này
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // Apply this configuration to all paths
         return source;
