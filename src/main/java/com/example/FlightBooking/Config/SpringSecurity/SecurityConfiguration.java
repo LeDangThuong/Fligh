@@ -46,10 +46,6 @@ public class SecurityConfiguration {
                         .contentSecurityPolicy(csp-> csp
                                 .policyDirectives("upgrade-insecure-requests;")))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/**").permitAll() // Permit all GET requests
-                        .requestMatchers(HttpMethod.POST, "/**").permitAll() // Permit all POST requests
-                        .requestMatchers(HttpMethod.PUT, "/**").permitAll() // Permit all PUT requests
-                        .requestMatchers(HttpMethod.DELETE, "/**").permitAll() // Permit all DELETE requests
                         .requestMatchers("/test", "/users/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
@@ -67,7 +63,6 @@ public class SecurityConfiguration {
         configuration.setAllowedOrigins(List.of("*")); // Specify your server's origin
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Accept", "Access-Control-Allow-Origin"));
-        configuration.setExposedHeaders(List.of("Authorization"));
         configuration.setAllowCredentials(true);
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration); // Apply this configuration to all paths
