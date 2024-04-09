@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin
+@CrossOrigin (value = "*")
 public class EmailOtpController {
     @Autowired
     private AuthenticationService authenticationService;

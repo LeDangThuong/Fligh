@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin
+@CrossOrigin (value = "*")
 public class ResetPasswordController {
     @Autowired
     private AuthenticationService authenticationService;

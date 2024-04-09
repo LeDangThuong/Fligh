@@ -12,8 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@Controller
-@CrossOrigin
+@CrossOrigin (value = "*")
 public class VeriPasswordController {
     @Autowired
     VerificationService verificationService;
