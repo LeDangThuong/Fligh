@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@CrossOrigin (value = "*")
+@CrossOrigin (value = {"http://localhost:7050", "https://flightbookingbe-production.up.railway.app"})
 public class UserInfoController {
     private final UserService userService;
 

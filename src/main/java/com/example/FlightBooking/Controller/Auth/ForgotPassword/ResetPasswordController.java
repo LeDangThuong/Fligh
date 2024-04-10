@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Controller
-@CrossOrigin (value = {"*", "https://flightbookingbe-production.up.railway.app/**"})
+@CrossOrigin (value = {"http://localhost:7050", "https://flightbookingbe-production.up.railway.app"})
 public class ResetPasswordController {
     @Autowired
     private AuthenticationService authenticationService;
