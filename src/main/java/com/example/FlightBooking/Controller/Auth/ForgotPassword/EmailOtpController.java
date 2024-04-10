@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Controller
-@CrossOrigin (value = "*")
+@CrossOrigin (value = {"*", "https://flightbookingbe-production.up.railway.app/**"})
 public class EmailOtpController {
     @Autowired
     private AuthenticationService authenticationService;
