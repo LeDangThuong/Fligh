@@ -14,8 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Controller
-@CrossOrigin (value = {"http://localhost:7050", "https://flightbookingbe-production.up.railway.app", "http://localhost:5173"},
-        origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
+@CrossOrigin (value = {"http://localhost:7050", "https://flightbookingbe-production.up.railway.app", "http://localhost:5173"})
 public class EmailOtpController {
     @Autowired
     private AuthenticationService authenticationService;
