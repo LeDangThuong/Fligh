@@ -106,7 +106,17 @@ public class AuthenticationService {
             }else {
                 return "OTP wrong! Please fill again";
             }
+    }
+    public String change_password(String email, String oldPassword, String newPassword){
+        Users users = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with email: "+ email));
 
+        if(passwordEncoder.encode(oldPassword).equals(users.getPassword())){
+            users.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(users);
+            return  "Successful! Password was change";
+        }else {
+            return "Failed! Password is wrong";
+        }
 
 
     }
