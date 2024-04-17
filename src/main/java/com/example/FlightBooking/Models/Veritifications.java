@@ -1,16 +1,9 @@
 package com.example.FlightBooking.Models;
 
 
-import com.example.FlightBooking.Enum.VeritificationStatus;
-
-import org.springframework.web.bind.annotation.RestController;
-
 import java.time.LocalDateTime;
-import java.util.Set;
 
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;

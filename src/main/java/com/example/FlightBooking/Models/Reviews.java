@@ -32,7 +32,5 @@ public class Reviews {
 
     private String famousPlace;
     private String localSpecialties;
-
-
-
+    
 }
