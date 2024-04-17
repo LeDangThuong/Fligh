@@ -1,7 +1,13 @@
 package com.example.FlightBooking.Models;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.sql.Timestamp;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -34,5 +40,14 @@ public class Airlines {
     @GeneratedValue (strategy = GenerationType.IDENTITY) // Sử dụng sequence hoặc auto-increment trong database để tự động tạo giá trị.
     // thường thì nó sẽ có giá trị 1 ++ lên dân
     private Long id;
+    private String airlineName;
+    private String logoUrl;
+    private String iataCode;
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Timestamp createdAt;
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
 
 }
