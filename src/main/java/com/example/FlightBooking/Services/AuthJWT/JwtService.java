@@ -30,7 +30,13 @@ public class JwtService {
 
     @Value("${security.jwt.expiration-time}")
     private long jwtExpiration;
-
+    public String getUsername(String token) {
+        Claims claims = Jwts.parser()
+                .setSigningKey(secretKey)
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject();
+    }
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
     }
