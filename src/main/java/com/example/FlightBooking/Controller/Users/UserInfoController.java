@@ -4,6 +4,7 @@ import com.example.FlightBooking.DTOs.Request.User.UserRequest;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Services.UserService.UserService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin (value = {"http://localhost:7050", "https://flightbookingbe-production.up.railway.app", "http://localhost:5173"})
+@Tag(name ="User Profile", description = "apis for changing user profile and information")
 public class UserInfoController {
     private final UserService userService;
 
