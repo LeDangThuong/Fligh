@@ -7,22 +7,20 @@ import com.stripe.model.PaymentIntent;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @RestController
 @CrossOrigin
+@RequestMapping("/payment")
 @Tag(name = "Payment method", description = "APIs for payment and charge to buy or get somethings")
 public class PaymentController {
 
     @Autowired
     private PaymentService paymentService;
 
-    @PostMapping("/payment/create-payment-intent")
+    @PostMapping("/create-payment-intent")
     public ResponseEntity<?> createPaymentIntent(@RequestBody Order order) {
         try {
             PaymentIntent paymentIntent = paymentService.createPaymentIntent(order);
