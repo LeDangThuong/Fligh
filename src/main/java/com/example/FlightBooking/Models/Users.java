@@ -63,7 +63,7 @@ public class Users implements UserDetails {
     private String address;
 
     private String personalId;
-    private LocalDate dayOfBirth;
+    private Timestamp dayOfBirth;
     private String avatarUrl;
     private String gender;
     private String role;

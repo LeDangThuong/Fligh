@@ -23,7 +23,6 @@ public class SignUpController {
         this.jwtService = jwtService;
         this.authenticationService = authenticationService;
     }
-
     @PostMapping("/auth/signup")
     public ResponseEntity<Users> register(@RequestBody SignUpDTO registerUserDto) {
         Users registeredUser = authenticationService.signup(registerUserDto);
