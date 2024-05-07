@@ -2,6 +2,7 @@ package com.example.FlightBooking.DTOs.Request.Auth;
 
 import com.example.FlightBooking.Enum.Roles;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Set;
 
@@ -18,5 +19,5 @@ public class SignUpDTO {
     private String fullName;
     private String username;
     private String email;
-    private LocalDate dayOfBirth;
+    private Timestamp dayOfBirth;
 }

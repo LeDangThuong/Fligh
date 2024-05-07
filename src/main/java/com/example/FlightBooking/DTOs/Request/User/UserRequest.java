@@ -1,5 +1,6 @@
 package com.example.FlightBooking.DTOs.Request.User;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 
 import lombok.Data;
@@ -13,5 +14,5 @@ public class UserRequest {
     private String fullName;
     private String phoneNumber;
     private String address;
-    private LocalDate dayOfBirth;
+    private Timestamp dayOfBirth;
 }
