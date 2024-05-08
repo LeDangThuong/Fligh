@@ -31,7 +31,7 @@ import lombok.experimental.FieldDefaults;
 
 
 @ApiModel
-public class Veritifications {
+public class Verifications {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long Id;
