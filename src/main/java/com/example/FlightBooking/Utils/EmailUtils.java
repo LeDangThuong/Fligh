@@ -1,29 +1,21 @@
 package com.example.FlightBooking.Utils;
 
-import com.example.FlightBooking.Models.Veritifications;
+import com.example.FlightBooking.Models.Verifications;
 import com.example.FlightBooking.Repositories.UserRepository;
-import com.example.FlightBooking.Repositories.VeritificationRepository;
+import com.example.FlightBooking.Repositories.VerificationRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Optional;
-
-import javax.imageio.ImageIO;
 
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.util.ByteArrayDataSource;
 import jakarta.transaction.Transactional;
-import springfox.documentation.annotations.ApiIgnore;
+
 import java.time.temporal.ChronoUnit;
 @Component
 @Hidden
@@ -35,7 +27,7 @@ public class EmailUtils {
     @Autowired
     private OtpUtils otpUtil;
     @Autowired
-    private VeritificationRepository veritificationRepository;
+    private VerificationRepository verificationRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -58,11 +50,11 @@ public class EmailUtils {
     }
 
     private void saveOTPInDatabase(String email, Long otp) {
-        LocalDateTime expireTime = LocalDateTime.now().plus(3, ChronoUnit.MINUTES);
-        Veritifications otpVerification = new Veritifications();
+        LocalDateTime expireTime = LocalDateTime.now().plus(5, ChronoUnit.MINUTES);
+        Verifications otpVerification = new Verifications();
         otpVerification.setEmail(email);
         otpVerification.setCodeOTP(otp);
         otpVerification.setExpireTime(expireTime);
-        veritificationRepository.save(otpVerification);
+        verificationRepository.save(otpVerification);
     }
 }

@@ -5,10 +5,10 @@ import com.example.FlightBooking.DTOs.Request.Auth.SignInDTO;
 import com.example.FlightBooking.DTOs.Request.Auth.SignUpDTO;
 import com.example.FlightBooking.Enum.Roles;
 import com.example.FlightBooking.Models.Users;
-import com.example.FlightBooking.Models.Veritifications;
+import com.example.FlightBooking.Models.Verifications;
 import com.example.FlightBooking.Repositories.TokenRepository;
 import com.example.FlightBooking.Repositories.UserRepository;
-import com.example.FlightBooking.Repositories.VeritificationRepository;
+import com.example.FlightBooking.Repositories.VerificationRepository;
 import com.example.FlightBooking.Utils.EmailUtils;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class AuthenticationService {
 
 
     @Autowired
-    private VeritificationRepository veritificationRepository;
+    private VerificationRepository verificationRepository;
     @Autowired
     private EmailUtils emailUtil;
     public AuthenticationService(
@@ -93,9 +93,9 @@ public class AuthenticationService {
     public String reset_password(String email, Long otp, String newPassword, String confirmPassword){
         Users user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
 
-        Veritifications veritifications = veritificationRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Ver not found with this email "));
+        Verifications verifications = verificationRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("Ver not found with this email "));
 
-            if(veritifications.getCodeOTP().equals(otp)){
+            if(verifications.getCodeOTP().equals(otp)){
                 if(newPassword.equals(confirmPassword)){
                     user.setPassword(passwordEncoder.encode(newPassword));
                     userRepository.save(user);
@@ -103,11 +103,9 @@ public class AuthenticationService {
                 }else {
                     return "Password do not match! Please fill again";
                 }
-            }else {
+            }
+            else {
                 return "OTP wrong! Please fill again";
             }
-
-
-
     }
 }
