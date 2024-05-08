@@ -18,7 +18,6 @@ import java.io.IOException;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-@Controller
 @RestController
 @CrossOrigin
 @Tag(name ="User Profile", description = "apis for changing user profile and information")
