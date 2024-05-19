@@ -29,7 +29,9 @@ public class CreditCard {
     private Long id;
 
     private Long userId;
+    private String stripePaymentMethodId;
     private String cardNumber;
     private String expirationDate;
+    private String cvv;
     private String postalCode;
 }
