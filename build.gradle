@@ -63,6 +63,9 @@ dependencies {
 	//Implement ZXing to generate Barcode and QRCode
 	implementation("com.google.zxing:core:3.5.3")
 	implementation("com.google.zxing:javase:3.5.3")
+
+    // https://mvnrepository.com/artifact/org.apache.poi/poi
+	implementation("org.apache.poi:poi:5.2.5")
 }
 
 tasks.named('test') {
