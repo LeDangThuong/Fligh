@@ -67,6 +67,7 @@ public class Users implements UserDetails {
     private String avatarUrl;
     private String gender;
     private String role;
+    private String stripeCustomerId;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
