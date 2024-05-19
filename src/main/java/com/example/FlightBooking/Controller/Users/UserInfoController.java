@@ -41,13 +41,12 @@ public class UserInfoController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    @DeleteMapping("/delete-user-by-id")
-    public ResponseEntity <Users> deleteUserById(@RequestParam Long id)
-    {
+    @DeleteMapping("/users/delete-user-by-id/{id}")
+    public String deleteUserById(@PathVariable Long id) {
         if (!userRepository.existsById(id)) {
-            return ResponseEntity.notFound().build();
+            return "User not found by id";
         }
         userRepository.deleteById(id);
-        return ResponseEntity.ok().build();
+        return "Delete user complete";
     }
 }
