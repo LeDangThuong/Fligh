@@ -1,6 +1,9 @@
 package com.example.FlightBooking.Services.PaymentService;
 
+import com.example.FlightBooking.Models.CreditCard;
 import com.example.FlightBooking.Models.Order;
+import com.example.FlightBooking.Models.Users;
+import com.example.FlightBooking.Repositories.UserRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
@@ -21,6 +24,7 @@ public class PaymentService {
     @Value("${stripe.api.secretKey}")
     private String stripeSecretKey;
 
+    private UserRepository userRepository;
     public PaymentService() {
         Stripe.apiKey = stripeSecretKey;
     }
@@ -30,6 +34,8 @@ public class PaymentService {
                 .setEmail(email)
                 .build();
         Customer customer = Customer.create(params);
+        Users users = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+        users.setStripeCustomerId(customer.getId());
         return customer.getId();
     }
 
@@ -40,6 +46,8 @@ public class PaymentService {
                 .setCustomer(customerId)
                 .build();
         paymentMethod.attach(params);
+        CreditCard creditCard = new CreditCard();
+        creditCard.setStripePaymentMethodId(paymentMethodId);
         return paymentMethod.getId();
     }
 
