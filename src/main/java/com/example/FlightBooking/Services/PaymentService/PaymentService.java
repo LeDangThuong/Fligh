@@ -7,6 +7,9 @@ import com.stripe.model.Customer;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.PaymentMethod;
 
+import com.stripe.param.CustomerCreateParams;
+import com.stripe.param.PaymentIntentCreateParams;
+import com.stripe.param.PaymentMethodAttachParams;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -17,45 +20,39 @@ import java.util.Map;
 public class PaymentService {
     @Value("${stripe.api.secretKey}")
     private String stripeSecretKey;
+
     public PaymentService() {
         Stripe.apiKey = stripeSecretKey;
     }
-    public PaymentIntent createPaymentIntent(Order order) throws StripeException {
-        Stripe.apiKey = stripeSecretKey;
-
-        Map<String, Object> params = new HashMap<>();
-        params.put("amount", order.getAmount());
-        params.put("currency", order.getCurrency());
-        params.put("description", order.getDescription());
-
-        return PaymentIntent.create(params);
-    }
     public String createStripeCustomer(String email) throws StripeException {
-        Map<String, Object> customerParams = new HashMap<>();
-        customerParams.put("email", email);
-        Customer customer = Customer.create(customerParams);
+        Stripe.apiKey = stripeSecretKey;
+        CustomerCreateParams params = CustomerCreateParams.builder()
+                .setEmail(email)
+                .build();
+        Customer customer = Customer.create(params);
         return customer.getId();
     }
 
     public String attachPaymentMethodToCustomer(String paymentMethodId, String customerId) throws StripeException {
+        Stripe.apiKey = stripeSecretKey;
         PaymentMethod paymentMethod = PaymentMethod.retrieve(paymentMethodId);
-        Map<String, Object> params = new HashMap<>();
-        params.put("customer", customerId);
+        PaymentMethodAttachParams params = PaymentMethodAttachParams.builder()
+                .setCustomer(customerId)
+                .build();
         paymentMethod.attach(params);
-
         return paymentMethod.getId();
     }
 
-    public PaymentIntent createPaymentIntent(Order order, String paymentMethodId, String customerId) throws StripeException {
-        Map<String, Object> params = new HashMap<>();
-        params.put("amount", order.getAmount());
-        params.put("currency", order.getCurrency());
-        params.put("description", order.getDescription());
-        params.put("payment_method", paymentMethodId);
-        params.put("customer", customerId);
-        params.put("off_session", true);
-        params.put("confirm", true);
-
-        return PaymentIntent.create(params);
+    public void chargeCustomer(String customerId, String paymentMethodId, long amount) throws StripeException {
+        Stripe.apiKey = stripeSecretKey;
+        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                .setCustomer(customerId)
+                .setPaymentMethod(paymentMethodId)
+                .setAmount(amount)
+                .setCurrency("usd")
+                .setConfirm(true)
+                .setOffSession(true)
+                .build();
+        PaymentIntent.create(params);
     }
 }
