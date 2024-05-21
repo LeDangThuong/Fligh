@@ -23,8 +23,6 @@ public class AirportsService {
         return airportsRepository.findById(id);
     }
     public Airports addAirport(Airports airport) {
-        airport.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        airport.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         return airportsRepository.save(airport);
     }
 
@@ -34,7 +32,6 @@ public class AirportsService {
             Airports airport = optionalAirport.get();
             airport.setAirportName(airportDetails.getAirportName());
             airport.setCity(airportDetails.getCity());
-            airport.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
             return airportsRepository.save(airport);
         } else {
             throw new RuntimeException("Airport not found");
