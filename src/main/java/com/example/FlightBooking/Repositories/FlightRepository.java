@@ -16,14 +16,13 @@ import java.util.List;
 @Hidden
 public interface FlightRepository extends JpaRepository<Flights, Long> {
 
-    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND f.departureDate = :departureDate")
+    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND CAST(f.departureDate AS date) = CAST(:departureDate AS date)")
     List<Flights> searchFlightOneWay(
             @Param("departureAirportId") Long departureAirportId,
             @Param("arrivalAirportId") Long arrivalAirportId,
             @Param("departureDate") Timestamp departureDate
     );
-
-    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND f.departureDate BETWEEN :departureStartDate AND :departureEndDate")
+    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND CAST(f.departureDate AS date) BETWEEN CAST(:departureStartDate AS date) AND CAST(:departureEndDate AS date)")
     List<Flights> searchFlightRoundTrip(
             @Param("departureAirportId") Long departureAirportId,
             @Param("arrivalAirportId") Long arrivalAirportId,
@@ -31,11 +30,11 @@ public interface FlightRepository extends JpaRepository<Flights, Long> {
             @Param("departureEndDate") Timestamp departureEndDate
     );
 
-    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND f.departureDate BETWEEN :departureStartDate AND :departureEndDate")
-    List<Flights> searchFlightMulti(
-            @Param("departureAirportId") Long departureAirportId,
-            @Param("arrivalAirportId") Long arrivalAirportId,
-            @Param("departureStartDate") Timestamp departureStartDate,
-            @Param("departureEndDate") Timestamp departureEndDate
-    );
+//    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND f.departureDate BETWEEN :departureStartDate AND :departureEndDate")
+//    List<Flights> searchFlightMulti(
+//            @Param("departureAirportId") Long departureAirportId,
+//            @Param("arrivalAirportId") Long arrivalAirportId,
+//            @Param("departureStartDate") Timestamp departureStartDate,
+//            @Param("departureEndDate") Timestamp departureEndDate
+//    );
 }

@@ -37,13 +37,18 @@ public class Flights {
 
     private Timestamp departureDate; //thoi gian cat canh
     private Timestamp arrivalDate; // thoi gian ha canh
+
     private Long duration; // uoc luong thoi gian bay
-    private Long price;
-    // Luu noi cat canh va ha canh de khi search de search, cung nhu luu thong tin chuyen bay
     private Long departureAirportId;
     private Long arrivalAirportId;
-
     private Long planeId; // Luu thong tin may bay cua hang nao
+
+    private Double economyPrice;
+    private Double businessPrice;
+    private Double firstClassPrice;
+    //
+
+
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

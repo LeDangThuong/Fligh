@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Controller.Flights;
 
+import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
 import com.example.FlightBooking.Models.Flights;
 import com.example.FlightBooking.Services.FlightService.ExcelService;
 import com.example.FlightBooking.Services.FlightService.FlightService;
@@ -27,7 +28,13 @@ public class CRUDFlightController {
         excelService.saveFlightsFromExcel(file);
         return "File uploaded and data saved successfully!";
     }
-    @GetMapping("/search/oneway")
+
+    @PostMapping("/create-new-flight")
+    public ResponseEntity<Flights> createFlight(@RequestBody FlightDTO flightDTO) {
+        Flights flight = flightService.createFlight(flightDTO);
+        return ResponseEntity.ok(flight);
+    }
+    @GetMapping("/search-one-way")
     public ResponseEntity<List<Flights>> searchFlightOneWay(
             @RequestParam Long departureAirportId,
             @RequestParam Long arrivalAirportId,
@@ -36,7 +43,7 @@ public class CRUDFlightController {
         return ResponseEntity.ok(flights);
     }
 
-    @GetMapping("/search/roundtrip")
+    @GetMapping("/search-round-trip")
     public ResponseEntity<List<Flights>> searchFlightRoundTrip(
             @RequestParam Long departureAirportId,
             @RequestParam Long arrivalAirportId,
@@ -45,15 +52,4 @@ public class CRUDFlightController {
         List<Flights> flights = flightService.searchFlightRoundTrip(departureAirportId, arrivalAirportId, departureStartDate, departureEndDate);
         return ResponseEntity.ok(flights);
     }
-
-    @GetMapping("/search/multi")
-    public ResponseEntity<List<Flights>> searchFlightMulti(
-            @RequestParam Long departureAirportId,
-            @RequestParam Long arrivalAirportId,
-            @RequestParam Timestamp departureStartDate,
-            @RequestParam Timestamp departureEndDate) {
-        List<Flights> flights = flightService.searchFlightMulti(departureAirportId, arrivalAirportId, departureStartDate, departureEndDate);
-        return ResponseEntity.ok(flights);
-    }
-
 }
