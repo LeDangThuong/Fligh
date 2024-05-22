@@ -36,7 +36,7 @@ public class Airports {
     private Long id;
     private String airportName;
     private String city;
-
+    private String iataCode;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;

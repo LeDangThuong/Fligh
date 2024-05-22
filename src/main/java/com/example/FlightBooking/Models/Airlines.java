@@ -1,5 +1,7 @@
 package com.example.FlightBooking.Models;
 
+import jakarta.persistence.*;
+import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -7,12 +9,6 @@ import java.sql.Timestamp;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,9 +37,11 @@ public class Airlines {
     // thường thì nó sẽ có giá trị 1 ++ lên dân
     private Long id;
     private String airlineName;
-    private String flightNumber; //So hieu may bay
     private String logoUrl;
-    private String iataCode;
+
+    @OneToMany
+    @JoinColumn(name = "plane_id")
+    private Planes planes;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
