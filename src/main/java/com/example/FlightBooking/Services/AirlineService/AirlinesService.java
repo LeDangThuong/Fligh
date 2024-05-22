@@ -31,7 +31,6 @@ public class AirlinesService {
             Airlines airlines = optionalAirlines.get();
             airlines.setAirlineName(airlinesDetails.getAirlineName());
             airlines.setLogoUrl(airlinesDetails.getLogoUrl());
-            airlines.setIataCode(airlinesDetails.getIataCode());
             return airlinesRepository.save(airlines);
         } else {
             throw new RuntimeException("Airline not found with id " + id);
