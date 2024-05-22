@@ -34,14 +34,14 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "flight_id", nullable = false)
-    private Flights flight;
-
+    private Long flightId;
+    private String bookerFullName;
+    private String bookerEmail;
+    private String bookerPersonalId;
     private Timestamp bookingDate;
-    private double totalAmount;
+    private Long userId;
 
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Passengers> passengers;
 
     @CreationTimestamp
