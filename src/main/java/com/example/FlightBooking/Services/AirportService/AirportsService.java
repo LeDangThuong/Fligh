@@ -32,6 +32,7 @@ public class AirportsService {
             Airports airport = optionalAirport.get();
             airport.setAirportName(airportDetails.getAirportName());
             airport.setCity(airportDetails.getCity());
+            airport.setIataCode(airportDetails.getIataCode());
             return airportsRepository.save(airport);
         } else {
             throw new RuntimeException("Airport not found");
