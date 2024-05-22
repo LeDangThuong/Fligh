@@ -14,7 +14,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.sql.Timestamp;
-import java.util.Date;
+
 @Entity
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -24,24 +24,24 @@ import java.util.Date;
 @Getter
 @Setter
 @Table(name = "seats")
-public class Seat {
+public class Seats {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne
-    @JoinColumn(name = "fare_id", nullable = false)
-    private Fares fare;
+    @JoinColumn(name = "flight_id", nullable = false)
+    private Flights flight;
 
     private String seatNumber;
     private String seatPosition; // Aisle, Window, Middle
+    private String seatClass; // ECONOMY, BUSINESS, FIRST
+    private String status; // AVAILABLE, BOOKED, HELD
+    private Timestamp holdExpiryTime;
 
-    private String phoneNumber;
-    private String nationality;
-    private String passportNumber;
-    private String fullName;
-    private Timestamp dateOfBirth;
 
+    @ManyToOne
+    @JoinColumn(name = "booking_id")
+    private Booking booking;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
