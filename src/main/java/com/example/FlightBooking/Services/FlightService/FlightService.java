@@ -2,14 +2,11 @@ package com.example.FlightBooking.Services.FlightService;
 
 import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
 import com.example.FlightBooking.Models.Flights;
-import com.example.FlightBooking.Models.Seats;
 import com.example.FlightBooking.Repositories.FlightRepository;
-import com.example.FlightBooking.Repositories.SeatRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

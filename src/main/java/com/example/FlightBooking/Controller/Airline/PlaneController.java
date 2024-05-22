@@ -30,7 +30,7 @@ public class PlaneController {
     @GetMapping("/{planeId}/seats")
     public ResponseEntity<?> getSeatStatuses(@PathVariable Long planeId) {
         try {
-            Map<String, String> seatStatuses = planeService.getSeatStatuses(planeId);
+            Map<String, Map<String, String>> seatStatuses = planeService.getSeatStatuses(planeId);
             return ResponseEntity.ok(seatStatuses);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error getting seat statuses: " + e.getMessage());
