@@ -22,6 +22,9 @@ public class Planes {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String flightNumber; //So hieu may bay
+    @ManyToOne
+    @JoinColumn(name = "airline_id", nullable = false)
+    private Airlines airline;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;

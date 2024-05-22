@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
@@ -39,9 +40,8 @@ public class Airlines {
     private String airlineName;
     private String logoUrl;
 
-    @OneToMany
-    @JoinColumn(name = "plane_id")
-    private Planes planes;
+    @OneToMany(mappedBy = "airline", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Planes> planes;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
