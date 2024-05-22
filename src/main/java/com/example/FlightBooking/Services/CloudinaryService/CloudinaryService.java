@@ -29,7 +29,15 @@ public class CloudinaryService {
         Map response = cloudinary.uploader().upload(file.getBytes(),
                 ObjectUtils.asMap(
                         "resource_type", "auto",
-                        "folder", "Flights" // Thêm folder "Donations"
+                        "folder", "Flights"
+                ));
+        return (String) response.get("url");
+    }
+    public String uploadAirlineLogo(MultipartFile file) throws IOException {
+        Map response = cloudinary.uploader().upload(file.getBytes(),
+                ObjectUtils.asMap(
+                        "resource_type", "auto",
+                        "folder", "Airlines"
                 ));
         return (String) response.get("url");
     }

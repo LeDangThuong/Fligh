@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Models;
 
+import com.example.FlightBooking.Enum.SeatClass;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -28,20 +29,20 @@ public class Seats {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne
-    @JoinColumn(name = "flight_id", nullable = false)
-    private Flights flight;
-
-    private String seatNumber;
-    private String seatPosition; // Aisle, Window, Middle
-    private String seatClass; // ECONOMY, BUSINESS, FIRST
-    private String status; // AVAILABLE, BOOKED, HELD
-    private Timestamp holdExpiryTime;
-
 
     @ManyToOne
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
+    @JoinColumn(name = "plane_id", nullable = false)
+    private Planes plane;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "seat_class", nullable = false)
+    private SeatClass seatClass;
+
+    @Column(name = "row_number", nullable = false)
+    private int rowNumber;
+
+    @Column(name = "seat_number", nullable = false)
+    private String seatNumber;  // Chuyển từ int sang String để lưu vị trí ghế
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;

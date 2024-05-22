@@ -7,6 +7,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.List;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -34,14 +35,14 @@ public class Booking {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "flight_id")
+    @JoinColumn(name = "flight_id", nullable = false)
     private Flights flight;
 
-    private String bookingStatus;
+    private Timestamp bookingDate;
+    private double totalAmount;
 
-    private String customerName;
-    private String customerEmail;
-    private String customerPhone;
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    private List<Passengers> passengers;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

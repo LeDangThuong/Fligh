@@ -15,12 +15,12 @@ public class Passengers {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "booking_id")
-    private Booking booking;
-
-    private String passengerType; // ADULT, CHILD
     private String name;
-    private String passportNumber;
-    private String seatClass; // ECONOMY, BUSINESS, FIRST
+    private String email;
+    private String phoneNumber;
+    private String personalId;
+
+    @ManyToOne
+    @JoinColumn(name = "booking_id", nullable = false)
+    private Booking booking;
 }

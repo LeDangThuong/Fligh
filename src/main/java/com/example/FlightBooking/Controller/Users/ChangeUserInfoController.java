@@ -29,7 +29,7 @@ public class ChangeUserInfoController {
     private UserRepository userRepository;
     @Autowired
     private JwtService jwtService;
-    @PutMapping("/user/change-info")
+    @PutMapping("/users/change-info")
     public ResponseEntity<?> updateUserInfo(@RequestBody ChangeInfoRequest changeInfoRequest) throws Exception {
         String token = changeInfoRequest.getToken();
         String username = jwtService.getUsername(token);

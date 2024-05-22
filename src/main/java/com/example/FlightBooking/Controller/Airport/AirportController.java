@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Controller.Airport;
 
+import com.example.FlightBooking.DTOs.Request.AirlineAndAirport.AirportRequest;
 import com.example.FlightBooking.Models.Airports;
 import com.example.FlightBooking.Services.AirportService.AirportsService;
 
@@ -41,9 +42,9 @@ public class AirportController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PostMapping
-    public  ResponseEntity<Airports> addAirport(@RequestBody Airports airport) {
-        Airports airports = airportsService.addAirport(airport);
+    @PostMapping ("/create-new-airport")
+    public  ResponseEntity<Airports> addAirport(@RequestBody AirportRequest airportRequest) {
+        Airports airports = airportsService.createNewAirport(airportRequest);
         return new ResponseEntity<>(airports, HttpStatus.OK);
     }
 

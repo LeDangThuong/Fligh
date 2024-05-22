@@ -26,21 +26,21 @@ public class FaresService {
         return faresRepository.save(fare);
     }
 
-    public Fares updateFare(Long id, Fares fareDetails) {
-        Optional<Fares> optionalFare = faresRepository.findById(id);
-        if (optionalFare.isPresent()) {
-            Fares fare = optionalFare.get();
-            fare.setFlightId(fareDetails.getFlightId());
-            fare.setFareType(fareDetails.getFareType());
-            fare.setPassengerType(fareDetails.getPassengerType());
-            fare.setBaseFare(fareDetails.getBaseFare());
-            fare.setTax(fareDetails.getTax());
-            fare.setBaggageFee(fareDetails.getBaggageFee());
-            return faresRepository.save(fare);
-        } else {
-            throw new RuntimeException("Fare not found with id " + id);
-        }
-    }
+//    public Fares updateFare(Long id, Fares fareDetails) {
+//        Optional<Fares> optionalFare = faresRepository.findById(id);
+//        if (optionalFare.isPresent()) {
+//            Fares fare = optionalFare.get();
+//            fare.setFlightId(fareDetails.getFlightId());
+//            fare.setFareType(fareDetails.getFareType());
+//            fare.setPassengerType(fareDetails.getPassengerType());
+//            fare.setBaseFare(fareDetails.getBaseFare());
+//            fare.setTax(fareDetails.getTax());
+//            fare.setBaggageFee(fareDetails.getBaggageFee());
+//            return faresRepository.save(fare);
+//        } else {
+//            throw new RuntimeException("Fare not found with id " + id);
+//        }
+//    }
 
     public boolean deleteFare(Long id) {
         if(faresRepository.existsById(id)){

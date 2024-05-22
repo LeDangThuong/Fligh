@@ -10,6 +10,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.apache.poi.hpsf.Decimal;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -33,19 +34,16 @@ public class Flights {
     private Long id;
 
     private String flightStatus; // Cai nay la dang delay, hay hoan, hay la san sang cat canh
-    private String flightType; // 1 chieu, khu hoi, hay nhieu chang
 
     private Timestamp departureDate; //thoi gian cat canh
     private Timestamp arrivalDate; // thoi gian ha canh
     private Long duration; // uoc luong thoi gian bay
-    private int economySeatsAvailable;
-    private int businessSeatsAvailable;
-    private int firstClassSeatsAvailable;
+    private Long price;
     // Luu noi cat canh va ha canh de khi search de search, cung nhu luu thong tin chuyen bay
     private Long departureAirportId;
     private Long arrivalAirportId;
 
-    private Long airlineId; // Luu thong tin may bay cua hang nao
+    private Long planeId; // Luu thong tin may bay cua hang nao
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

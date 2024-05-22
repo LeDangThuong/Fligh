@@ -1,6 +1,5 @@
-package com.example.FlightBooking.Controller.Checkout;
+package com.example.FlightBooking.Controller.Payment;
 
-import com.example.FlightBooking.DTOs.Request.CreditCard.CreditCardDTO;
 import com.example.FlightBooking.Models.CreditCard;
 import com.example.FlightBooking.Models.Order;
 import com.example.FlightBooking.Models.Users;
@@ -9,12 +8,10 @@ import com.example.FlightBooking.Repositories.UserRepository;
 import com.example.FlightBooking.Services.PaymentService.PaymentService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
 
 import com.stripe.model.PaymentMethod;
 import com.stripe.model.SetupIntent;
 import com.stripe.param.SetupIntentCreateParams;
-import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
@@ -62,7 +59,17 @@ public class PaymentController {
         }
         catch (RuntimeException e) {
         return ResponseEntity.status(404).body("Error: " + e.getMessage());
+        }
     }
+    @GetMapping("/get-stripe-payment-method-id")
+    public ResponseEntity<?> getStripePaymentMethodId (@RequestParam String token){
+        try {
+            String paymentMethodId = paymentService.getPaymentMethodId(token);
+            return ResponseEntity.ok(Collections.singletonMap("stripePaymentMethod", paymentMethodId));
+        }
+        catch (RuntimeException e) {
+            return ResponseEntity.status(404).body("Error: " + e.getMessage());
+        }
     }
     @PostMapping("/create-customer")
     public ResponseEntity<?> createCustomer(@RequestParam String email) {
@@ -128,11 +135,25 @@ public class PaymentController {
     }
 
     @PostMapping("/charge-customer")
-    public ResponseEntity<?> chargeCustomer(@RequestParam String customerId, @RequestParam String paymentMethodId, @RequestParam long amount) {
+    public ResponseEntity<?> chargeCustomer(@RequestParam String customerId, @RequestParam String paymentMethodId, @RequestParam long amount, @RequestParam String paymentType) {
         try {
-            paymentService.chargeCustomer(customerId, paymentMethodId, amount);
+            Order order = new Order(); // Bạn cần tạo đơn hàng thực tế hoặc nhận từ request
+            paymentService.chargeCustomer(customerId, paymentMethodId, amount, paymentType, order);
             return ResponseEntity.ok().body("Payment successful");
-        } catch (StripeException e) {
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error: " + e.getMessage());
+        }
+    }
+
+    // Thêm phương thức cho VNPay
+    @PostMapping("/vnpay-payment")
+    public ResponseEntity<?> vnpayPayment(@RequestParam long amount, @RequestParam String orderInfo) {
+        try {
+            Order order = new Order();
+//            order.setOrderInfo(orderInfo); // Bạn cần bổ sung thêm các thuộc tính cần thiết cho đơn hàng
+            paymentService.chargeCustomer(null, null, amount, "vnpay", order);
+            return ResponseEntity.ok().body("VNPay Payment successful");
+        } catch (Exception e) {
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }

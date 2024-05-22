@@ -35,7 +35,9 @@ public class JwtService {
                 .setSigningKey(secretKey)
                 .parseClaimsJws(token)
                 .getBody();
-        return claims.getSubject();
+        String username = claims.getSubject();
+        System.out.println("Extracted username: " + username); // Log the extracted username
+        return username;
     }
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);

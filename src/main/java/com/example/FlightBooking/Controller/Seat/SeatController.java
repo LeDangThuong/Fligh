@@ -37,15 +37,15 @@ public class SeatController {
         return seatService.addSeat(seat);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Seats> updateSeat(@PathVariable Long id, @RequestBody Seats seatDetails) {
-        try {
-            Seats updatedSeat = seatService.updateSeat(id, seatDetails);
-            return ResponseEntity.ok(updatedSeat);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Seats> updateSeat(@PathVariable Long id, @RequestBody Seats seatDetails) {
+//        try {
+//            Seats updatedSeat = seatService.updateSeat(id, seatDetails);
+//            return ResponseEntity.ok(updatedSeat);
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteSeat(@PathVariable Long id) {
@@ -54,34 +54,5 @@ public class SeatController {
         else
             return ResponseEntity.notFound().build();
     }
-    @GetMapping("/available")
-    public ResponseEntity<List<Seats>> getAvailableSeats(@RequestParam Long flightId) {
-        List<Seats> seats = seatService.getAvailableSeats(flightId);
-        return ResponseEntity.ok(seats);
-    }
 
-    @GetMapping("/available/byClass")
-    public ResponseEntity<List<Seats>> getAvailableSeatsByClass(@RequestParam Long flightId, @RequestParam String seatClass) {
-        List<Seats> seats = seatService.getAvailableSeatsByClass(flightId, seatClass);
-        return ResponseEntity.ok(seats);
-    }
-
-    @GetMapping("/available/byClassAndPosition")
-    public ResponseEntity<List<Seats>> getAvailableSeatsByClassAndPosition(@RequestParam Long flightId, @RequestParam String seatClass, @RequestParam String seatPosition) {
-        List<Seats> seats = seatService.getAvailableSeatsByClassAndPosition(flightId, seatClass, seatPosition);
-        return ResponseEntity.ok(seats);
-    }
-
-    @PostMapping("/hold")
-    public ResponseEntity<Seats> holdSeat(@RequestParam Long seatId) {
-        Seats seat = seatService.holdSeat(seatId);
-        return ResponseEntity.ok(seat);
-    }
-
-    @PostMapping("/book")
-    public ResponseEntity<Seats> bookSeat(@RequestParam Long seatId, @RequestParam Long bookingId) {
-        Booking booking = bookingService.getBookingById(bookingId); // Add this method to BookingService
-        Seats seat = seatService.bookSeat(seatId, booking);
-        return ResponseEntity.ok(seat);
-    }
 }

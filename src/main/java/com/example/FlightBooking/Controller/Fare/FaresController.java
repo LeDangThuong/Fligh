@@ -40,15 +40,15 @@ public class FaresController {
         return faresService.addFare(fare);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Fares> updateFare(@PathVariable Long id, @RequestBody Fares fareDetails) {
-        try {
-            Fares updatedFare = faresService.updateFare(id, fareDetails);
-            return ResponseEntity.ok(updatedFare);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
+//    @PutMapping("/{id}")
+//    public ResponseEntity<Fares> updateFare(@PathVariable Long id, @RequestBody Fares fareDetails) {
+//        try {
+//            Fares updatedFare = faresService.updateFare(id, fareDetails);
+//            return ResponseEntity.ok(updatedFare);
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.notFound().build();
+//        }
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteFare(@PathVariable Long id) {

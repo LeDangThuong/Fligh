@@ -41,11 +41,27 @@ public class EmailUtils {
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
         mimeMessageHelper.setTo(email);
         mimeMessageHelper.setSubject("Set Password");
-        mimeMessageHelper.setText("""
-            <div>
-                Your OTP for password change is: %s
-            </div>
-            """.formatted(otp), true);
+        String htmlMsg = """
+                <html>
+                <body>
+                    <div style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; border: 1px solid #ddd; border-radius: 10px; max-width: 600px; margin: auto;">
+                        <h2 style="text-align: center; color: #4CAF50;">Set Password</h2>
+                        <p>Hello,</p>
+                        <p>Your OTP for password change is:</p>
+                        <div style="text-align: center; font-size: 24px; font-weight: bold; color: #333;">%s</div>
+                        <p>This OTP is valid for 5 minutes.</p>
+                        <p>If you did not request a password change, please ignore this email.</p>
+                        <p>Thank you!</p>
+                        <hr style="border: none; border-top: 1px solid #eee;">
+                        <div style="text-align: center; color: #999; font-size: 12px;">
+                            <p>FlightBooking Team</p>
+                            <p>Do not reply to this email. If you have any questions, contact us at support@flightbooking.com.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """.formatted(otp);
+        mimeMessageHelper.setText(htmlMsg, true);
         javaMailSender.send(mimeMessage);
     }
 
