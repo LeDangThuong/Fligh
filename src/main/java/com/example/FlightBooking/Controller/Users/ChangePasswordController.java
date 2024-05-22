@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Controller;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +33,7 @@ public class ChangePasswordController {
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;  // Use BCryptPasswordEncoder
 
-    @PostMapping("/user/change-password")
+    @PostMapping("/users/change-password")
     public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
         String token = request.getToken();
         String oldPassword = request.getOldPassword();
@@ -48,7 +48,9 @@ public class ChangePasswordController {
             }
 
             Users user = optionalUser.get();
-
+            System.out.println("Found user: " + user.getUsername()); // Log the found user
+            System.out.println("Old password entered: " + oldPassword); // Log the old password entered
+            System.out.println("Stored hashed password: " + user.getPassword()); // Log the stored hashed password
             if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Old password does not match.");
             }
@@ -56,7 +58,8 @@ public class ChangePasswordController {
             user.setPassword(passwordEncoder.encode(newPassword));
             userRepository.save(user);
             return ResponseEntity.ok("Password successfully updated.");
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             // Log the exception and provide a generic error message
             System.out.println("Error changing password: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("You need to login again - Your token has been expired");

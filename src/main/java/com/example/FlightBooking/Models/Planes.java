@@ -7,6 +7,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @Entity
@@ -21,13 +22,22 @@ public class Planes {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String flightNumber; //So hieu may bay
+
+    @Column(nullable = false)
+    private String flightNumber;
+
     @ManyToOne
     @JoinColumn(name = "airline_id", nullable = false)
     private Airlines airline;
+
+    @Lob
+    @Column(name = "seat_statuses", nullable = false)
+    private String seatStatuses; // Sử dụng JSON để lưu trạng thái chỗ ngồi
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
+
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Timestamp updatedAt;

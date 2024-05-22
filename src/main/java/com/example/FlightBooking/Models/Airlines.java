@@ -40,8 +40,6 @@ public class Airlines {
     private String airlineName;
     private String logoUrl;
 
-    @OneToMany(mappedBy = "airline", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Planes> planes;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;

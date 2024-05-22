@@ -25,7 +25,7 @@ public class ChangeAvatarController {
     @Autowired
     private UserService userService;
 
-    @PostMapping(value = "/user/upload-new-avatar", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/users/upload-new-avatar", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> uploadAvatar(@RequestParam("token") String token,
                                                @RequestPart("avatarFile") MultipartFile avatarFile) {
         try {

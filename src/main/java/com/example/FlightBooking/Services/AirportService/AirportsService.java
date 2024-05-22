@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Services.AirportService;
 
+import com.example.FlightBooking.DTOs.Request.AirlineAndAirport.AirportRequest;
 import com.example.FlightBooking.Models.Airports;
 import com.example.FlightBooking.Repositories.AirportsRepository;
 
@@ -22,8 +23,14 @@ public class AirportsService {
     public Optional<Airports> getAirportById(Long id) {
         return airportsRepository.findById(id);
     }
-    public Airports addAirport(Airports airport) {
-        return airportsRepository.save(airport);
+
+    public Airports createNewAirport (AirportRequest airportRequest)
+    {
+       Airports airports = new Airports();
+       airports.setAirportName(airportRequest.getAirportName());
+       airports.setCity(airportRequest.getCity());
+       airports.setIataCode(airportRequest.getIataCode());
+       return airportsRepository.save(airports);
     }
 
     public Airports updateAirport(Long id, Airports airportDetails) {

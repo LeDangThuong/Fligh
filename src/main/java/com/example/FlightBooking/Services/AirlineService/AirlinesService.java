@@ -1,10 +1,15 @@
 package com.example.FlightBooking.Services.AirlineService;
+import com.example.FlightBooking.DTOs.Request.AirlineAndAirport.AirlineRequest;
 import com.example.FlightBooking.Models.Airlines;
+import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.AirlinesRepository;
 
+import com.example.FlightBooking.Services.CloudinaryService.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,6 +17,8 @@ import java.util.Optional;
 public class AirlinesService {
     @Autowired
     private AirlinesRepository airlinesRepository;
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     public List<Airlines> getAllAirlines() {
         return airlinesRepository.findAll();
@@ -44,5 +51,18 @@ public class AirlinesService {
         }else {
             return false;
         }
+    }
+    private Airlines getAirlineById(Long airlineId) {
+        return airlinesRepository.findById(airlineId).orElseThrow(() -> new RuntimeException("Airline not found"));
+    }
+    public Airlines createNewAirline(String airlineName, MultipartFile file) throws IOException {
+        // Tải lên logo và nhận URL mới
+        String logoUrl = cloudinaryService.uploadAirlineLogo(file);
+        // Tạo mới hãng hàng không với tên và logo URL
+        Airlines airlines = new Airlines();
+        airlines.setAirlineName(airlineName);
+        airlines.setLogoUrl(logoUrl);
+
+        return airlinesRepository.save(airlines);
     }
 }

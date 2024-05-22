@@ -1,6 +1,8 @@
 package com.example.FlightBooking.Services.AuthJWT;
 
 
+import com.example.FlightBooking.Components.Builder.ConcreteUserBuilder;
+import com.example.FlightBooking.Components.Builder.UserDirector;
 import com.example.FlightBooking.DTOs.Request.Auth.SignInDTO;
 import com.example.FlightBooking.DTOs.Request.Auth.SignUpDTO;
 import com.example.FlightBooking.Enum.Roles;
@@ -53,13 +55,10 @@ public class AuthenticationService {
         if (existingUser.isPresent()) {
             throw new IllegalArgumentException("Username '" + input.getUsername() + "' already exists. Please choose a different username.");
         }
-        Users user = new Users();
-        user.setUsername(input.getUsername());
-        user.setEmail(input.getEmail());
-        user.setPassword(passwordEncoder.encode(input.getPassword()));
-        user.setFullName(input.getFullName());
-        user.setDayOfBirth(input.getDayOfBirth());
-        user.setRole(Roles.CUSTOMER.name());
+        ConcreteUserBuilder builder = new ConcreteUserBuilder(passwordEncoder);
+        UserDirector director = new UserDirector(builder);
+        director.constructUser(input);
+        Users user = builder.build();
         return userRepository.save(user);
     }
 

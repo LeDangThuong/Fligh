@@ -16,14 +16,14 @@ import java.util.List;
 @Hidden
 public interface FlightRepository extends JpaRepository<Flights, Long> {
 
-    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND f.departureDate = :departureDate AND f.flightType = 'ONE_WAY'")
+    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND f.departureDate = :departureDate")
     List<Flights> searchFlightOneWay(
             @Param("departureAirportId") Long departureAirportId,
             @Param("arrivalAirportId") Long arrivalAirportId,
             @Param("departureDate") Timestamp departureDate
     );
 
-    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND f.departureDate BETWEEN :departureStartDate AND :departureEndDate AND f.flightType = 'ROUND_TRIP'")
+    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND f.departureDate BETWEEN :departureStartDate AND :departureEndDate")
     List<Flights> searchFlightRoundTrip(
             @Param("departureAirportId") Long departureAirportId,
             @Param("arrivalAirportId") Long arrivalAirportId,
@@ -31,7 +31,7 @@ public interface FlightRepository extends JpaRepository<Flights, Long> {
             @Param("departureEndDate") Timestamp departureEndDate
     );
 
-    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND f.departureDate BETWEEN :departureStartDate AND :departureEndDate AND f.flightType = 'MULTI_LEG'")
+    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND f.departureDate BETWEEN :departureStartDate AND :departureEndDate")
     List<Flights> searchFlightMulti(
             @Param("departureAirportId") Long departureAirportId,
             @Param("arrivalAirportId") Long arrivalAirportId,

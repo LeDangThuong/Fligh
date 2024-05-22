@@ -15,9 +15,10 @@ import springfox.documentation.annotations.ApiIgnore;
 @Setter
 
 public class SignUpDTO {
-    private String password;
-    private String fullName;
     private String username;
+    private String password;
     private String email;
+    private Roles role;
     private Timestamp dayOfBirth;
+    private String fullName;
 }

@@ -27,11 +27,6 @@ public class CRUDFlightController {
         excelService.saveFlightsFromExcel(file);
         return "File uploaded and data saved successfully!";
     }
-    @PostMapping("/create")
-    public ResponseEntity<Flights> createNewFlight(@RequestBody Flights flight) {
-        Flights newFlight = flightService.createNewFlight(flight);
-        return ResponseEntity.ok(newFlight);
-    }
     @GetMapping("/search/oneway")
     public ResponseEntity<List<Flights>> searchFlightOneWay(
             @RequestParam Long departureAirportId,

@@ -3,14 +3,12 @@ package com.example.FlightBooking.Models;
 import com.example.FlightBooking.Enum.FareTypes;
 import com.example.FlightBooking.Enum.PassengerTypes;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,10 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import jakarta.persistence.Table;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+
 @Data
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
@@ -37,17 +32,13 @@ public class Fares {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long flightId;
+    @ManyToOne
+    @JoinColumn(name = "flight_id", nullable = false)
+    private Flights flight;
 
-    @Enumerated(EnumType.STRING)
-    private FareTypes fareType;
-
-    @Enumerated(EnumType.STRING)
-    private PassengerTypes passengerType;
-
-    private BigDecimal baseFare;
-    private BigDecimal tax;
-    private BigDecimal baggageFee;
+    private String seatClass;
+    private double price;
+    private double baggageFee;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

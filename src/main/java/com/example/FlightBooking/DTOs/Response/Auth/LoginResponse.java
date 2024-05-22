@@ -1,5 +1,6 @@
 package com.example.FlightBooking.DTOs.Response.Auth;
 
+import com.example.FlightBooking.Enum.Roles;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
@@ -15,5 +16,5 @@ public class LoginResponse {
     private long expiresRefreshIn;
     private long expiresIn;
     private String username;
-    private String role;
+    private Roles role;
 }
