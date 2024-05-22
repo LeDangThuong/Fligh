@@ -38,7 +38,9 @@ public class Flights {
     private Timestamp departureDate; //thoi gian cat canh
     private Timestamp arrivalDate; // thoi gian ha canh
     private Long duration; // uoc luong thoi gian bay
-
+    private int economySeatsAvailable;
+    private int businessSeatsAvailable;
+    private int firstClassSeatsAvailable;
     // Luu noi cat canh va ha canh de khi search de search, cung nhu luu thong tin chuyen bay
     private Long departureAirportId;
     private Long arrivalAirportId;
