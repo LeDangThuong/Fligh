@@ -39,6 +39,7 @@ public class Booking {
     private String bookerEmail;
     private String bookerPersonalId;
     private Timestamp bookingDate;
+    private Long userId;
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Passengers> passengers;

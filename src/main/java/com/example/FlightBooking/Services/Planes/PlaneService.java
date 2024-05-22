@@ -95,7 +95,7 @@ public class PlaneService {
         return sortedSeatStatuses;
     }
 
-    public boolean holdSeats(Long planeId, Set<String> seatNumbers) throws Exception {
+    public boolean holdSeats(Long planeId, Set<String> seatNumbers, Long userId) throws Exception {
         logger.info("Attempting to hold seats for planeId: {}", planeId);
         Planes plane = planeRepository.findById(planeId)
                 .orElseThrow(() -> new RuntimeException("Plane not found"));
@@ -119,6 +119,7 @@ public class PlaneService {
         for (String seatNumber : seatNumbers) {
             logger.info("Holding seat: {}", seatNumber);
             seatStatuses.get(seatNumber).put("status", SeatStatus.ON_HOLD.name());
+            seatStatuses.get(seatNumber).put("userId", userId.toString());
         }
 
         seatStatusesJson = objectMapper.writeValueAsString(seatStatuses);
@@ -130,7 +131,7 @@ public class PlaneService {
                     @Override
                     public void run() {
                         try {
-                            releaseSeats(planeId, seatNumbers);
+                            releaseSeats(planeId, seatNumbers, userId);
                         } catch (Exception e) {
                             logger.error("Error releasing seats: ", e);
                         }
@@ -142,7 +143,7 @@ public class PlaneService {
         return true;
     }
 
-    public void releaseSeats(Long planeId, Set<String> seatNumbers) throws Exception {
+    public void releaseSeats(Long planeId, Set<String> seatNumbers, Long userId) throws Exception {
         logger.info("Releasing seats for planeId: {}", planeId);
         Planes plane = planeRepository.findById(planeId).orElseThrow(() -> new RuntimeException("Plane not found"));
         String seatStatusesJson = plane.getSeatStatuses();
@@ -150,8 +151,10 @@ public class PlaneService {
 
         for (String seatNumber : seatNumbers) {
             logger.debug("Releasing seat: {}", seatNumber);
-            if (SeatStatus.ON_HOLD.name().equals(seatStatuses.get(seatNumber).get("status"))) {
+            if (SeatStatus.ON_HOLD.name().equals(seatStatuses.get(seatNumber).get("status"))
+                    && userId.toString().equals(seatStatuses.get(seatNumber).get("userId"))) {
                 seatStatuses.get(seatNumber).put("status", SeatStatus.AVAILABLE.name());
+                seatStatuses.get(seatNumber).remove("userId");
             }
         }
 
@@ -161,7 +164,7 @@ public class PlaneService {
         logger.info("Seats released successfully for planeId: {}", planeId);
     }
 
-    public boolean bookSeats(Long planeId, Set<String> seatNumbers) throws Exception {
+    public boolean bookSeats(Long planeId, Set<String> seatNumbers, Long userId) throws Exception {
         logger.info("Booking seats for planeId: {}", planeId);
         Planes plane = planeRepository.findById(planeId).orElseThrow(() -> new RuntimeException("Plane not found"));
         String seatStatusesJson = plane.getSeatStatuses();
@@ -169,8 +172,9 @@ public class PlaneService {
 
         for (String seatNumber : seatNumbers) {
             logger.debug("Checking seat: {}", seatNumber);
-            if (!SeatStatus.ON_HOLD.name().equals(seatStatuses.get(seatNumber).get("status"))) {
-                logger.warn("Seat {} is not on hold, current status: {}", seatNumber, seatStatuses.get(seatNumber).get("status"));
+            if (!SeatStatus.ON_HOLD.name().equals(seatStatuses.get(seatNumber).get("status"))
+                    || !userId.toString().equals(seatStatuses.get(seatNumber).get("userId"))) {
+                logger.warn("Seat {} is not on hold by user {}, current status: {}", seatNumber, userId, seatStatuses.get(seatNumber).get("status"));
                 return false;
             }
         }
@@ -178,6 +182,7 @@ public class PlaneService {
         for (String seatNumber : seatNumbers) {
             logger.info("Booking seat: {}", seatNumber);
             seatStatuses.get(seatNumber).put("status", SeatStatus.BOOKED.name());
+            seatStatuses.get(seatNumber).remove("userId");
         }
 
         seatStatusesJson = objectMapper.writeValueAsString(seatStatuses);
@@ -227,7 +232,7 @@ public class PlaneService {
                 .orElseThrow(() -> new RuntimeException("Plane not found with id: " + flight.getPlaneId()));
 
         Set<String> seatNumbers = new HashSet<>(bookingRequestDTO.getSelectedSeats());
-        boolean seatsHeld = holdSeats(plane.getId(), seatNumbers);
+        boolean seatsHeld = holdSeats(plane.getId(), seatNumbers, bookingRequestDTO.getUserId());
         if (!seatsHeld) {
             throw new RuntimeException("Unable to hold seats");
         }
@@ -237,12 +242,12 @@ public class PlaneService {
         booking.setBookerFullName(bookingRequestDTO.getBookerFullName());
         booking.setBookerEmail(bookingRequestDTO.getBookerEmail());
         booking.setBookerPersonalId(bookingRequestDTO.getBookerPersonalId());
+        booking.setUserId(bookingRequestDTO.getUserId());
         booking.setBookingDate(Timestamp.valueOf(LocalDateTime.now()));
 
         List<Passengers> passengers = bookingRequestDTO.getPassengers().stream().map(dto -> {
             Passengers passenger = new Passengers();
             passenger.setFullName(dto.getFullName());
-            passenger.setEmail(dto.getEmail());
             passenger.setPersonalId(dto.getPersonalId());
             passenger.setSeatNumber(dto.getSeatNumber());
             passenger.setBooking(booking);
@@ -252,11 +257,12 @@ public class PlaneService {
         booking.setPassengers(passengers);
         Booking savedBooking = bookingRepository.save(booking);
 
-        boolean seatsBooked = bookSeats(plane.getId(), seatNumbers);
+        boolean seatsBooked = bookSeats(plane.getId(), seatNumbers, bookingRequestDTO.getUserId());
         if (!seatsBooked) {
-            releaseSeats(plane.getId(), seatNumbers);
+            releaseSeats(plane.getId(), seatNumbers, bookingRequestDTO.getUserId());
             throw new RuntimeException("Unable to book seats");
         }
+
         return savedBooking;
     }
 }

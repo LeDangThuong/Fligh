@@ -35,9 +35,9 @@ public class BookingController {
     }
 
     @PostMapping("/hold-seats")
-    public ResponseEntity<Boolean> holdSeats(@RequestParam Long planeId, @RequestBody Set<String> seatNumbers) {
+    public ResponseEntity<Boolean> holdSeats(@RequestParam Long planeId, @RequestBody Set<String> seatNumbers, @RequestBody Long userId) {
         try {
-            boolean result = planeService.holdSeats(planeId, seatNumbers);
+            boolean result = planeService.holdSeats(planeId, seatNumbers, userId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(false);
@@ -45,9 +45,9 @@ public class BookingController {
     }
 
     @PostMapping("/book-seats")
-    public ResponseEntity<Boolean> bookSeats(@RequestParam Long planeId, @RequestBody Set<String> seatNumbers) {
+    public ResponseEntity<Boolean> bookSeats(@RequestParam Long planeId, @RequestBody Set<String> seatNumbers, @RequestBody Long userId) {
         try {
-            boolean result = planeService.bookSeats(planeId, seatNumbers);
+            boolean result = planeService.bookSeats(planeId, seatNumbers, userId);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(false);

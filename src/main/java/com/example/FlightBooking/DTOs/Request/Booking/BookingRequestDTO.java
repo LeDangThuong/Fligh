@@ -16,5 +16,6 @@ public class BookingRequestDTO {
     private String bookerFullName;
     private String bookerEmail;
     private String bookerPersonalId;
+    private Long userId;
     private List<PassengerDTO> passengers;
 }
