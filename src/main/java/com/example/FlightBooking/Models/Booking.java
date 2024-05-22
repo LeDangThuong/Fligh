@@ -36,21 +36,11 @@ import lombok.experimental.FieldDefaults;
 public class Booking {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
-
     private Long id;
 
 
-    @OneToOne
-    private Airlines airlines;
-
     private Long passengers;
-
     private Double price;
-    private String departLocation;
-    private String arrivalLocation;
-
-    private Timestamp departTime;
-    private Timestamp returnTime;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

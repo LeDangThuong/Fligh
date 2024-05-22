@@ -34,7 +34,6 @@ public class Airports {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String airportName;
     private String city;
 

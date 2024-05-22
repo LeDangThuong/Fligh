@@ -41,6 +41,7 @@ public class Airlines {
     // thường thì nó sẽ có giá trị 1 ++ lên dân
     private Long id;
     private String airlineName;
+    private String flightNumber; //So hieu may bay
     private String logoUrl;
     private String iataCode;
     @CreationTimestamp
