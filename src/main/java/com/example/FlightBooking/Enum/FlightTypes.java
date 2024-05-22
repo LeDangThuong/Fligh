@@ -2,6 +2,6 @@ package com.example.FlightBooking.Enum;
 
 public enum FlightTypes {
     ROUND_TRIP,
-    ONEWAY,
-
+    ONE_WAY,
+    MULTIPLE_DESTINATIONS,
 }

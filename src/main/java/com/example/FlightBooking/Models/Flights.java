@@ -1,13 +1,7 @@
 package com.example.FlightBooking.Models;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +10,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.sql.Time;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 
 @Data
 @Entity
@@ -26,13 +26,30 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @Table(name = "flights")
+// Cai model nay la luu thong tin CHUYEN BAY
 public class Flights {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String flightNumber;
-    @ManyToOne
-    @JoinColumn(name = "airport_id")
-    private Airports airports;
+    private String flightStatus; // Cai nay la dang delay, hay hoan, hay la san sang cat canh
+    private String flightType; // 1 chieu, khu hoi, hay nhieu chang
+
+    private Timestamp departureDate; //thoi gian cat canh
+    private Timestamp arrivalDate; // thoi gian ha canh
+    private Long duration; // uoc luong thoi gian bay
+
+    // Luu noi cat canh va ha canh de khi search de search, cung nhu luu thong tin chuyen bay
+    private Long departureAirportId;
+    private Long arrivalAirportId;
+
+    private Long airlineId; // Luu thong tin may bay cua hang nao
+
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
+    private Timestamp createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private Timestamp updatedAt;
 }
