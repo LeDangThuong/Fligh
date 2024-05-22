@@ -10,7 +10,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 import io.swagger.v3.oas.annotations.Hidden;
-import springfox.documentation.annotations.ApiIgnore;
 
 @Repository
 @RepositoryRestResource
@@ -18,8 +17,9 @@ import springfox.documentation.annotations.ApiIgnore;
 public interface UserRepository extends JpaRepository<Users, Long> {
 
     Optional<Users> findByUsername(String username);
-    Optional<Users> findByEmail (String email);
+    Optional<Users> findByEmail(String email);
     Optional<Users> findById(Long id);
+    Optional<Users> findByStripeCustomerId(String stripeCustomerId);
 }
 
 
