@@ -10,12 +10,14 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RepositoryRestResource
 @Hidden
 public interface FlightRepository extends JpaRepository<Flights, Long> {
 
+    Optional<Flights> findById (Long id);
     @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND CAST(f.departureDate AS date) = CAST(:departureDate AS date)")
     List<Flights> searchFlightOneWay(
             @Param("departureAirportId") Long departureAirportId,

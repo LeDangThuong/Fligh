@@ -2,6 +2,7 @@ package com.example.FlightBooking.Controller.Flights;
 
 import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
 import com.example.FlightBooking.Models.Flights;
+import com.example.FlightBooking.Repositories.FlightRepository;
 import com.example.FlightBooking.Services.FlightService.ExcelService;
 import com.example.FlightBooking.Services.FlightService.FlightService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +23,9 @@ public class CRUDFlightController {
     private ExcelService excelService;
     @Autowired
     private FlightService flightService;
+
+    @Autowired
+    private FlightRepository flightRepository;
 
     @PostMapping("/upload")
     public String uploadFile(@RequestParam("file") MultipartFile file) {
@@ -51,5 +55,17 @@ public class CRUDFlightController {
             @RequestParam Timestamp departureEndDate) {
         List<Flights> flights = flightService.searchFlightRoundTrip(departureAirportId, arrivalAirportId, departureStartDate, departureEndDate);
         return ResponseEntity.ok(flights);
+    }
+    @GetMapping( value = "/{flightId}/calculate-total-price", name = "Cái API này la lấy du lieu tong so tien truoc khi thanh toan")
+    public double calculateTotalPrice(@PathVariable Long flightId,
+                                      @RequestParam int numberOfTickets,
+                                      @RequestParam String ticketType,
+                                      @RequestParam boolean isRoundTrip) {
+        return flightService.calculateTotalPrice(flightId, numberOfTickets, ticketType, isRoundTrip);
+    }
+    @GetMapping ("/get-flight-by-id")
+    public Flights getFlightById(@RequestParam Long id)
+    {
+        return flightRepository.findById(id).orElseThrow(() -> new RuntimeException("Flight not found with this id: " + id));
     }
 }
