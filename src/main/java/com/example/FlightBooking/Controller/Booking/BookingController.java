@@ -23,8 +23,8 @@ public class BookingController {
 
     @Autowired
     private PlaneService planeService;
-
-    @PostMapping("/calculate-total-price")
+    //Cai nay la cai de tinh so tien khi chon ve ne
+    @PostMapping("/calculate-total-price-before-booking")
     public ResponseEntity<Double> calculateTotalPrice(@RequestBody SelectSeatDTO selectedSeatsDTO) {
         try {
             double totalPrice = planeService.calculateTotalPrice(selectedSeatsDTO);
@@ -33,8 +33,8 @@ public class BookingController {
             return ResponseEntity.status(500).body(null);
         }
     }
-
-    @PostMapping("/hold-seats")
+    //Cai nay la cai de tinh so tien khi chon ve ne
+    @PostMapping("/hold-seats-when-booking")
     public ResponseEntity<Boolean> holdSeats(@RequestParam Long planeId, @RequestBody Set<String> seatNumbers, @RequestBody Long userId) {
         try {
             boolean result = planeService.holdSeats(planeId, seatNumbers, userId);
@@ -44,7 +44,7 @@ public class BookingController {
         }
     }
 
-    @PostMapping("/book-seats")
+    @PostMapping("/select-seats-for-ticket")
     public ResponseEntity<Boolean> bookSeats(@RequestParam Long planeId, @RequestBody Set<String> seatNumbers, @RequestBody Long userId) {
         try {
             boolean result = planeService.bookSeats(planeId, seatNumbers, userId);
@@ -53,7 +53,8 @@ public class BookingController {
             return ResponseEntity.status(500).body(false);
         }
     }
-    @PostMapping("/create-booking")
+
+    @PostMapping("/fill-info-passenger-to-create-booking")
     public ResponseEntity<Booking> createBooking(@RequestBody BookingRequestDTO bookingRequestDTO) {
         try {
             Booking booking = planeService.createBooking(bookingRequestDTO);
