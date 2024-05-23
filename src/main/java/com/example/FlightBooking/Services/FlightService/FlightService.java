@@ -39,7 +39,7 @@ public class FlightService {
     public double calculateTotalPrice(Long flightId, int numberOfTickets, String ticketType, boolean isRoundTrip) {
         Flights flight = flightRepository.findById(flightId).orElseThrow(() -> new IllegalArgumentException("Invalid flight ID"));
         double ticketPrice;
-        switch (ticketType.toLowerCase()) {
+        switch (ticketType) {
             case "ECONOMY":
                 ticketPrice = flight.getEconomyPrice();
                 break;
