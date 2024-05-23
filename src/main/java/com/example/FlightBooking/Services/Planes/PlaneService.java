@@ -7,10 +7,7 @@ import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.Booking.SelectSeatDTO;
 import com.example.FlightBooking.Enum.SeatStatus;
 import com.example.FlightBooking.Models.*;
-import com.example.FlightBooking.Repositories.AirlinesRepository;
-import com.example.FlightBooking.Repositories.BookingRepository;
-import com.example.FlightBooking.Repositories.FlightRepository;
-import com.example.FlightBooking.Repositories.PlaneRepository;
+import com.example.FlightBooking.Repositories.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -37,6 +34,8 @@ public class PlaneService {
     private ObjectMapper objectMapper;
     @Autowired
     private BookingRepository bookingRepository;
+    @Autowired
+    private TicketRepository ticketRepository;
 
     public Planes createPlaneWithSeats(Long airlineId) throws Exception {
         Airlines airline = getAirlineById(airlineId);
@@ -262,7 +261,18 @@ public class PlaneService {
             releaseSeats(plane.getId(), seatNumbers, bookingRequestDTO.getUserId());
             throw new RuntimeException("Unable to book seats");
         }
-
+        // Create and save tickets
+        List<Tickets> tickets = new ArrayList<>();
+        for (Passengers passenger : passengers) {
+            Tickets ticket = new Tickets();
+            ticket.setBooking(savedBooking);
+            ticket.setUserId(bookingRequestDTO.getUserId());
+            ticket.setSeatNumber(passenger.getSeatNumber());
+            ticket.setFlight(flight);
+            ticket.setIssueDate(Timestamp.valueOf(LocalDateTime.now()));
+            tickets.add(ticket);
+        }
+        ticketRepository.saveAll(tickets);
         return savedBooking;
     }
 }

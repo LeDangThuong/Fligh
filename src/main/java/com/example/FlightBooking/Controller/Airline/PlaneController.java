@@ -27,7 +27,8 @@ public class PlaneController {
             return ResponseEntity.status(500).body("Error creating plane: " + e.getMessage());
         }
     }
-    @GetMapping("/{planeId}/seats")
+    // Cai nay la xem thu cai ghe do da duoc dat chua, hay la on hold theo user ID nao
+    @GetMapping("/{planeId}/get-seat-status")
     public ResponseEntity<?> getSeatStatuses(@PathVariable Long planeId) {
         try {
             Map<String, Map<String, String>> seatStatuses = planeService.getSeatStatuses(planeId);
@@ -36,6 +37,8 @@ public class PlaneController {
             return ResponseEntity.status(500).body("Error getting seat statuses: " + e.getMessage());
         }
     }
+
+    //Khi nguoi dung booking ve thi hold ve cho nguoi dung
     @PostMapping("/{planeId}/hold")
     public ResponseEntity<?> holdSeats(@PathVariable Long planeId, @RequestBody Set<String> seatNumbers, @RequestBody Long userId) {
         try {
@@ -49,7 +52,7 @@ public class PlaneController {
             return ResponseEntity.status(500).body("Error holding seats: " + e.getMessage());
         }
     }
-
+    // Dat ve may bay
     @PostMapping("/{planeId}/book")
     public ResponseEntity<?> bookSeats(@PathVariable Long planeId, @RequestBody Set<String> seatNumbers, @RequestBody Long userId) {
         try {
