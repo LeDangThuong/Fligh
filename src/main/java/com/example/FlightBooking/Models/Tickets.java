@@ -1,17 +1,12 @@
 package com.example.FlightBooking.Models;
 
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,8 +29,25 @@ public class Tickets {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "booking_id", nullable = false)
+    private Booking booking;
+
+    @Column(name = "user_id", nullable = false)
+    private Long userId;
+
+    @Column(name = "seat_number", nullable = false)
+    private String seatNumber;
+
+    @ManyToOne
+    @JoinColumn(name = "flight_id", nullable = false)
+    private Flights flight;
+
+
+    @Column(name = "issue_date", nullable = false)
+    private Timestamp issueDate;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
