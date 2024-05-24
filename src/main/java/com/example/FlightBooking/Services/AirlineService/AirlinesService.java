@@ -1,9 +1,11 @@
 package com.example.FlightBooking.Services.AirlineService;
 import com.example.FlightBooking.DTOs.Request.AirlineAndAirport.AirlineRequest;
 import com.example.FlightBooking.Models.Airlines;
+import com.example.FlightBooking.Models.Planes;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.AirlinesRepository;
 
+import com.example.FlightBooking.Repositories.PlaneRepository;
 import com.example.FlightBooking.Services.CloudinaryService.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,6 +21,9 @@ public class AirlinesService {
     private AirlinesRepository airlinesRepository;
     @Autowired
     private CloudinaryService cloudinaryService;
+
+    @Autowired
+    private PlaneRepository planeRepository;
 
     public List<Airlines> getAllAirlines() {
         return airlinesRepository.findAll();
@@ -64,5 +69,11 @@ public class AirlinesService {
         airlines.setLogoUrl(logoUrl);
 
         return airlinesRepository.save(airlines);
+    }
+
+    public Airlines getAirlineByPlaneId(Long planeId)
+    {
+        Planes planes = planeRepository.findById(planeId).orElseThrow(() -> new RuntimeException("Plane not found"));
+        return planes.getAirline();
     }
 }
