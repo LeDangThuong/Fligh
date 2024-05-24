@@ -81,4 +81,9 @@ public class AirlinesController {
             return ResponseEntity.status(403).body("Error uploading logo: " + e.getMessage());
         }
     }
+    @GetMapping("/get-airline-by-planeId")
+    public ResponseEntity<Airlines> getAirlineByPlaneId(@RequestParam Long planeId)
+    {
+        return ResponseEntity.ok(airlinesService.getAirlineByPlaneId(planeId));
+    }
 }
