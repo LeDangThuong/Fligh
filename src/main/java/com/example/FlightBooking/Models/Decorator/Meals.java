@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class MealService {
+public class Meals {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
