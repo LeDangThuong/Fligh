@@ -38,22 +38,14 @@ public class CRUDFlightController {
         Flights flight = flightService.createFlight(flightDTO);
         return ResponseEntity.ok(flight);
     }
-    @GetMapping("/search-one-way")
+    @GetMapping("/search-flight-by-type")
     public ResponseEntity<List<Flights>> searchFlightOneWay(
+            @RequestParam ("ROUND_TRIP or ONE_WAY")String flightType,
             @RequestParam Long departureAirportId,
             @RequestParam Long arrivalAirportId,
-            @RequestParam Timestamp departureDate) {
-        List<Flights> flights = flightService.searchFlightOneWay(departureAirportId, arrivalAirportId, departureDate);
-        return ResponseEntity.ok(flights);
-    }
-
-    @GetMapping("/search-round-trip")
-    public ResponseEntity<List<Flights>> searchFlightRoundTrip(
-            @RequestParam Long departureAirportId,
-            @RequestParam Long arrivalAirportId,
-            @RequestParam Timestamp departureStartDate,
-            @RequestParam Timestamp departureEndDate) {
-        List<Flights> flights = flightService.searchFlightRoundTrip(departureAirportId, arrivalAirportId, departureStartDate, departureEndDate);
+            @RequestParam Timestamp departureDate,
+            @RequestParam (required = false) Timestamp returnDate) {
+        List<Flights> flights = flightService.searchFlights(flightType ,departureAirportId, arrivalAirportId, departureDate, returnDate);
         return ResponseEntity.ok(flights);
     }
     @GetMapping( value = "/{flightId}/calculate-total-price", name = "Cái API này la lấy du lieu tong so tien truoc khi thanh toan")

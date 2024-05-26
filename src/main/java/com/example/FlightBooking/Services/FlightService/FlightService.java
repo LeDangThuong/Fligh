@@ -1,5 +1,8 @@
 package com.example.FlightBooking.Services.FlightService;
 
+import com.example.FlightBooking.Components.Strategy.FlightSearchContext;
+import com.example.FlightBooking.Components.Strategy.OneWayFlightSearchStrategy;
+import com.example.FlightBooking.Components.Strategy.RoundTripFlightSearchStrategy;
 import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
 import com.example.FlightBooking.Enum.SeatClass;
 import com.example.FlightBooking.Models.Flights;
@@ -29,12 +32,16 @@ public class FlightService {
         flight.setFirstClassPrice(flightDTO.getFirstClassPrice());
         return flightRepository.save(flight);
     }
-    public List<Flights> searchFlightOneWay(Long departureAirportId, Long arrivalAirportId, Timestamp departureDate) {
-        return flightRepository.searchFlightOneWay(departureAirportId, arrivalAirportId, departureDate);
-    }
+    public List<Flights> searchFlights(String type, Long departureAirportId, Long arrivalAirportId, Timestamp departureDate, Timestamp returnDate) {
+        FlightSearchContext context = new FlightSearchContext();
 
-    public List<Flights> searchFlightRoundTrip(Long departureAirportId, Long arrivalAirportId, Timestamp departureStartDate, Timestamp departureEndDate) {
-        return flightRepository.searchFlightRoundTrip(departureAirportId, arrivalAirportId, departureStartDate, departureEndDate);
+        if (type.equalsIgnoreCase("ONE_WAY")) {
+            context.setStrategy(new OneWayFlightSearchStrategy(flightRepository));
+        } else if (type.equalsIgnoreCase("ROUND_TRIP")) {
+            context.setStrategy(new RoundTripFlightSearchStrategy(flightRepository));
+        }
+
+        return context.searchFlights(departureAirportId, arrivalAirportId, departureDate, returnDate);
     }
     public double calculateTotalPrice(Long flightId, int numberOfTickets, String ticketType, boolean isRoundTrip) {
         Flights flight = flightRepository.findById(flightId).orElseThrow(() -> new IllegalArgumentException("Invalid flight ID"));
