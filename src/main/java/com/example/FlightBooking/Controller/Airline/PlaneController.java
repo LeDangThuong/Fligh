@@ -66,4 +66,15 @@ public class PlaneController {
             return ResponseEntity.status(500).body("Error booking seats: " + e.getMessage());
         }
     }
+    @GetMapping("/get-plane-detail-by-planeId")
+    public ResponseEntity<?> getDetailPlane(@RequestParam Long planeId)
+    {
+        try {
+            Planes planes = planeService.getDetailPlane(planeId);
+            return ResponseEntity.ok(planes);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error getting Plane detail: " + e.getMessage());
+        }
+    }
 }

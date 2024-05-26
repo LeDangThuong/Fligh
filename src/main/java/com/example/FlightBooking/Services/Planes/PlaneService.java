@@ -10,6 +10,7 @@ import com.example.FlightBooking.Models.*;
 import com.example.FlightBooking.Repositories.*;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,8 +82,11 @@ public class PlaneService {
         }
     }
 
-    private Airlines getAirlineById(Long airlineId) {
+    public Airlines getAirlineById(Long airlineId) {
         return airlinesRepository.findById(airlineId).orElseThrow(() -> new RuntimeException("Airline not found"));
+    }
+    public Planes getDetailPlane(Long planeId) {
+        return planeRepository.findById(planeId).orElseThrow(() -> new RuntimeException("Airline not found"));
     }
 
     public Map<String, Map<String, String>> getSeatStatuses(Long planeId) throws Exception {
