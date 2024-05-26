@@ -18,8 +18,6 @@ import java.util.Optional;
 @RestController
 @CrossOrigin
 @Tag(name = "CHAT WITH EMPLOYEE")
-@RequestMapping("/chat")
-
 public class ChatController {
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
@@ -30,7 +28,7 @@ public class ChatController {
     @Autowired
     private MessageRepository messageRepository;
 
-    @MessageMapping("/sending")
+    @MessageMapping("/chat")
     public void processMessage(ChatMessage chatMessage) {
         Optional<Users> sender = userRepository.findById(chatMessage.getSenderId());
         Optional<Users> receiver = userRepository.findById(chatMessage.getReceiverId());
