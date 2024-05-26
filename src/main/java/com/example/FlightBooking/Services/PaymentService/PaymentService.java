@@ -1,29 +1,15 @@
 package com.example.FlightBooking.Services.PaymentService;
-
-import com.example.FlightBooking.Components.Strategy.PaymentContext;
-import com.example.FlightBooking.Components.Strategy.StripePaymentStrategy;
-import com.example.FlightBooking.Components.Strategy.VNPayPaymentStrategy;
-import com.example.FlightBooking.Models.CreditCard;
-import com.example.FlightBooking.Models.Order;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.UserRepository;
 import com.example.FlightBooking.Services.AuthJWT.JwtService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
-import com.stripe.model.PaymentIntent;
-import com.stripe.model.PaymentMethod;
-
 import com.stripe.model.SetupIntent;
 import com.stripe.param.CustomerCreateParams;
-import com.stripe.param.PaymentIntentCreateParams;
-import com.stripe.param.PaymentMethodAttachParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class PaymentService {
@@ -49,15 +35,15 @@ public class PaymentService {
         userRepository.save(users);
         return customer.getId();
     }
-    public void chargeCustomer(String customerId, String paymentMethodId, long amount, String paymentType, Order order) throws Exception {
-        PaymentContext paymentContext = new PaymentContext();
-        if (paymentType.equals("stripe")) {
-            paymentContext.setPaymentStrategy(new StripePaymentStrategy(stripeSecretKey, customerId, paymentMethodId));
-        } else if (paymentType.equals("vnpay")) {
-            paymentContext.setPaymentStrategy(new VNPayPaymentStrategy());
-        }
-        paymentContext.executePayment(amount, order);
-    }
+//    public void chargeCustomer(String customerId, String paymentMethodId, long amount, String paymentType, Order order) throws Exception {
+//        PaymentContext paymentContext = new PaymentContext();
+//        if (paymentType.equals("stripe")) {
+//            paymentContext.setPaymentStrategy(new StripePaymentStrategy(stripeSecretKey, customerId, paymentMethodId));
+//        } else if (paymentType.equals("vnpay")) {
+//            paymentContext.setPaymentStrategy(new VNPayPaymentStrategy());
+//        }
+//        paymentContext.executePayment(amount, order);
+//    }
     public String getStripeCustomerId (String token)
     {
         String username = jwtService.getUsername(token);
