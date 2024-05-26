@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Controller.Auth.SignIn;
 
+import com.example.FlightBooking.Components.ChainOfResponsibility.LoginService;
 import com.example.FlightBooking.DTOs.Request.Auth.SignInDTO;
 import com.example.FlightBooking.DTOs.Response.Auth.LoginResponse;
 import com.example.FlightBooking.Models.Tokens;
@@ -10,6 +11,7 @@ import com.example.FlightBooking.Services.AuthJWT.JwtRefreshService;
 import com.example.FlightBooking.Services.AuthJWT.JwtService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -21,6 +23,10 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin
 @Tag(name = "Authentication", description = "APIs for authenticate for user")
 public class SignInController {
+
+    @Autowired
+    private LoginService loginService;
+
     private final JwtService jwtService;
     private final JwtRefreshService jwtRefreshService;
     private final AuthenticationService authenticationService;
@@ -54,5 +60,14 @@ public class SignInController {
         loginResponse.setTokenRefresh(jwtTokenRefresh);
         loginResponse.setExpiresRefreshIn(jwtRefreshService.getExpirationTime());
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
+    }
+    @PostMapping("/auth/signin-update")
+    public ResponseEntity<String> authenticateUpdate(@RequestBody SignInDTO request) {
+        try {
+            loginService.login(request);
+            return ResponseEntity.ok("Login successful.");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Login failed: " + e.getMessage());
+        }
     }
 }
