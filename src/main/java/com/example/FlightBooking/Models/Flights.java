@@ -14,9 +14,8 @@ import org.apache.poi.hpsf.Decimal;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDate;
+
 
 @Data
 @Entity
@@ -47,8 +46,6 @@ public class Flights {
     private Double businessPrice;
     private Double firstClassPrice;
     //
-
-
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
