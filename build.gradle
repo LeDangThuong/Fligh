@@ -73,6 +73,11 @@ dependencies {
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket
 	implementation("org.springframework.boot:spring-boot-starter-websocket:3.3.0")
 
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf
+	implementation("org.springframework.boot:spring-boot-starter-thymeleaf:3.3.0")
+
+
 }
 
 tasks.named('test') {

@@ -15,28 +15,29 @@ import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.time.temporal.ChronoUnit;
 @Component
 @Hidden
 public class EmailUtils {
-
     @Autowired
     private JavaMailSender javaMailSender;
-
     @Autowired
     private OtpUtils otpUtil;
     @Autowired
     private VerificationRepository verificationRepository;
-
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private SpringTemplateEngine templateEngine;
+
     @Transactional
     public void sendSetPasswordEmail (String email) throws MessagingException
     {
         Long otp = Long.valueOf(otpUtil.generateOtp());
         saveOTPInDatabase(email, otp);
-
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
         mimeMessageHelper.setTo(email);
@@ -64,7 +65,6 @@ public class EmailUtils {
         mimeMessageHelper.setText(htmlMsg, true);
         javaMailSender.send(mimeMessage);
     }
-
     private void saveOTPInDatabase(String email, Long otp) {
         LocalDateTime expireTime = LocalDateTime.now().plus(5, ChronoUnit.MINUTES);
         Verifications otpVerification = new Verifications();
@@ -72,5 +72,25 @@ public class EmailUtils {
         otpVerification.setCodeOTP(otp);
         otpVerification.setExpireTime(expireTime);
         verificationRepository.save(otpVerification);
+    }
+    @Transactional
+    public void sendVoucherEmail(String email, String voucherName, String voucherCode, String discountAmount, String validUntil, String voucherImageUrl) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        mimeMessageHelper.setTo(email);
+        mimeMessageHelper.setSubject("New Voucher Available!");
+
+        Context context = new Context();
+        context.setVariable("voucherName", voucherName);
+        context.setVariable("voucherCode", voucherCode);
+        context.setVariable("discountAmount", discountAmount);
+        context.setVariable("validUntil", validUntil);
+        context.setVariable("voucherImageUrl", voucherImageUrl);
+
+        String htmlContent = templateEngine.process("index", context);
+        mimeMessageHelper.setText(htmlContent, true);
+
+        mimeMessageHelper.setText(htmlContent, true);
+        javaMailSender.send(mimeMessage);
     }
 }
