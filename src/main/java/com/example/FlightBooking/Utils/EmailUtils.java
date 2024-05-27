@@ -15,6 +15,8 @@ import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.time.temporal.ChronoUnit;
 @Component
@@ -28,37 +30,9 @@ public class EmailUtils {
     private VerificationRepository verificationRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private SpringTemplateEngine templateEngine;
 
-    @Transactional
-    public void sendRegistrationEmail(String email) throws MessagingException {
-        Long otp = Long.valueOf(otpUtil.generateOtp());
-        saveOTPInDatabase(email, otp);
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-        mimeMessageHelper.setTo(email);
-        mimeMessageHelper.setSubject("Register New Account Confirm");
-        String htmlMsg = """
-                <html>
-                <body>
-                    <div style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; border: 1px solid #ddd; border-radius: 10px; max-width: 600px; margin: auto;">
-                        <h2 style="text-align: center; color: #4CAF50;">Set Password</h2>
-                        <p>Hello,</p>
-                        <p>Your OTP for register new account is:</p>
-                        <div style="text-align: center; font-size: 24px; font-weight: bold; color: #333;">%s</div>
-                        <p>This OTP is valid for 5 minutes.</p>
-                        <p>Thank you!</p>
-                        <hr style="border: none; border-top: 1px solid #eee;">
-                        <div style="text-align: center; color: #999; font-size: 12px;">
-                            <p>FlightBooking Team</p>
-                            <p>Do not reply to this email. If you have any questions, contact us at support@flightbooking.com.</p>
-                        </div>
-                    </div>
-                </body>
-                </html>
-                """.formatted(otp);
-        mimeMessageHelper.setText(htmlMsg, true);
-        javaMailSender.send(mimeMessage);
-    }
     @Transactional
     public void sendSetPasswordEmail (String email) throws MessagingException
     {
@@ -91,33 +65,6 @@ public class EmailUtils {
         mimeMessageHelper.setText(htmlMsg, true);
         javaMailSender.send(mimeMessage);
     }
-    @Transactional
-    public void sendTicketEmail(String email, String ticketDetails) throws MessagingException {
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
-        mimeMessageHelper.setTo(email);
-        mimeMessageHelper.setSubject("Your Flight Ticket");
-        String htmlMsg = """
-                <html>
-                <body>
-                    <div style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; border: 1px solid #ddd; border-radius: 10px; max-width: 600px; margin: auto;">
-                        <h2 style="text-align: center; color: #4CAF50;">Your Flight Ticket</h2>
-                        <p>Hello,</p>
-                        <p>Thank you for booking your flight with us. Here are your ticket details:</p>
-                        <p>%s</p>
-                        <p>Thank you!</p>
-                        <hr style="border: none; border-top: 1px solid #eee;">
-                        <div style="text-align: center; color: #999; font-size: 12px;">
-                            <p>FlightBooking Team</p>
-                            <p>Do not reply to this email. If you have any questions, contact us at support@flightbooking.com.</p>
-                        </div>
-                    </div>
-                </body>
-                </html>
-                """.formatted(ticketDetails);
-        mimeMessageHelper.setText(htmlMsg, true);
-        javaMailSender.send(mimeMessage);
-    }
     private void saveOTPInDatabase(String email, Long otp) {
         LocalDateTime expireTime = LocalDateTime.now().plus(5, ChronoUnit.MINUTES);
         Verifications otpVerification = new Verifications();
@@ -126,7 +73,24 @@ public class EmailUtils {
         otpVerification.setExpireTime(expireTime);
         verificationRepository.save(otpVerification);
     }
-    public Verifications getVerification(String email) {
-        return verificationRepository.findByEmail(email).orElse(null);
+    @Transactional
+    public void sendVoucherEmail(String email, String voucherName, String voucherCode, String discountAmount, String validUntil, String voucherImageUrl) throws MessagingException {
+        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        mimeMessageHelper.setTo(email);
+        mimeMessageHelper.setSubject("New Voucher Available!");
+
+        Context context = new Context();
+        context.setVariable("voucherName", voucherName);
+        context.setVariable("voucherCode", voucherCode);
+        context.setVariable("discountAmount", discountAmount);
+        context.setVariable("validUntil", validUntil);
+        context.setVariable("voucherImageUrl", voucherImageUrl);
+
+        String htmlContent = templateEngine.process("index", context);
+        mimeMessageHelper.setText(htmlContent, true);
+
+        mimeMessageHelper.setText(htmlContent, true);
+        javaMailSender.send(mimeMessage);
     }
 }

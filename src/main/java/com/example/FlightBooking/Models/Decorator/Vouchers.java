@@ -2,9 +2,11 @@ package com.example.FlightBooking.Models.Decorator;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.apache.poi.hpsf.Decimal;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 @Getter
@@ -20,8 +22,9 @@ public class Vouchers {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String code;
-    private double discountAmount; // Số tiền giảm giá
-
+    private BigDecimal discountAmount; // Số tiền giảm giá
+    private String voucherImageUrl;
+    private String voucherName;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
