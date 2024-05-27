@@ -89,8 +89,6 @@ public class EmailUtils {
 
         String htmlContent = templateEngine.process("index", context);
         mimeMessageHelper.setText(htmlContent, true);
-
-        mimeMessageHelper.setText(htmlContent, true);
         javaMailSender.send(mimeMessage);
     }
 }
