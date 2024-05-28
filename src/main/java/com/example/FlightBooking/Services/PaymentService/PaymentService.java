@@ -35,15 +35,8 @@ public class PaymentService {
         userRepository.save(users);
         return customer.getId();
     }
-//    public void chargeCustomer(String customerId, String paymentMethodId, long amount, String paymentType, Order order) throws Exception {
-//        PaymentContext paymentContext = new PaymentContext();
-//        if (paymentType.equals("stripe")) {
-//            paymentContext.setPaymentStrategy(new StripePaymentStrategy(stripeSecretKey, customerId, paymentMethodId));
-//        } else if (paymentType.equals("vnpay")) {
-//            paymentContext.setPaymentStrategy(new VNPayPaymentStrategy());
-//        }
-//        paymentContext.executePayment(amount, order);
-//    }
+
+
     public String getStripeCustomerId (String token)
     {
         String username = jwtService.getUsername(token);

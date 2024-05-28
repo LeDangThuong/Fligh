@@ -35,9 +35,9 @@ public class BookingController {
     }
     //Cai nay la cai de tinh so tien khi chon ve ne
     @PostMapping("/hold-seats-when-booking")
-    public ResponseEntity<Boolean> holdSeats(@RequestParam Long planeId, @RequestBody Set<String> seatNumbers, @RequestBody Long userId) {
+    public ResponseEntity<Boolean> holdSeats(@RequestParam Long planeId, @RequestBody Set<String> seatNumbers) {
         try {
-            boolean result = planeService.holdSeats(planeId, seatNumbers, userId);
+            boolean result = planeService.holdSeats(planeId, seatNumbers);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(false);
@@ -45,9 +45,9 @@ public class BookingController {
     }
 
     @PostMapping("/select-seats-for-ticket")
-    public ResponseEntity<Boolean> bookSeats(@RequestParam Long planeId, @RequestBody Set<String> seatNumbers, @RequestBody Long userId) {
+    public ResponseEntity<Boolean> bookSeats(@RequestParam Long planeId, @RequestBody Set<String> seatNumbers) {
         try {
-            boolean result = planeService.bookSeats(planeId, seatNumbers, userId);
+            boolean result = planeService.bookSeats(planeId, seatNumbers);
             return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(false);

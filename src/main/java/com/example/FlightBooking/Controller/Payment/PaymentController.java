@@ -133,30 +133,4 @@ public class PaymentController {
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
-
-//    @PostMapping("/charge-customer")
-//    public ResponseEntity<?> chargeCustomer(@RequestParam String customerId, @RequestParam String paymentMethodId, @RequestParam long amount, @RequestParam String paymentType) {
-//        try {
-//            Order order = new Order(); // Bạn cần tạo đơn hàng thực tế hoặc nhận từ request
-//            paymentService.chargeCustomer(customerId, paymentMethodId, amount, paymentType, order);
-//            return ResponseEntity.ok().body("Payment successful");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body("Error: " + e.getMessage());
-//        }
-//    }
-//
-//    // Thêm phương thức cho VNPay
-//    @PostMapping("/vnpay-payment")
-//    public ResponseEntity<?> vnpayPayment(@RequestParam long amount, @RequestParam String orderInfo) {
-//        try {
-//            Order order = new Order();
-////            order.setOrderInfo(orderInfo); // Bạn cần bổ sung thêm các thuộc tính cần thiết cho đơn hàng
-//            paymentService.chargeCustomer(null, null, amount, "vnpay", order);
-//            return ResponseEntity.ok().body("VNPay Payment successful");
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body("Error: " + e.getMessage());
-//        }
-//    }
 }
-
-

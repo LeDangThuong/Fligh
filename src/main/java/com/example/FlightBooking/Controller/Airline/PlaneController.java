@@ -40,9 +40,9 @@ public class PlaneController {
 
     //Khi nguoi dung booking ve thi hold ve cho nguoi dung
     @PostMapping("/{planeId}/hold")
-    public ResponseEntity<?> holdSeats(@PathVariable Long planeId, @RequestBody Set<String> seatNumbers, @RequestBody Long userId) {
+    public ResponseEntity<?> holdSeats(@PathVariable Long planeId, @RequestBody Set<String> seatNumbers) {
         try {
-            boolean success = planeService.holdSeats(planeId, seatNumbers, userId);
+            boolean success = planeService.holdSeats(planeId, seatNumbers);
             if (success) {
                 return ResponseEntity.ok("Seats held successfully.");
             } else {
@@ -54,9 +54,9 @@ public class PlaneController {
     }
     // Dat ve may bay
     @PostMapping("/{planeId}/book")
-    public ResponseEntity<?> bookSeats(@PathVariable Long planeId, @RequestBody Set<String> seatNumbers, @RequestBody Long userId) {
+    public ResponseEntity<?> bookSeats(@PathVariable Long planeId, @RequestBody Set<String> seatNumbers) {
         try {
-            boolean success = planeService.bookSeats(planeId, seatNumbers, userId);
+            boolean success = planeService.bookSeats(planeId, seatNumbers);
             if (success) {
                 return ResponseEntity.ok("Seats booked successfully.");
             } else {
