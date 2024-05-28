@@ -12,22 +12,22 @@ public class MealService {
     @Autowired
     private MealRepository mealRepository;
 
-    public Meals createService(Meals meals) {
+    public Meals createNewMeal(Meals meals) {
         return mealRepository.save(meals);
     }
 
-    public Meals getServiceById(Long id) {
+    public Meals getMealById(Long id) {
         return mealRepository.findById(id).orElseThrow(() -> new RuntimeException("Service not found with this id: " + id));
     }
 
-    public List<Meals> getAllServices() {
+    public List<Meals> getAllMeals() {
         return mealRepository.findAll();
     }
 
-    public Meals updateService(Long id, Meals serviceDetails) {
-        Meals meals = getServiceById(id);
-        meals.setDescription(serviceDetails.getDescription());
-        meals.setPrice(serviceDetails.getPrice());
+    public Meals updateMeals(Long id, Meals meal) {
+        Meals meals = getMealById(id);
+        meals.setDescription(meal.getDescription());
+        meals.setPrice(meal.getPrice());
         return mealRepository.save(meals);
     }
 
