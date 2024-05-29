@@ -76,7 +76,7 @@ public class EmailUtils {
     @Transactional
     public void sendVoucherEmail(String email, String voucherName, String voucherCode, String discountAmount, String validUntil, String voucherImageUrl) throws MessagingException {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage);
+        MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, "utf-8");
         mimeMessageHelper.setTo(email);
         mimeMessageHelper.setSubject("New Voucher Available!");
 

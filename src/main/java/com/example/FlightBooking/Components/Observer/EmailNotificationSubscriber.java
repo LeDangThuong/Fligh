@@ -6,9 +6,13 @@ import com.example.FlightBooking.Repositories.UserRepository;
 import com.example.FlightBooking.Services.DecoratorService.VoucherService;
 import com.example.FlightBooking.Utils.EmailUtils;
 import jakarta.mail.MessagingException;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 @Component
@@ -29,6 +33,12 @@ public class EmailNotificationSubscriber implements Subscriber {
         if ("NEW_VOUCHER".equals(eventType)) {
             Long voucherId = Long.parseLong(context);
             Vouchers voucher = voucherService.getVoucherById(voucherId);
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+            String formattedDate = formatter.format(voucher.getCreatedAt());
+            BigDecimal discountAmount = voucher.getDiscountAmount();
+            double doubleDiscountAmount = discountAmount.doubleValue(); // Chuyển đổi BigDecimal thành double
+            long floorDiscountAmount = (long) Math.floor(doubleDiscountAmount); // Làm tròn xuống và lấy phần nguyên
+            String roundedDiscountAmount = Double.toString(floorDiscountAmount);
             List<Users> users = userRepository.findAll();
             for (Users user : users) {
                 try {
@@ -36,8 +46,8 @@ public class EmailNotificationSubscriber implements Subscriber {
                             user.getEmail(),
                             voucher.getVoucherName(),
                             voucher.getCode(),
-                            voucher.getDiscountAmount().toString(),
-                            voucher.getCreatedAt().toString(),
+                            roundedDiscountAmount + "%",
+                            formattedDate,
                             voucher.getVoucherImageUrl()
                     );
                 } catch (MessagingException e) {
