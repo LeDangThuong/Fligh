@@ -50,10 +50,8 @@ public class PlaneService {
         seatStatuses.putAll(new FirstClassSeatFactory().createSeats(plane));
         seatStatuses.putAll(new BusinessClassSeatFactory().createSeats(plane));
         seatStatuses.putAll(new EconomyClassSeatFactory().createSeats(plane));
-
         String seatStatusesJson = objectMapper.writeValueAsString(seatStatuses);
         plane.setSeatStatuses(seatStatusesJson);
-
         return planeRepository.save(plane);
     }
 
@@ -276,4 +274,21 @@ public class PlaneService {
         ticketRepository.saveAll(tickets);
         return savedBooking;
     }
+    public Planes resetSeats(Long planeId) throws Exception {
+        Planes plane = planeRepository.findById(planeId)
+                .orElseThrow(() -> new RuntimeException("Plane not found"));
+        String seatStatusesJson = plane.getSeatStatuses();
+        // Deserialize the seat statuses JSON into a Map
+        Map<String, Map<String, String>> seatStatuses = objectMapper.readValue(seatStatusesJson, Map.class);
+
+        // Reset each seat status to AVAILABLE
+        for (Map<String, String> seat : seatStatuses.values()) {
+            seat.put("status", SeatStatus.AVAILABLE.name());
+        }
+        // Serialize the modified seat statuses back to JSON
+        seatStatusesJson = objectMapper.writeValueAsString(seatStatuses);
+        plane.setSeatStatuses(seatStatusesJson);
+        return planeRepository.save(plane);
+    }
+
 }
