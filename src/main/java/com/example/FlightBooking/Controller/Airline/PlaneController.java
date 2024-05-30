@@ -77,4 +77,10 @@ public class PlaneController {
             return ResponseEntity.status(500).body("Error getting Plane detail: " + e.getMessage());
         }
     }
+    @PostMapping("/reset/{planeId}")
+    public ResponseEntity<Planes> resetSeats(@RequestParam Long planeId) throws Exception {
+        Planes planes = planeService.resetSeats(planeId);
+        return ResponseEntity.ok().body(planes);
+
+    }
 }
