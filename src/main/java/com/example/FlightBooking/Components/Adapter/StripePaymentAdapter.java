@@ -1,0 +1,38 @@
+package com.example.FlightBooking.Components.Adapter;
+
+import com.example.FlightBooking.Services.PaymentService.PaymentService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class StripePaymentAdapter implements PaymentProcessor{
+    @Autowired
+    private PaymentService paymentService;
+
+    @Override
+    public String createCustomer(String email) throws StripeException {
+        return paymentService.createStripeCustomer(email);
+    }
+
+    @Override
+    public String getCustomerId(String token) {
+        return paymentService.getStripeCustomerId(token);
+    }
+
+    @Override
+    public String getSetupIntentId(String token) {
+        return paymentService.getStripeSetupIntentId(token);
+    }
+
+    @Override
+    public String getPaymentMethodId(String token) throws StripeException {
+        return paymentService.getPaymentMethodId(token);
+    }
+
+    @Override
+    public PaymentIntent processPayment(String token, double amount, Long flightId) throws StripeException {
+        return paymentService.createPayment(token, amount, flightId);
+    }
+}
