@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Models;
 
+import com.example.FlightBooking.Components.Composite.AirlineComponent;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -7,6 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,7 +20,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "planes")
-public class Planes {
+public class Planes implements AirlineComponent {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -41,4 +43,9 @@ public class Planes {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private Timestamp updatedAt;
+
+    @Override
+    public void execute() {
+        System.out.println("Executing plane operations for flight: " + flightNumber);
+    }
 }

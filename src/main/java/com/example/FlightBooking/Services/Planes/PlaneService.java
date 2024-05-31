@@ -33,13 +33,14 @@ public class PlaneService {
     private FlightRepository flightRepository;
     @Autowired
     private ObjectMapper objectMapper;
+
     @Autowired
     private BookingRepository bookingRepository;
     @Autowired
     private TicketRepository ticketRepository;
-
     public Planes createPlaneWithSeats(Long airlineId) throws Exception {
         Airlines airline = getAirlineById(airlineId);
+
         String flightNumber = generateUniqueFlightNumber(airline);
 
         Planes plane = new Planes();
@@ -52,9 +53,10 @@ public class PlaneService {
         seatStatuses.putAll(new EconomyClassSeatFactory().createSeats(plane));
         String seatStatusesJson = objectMapper.writeValueAsString(seatStatuses);
         plane.setSeatStatuses(seatStatusesJson);
-        return planeRepository.save(plane);
+        airline.addPlane(plane); // Add plane to the airline composite
+        airlinesRepository.save(airline); // Save airline to persist changes
+        return plane;
     }
-
     private String generateUniqueFlightNumber(Airlines airline) {
         String flightNumber;
         Random random = new Random();
@@ -63,7 +65,6 @@ public class PlaneService {
         } while (planeRepository.existsByFlightNumber(flightNumber));
         return flightNumber;
     }
-
     private String generateFlightNumber(Airlines airline, Random random) {
         int number = 100 + random.nextInt(900);
         switch (airline.getAirlineName()) {
@@ -79,14 +80,12 @@ public class PlaneService {
                 return "UNDEFINED";
         }
     }
-
     public Airlines getAirlineById(Long airlineId) {
         return airlinesRepository.findById(airlineId).orElseThrow(() -> new RuntimeException("Airline not found"));
     }
     public Planes getDetailPlane(Long planeId) {
         return planeRepository.findById(planeId).orElseThrow(() -> new RuntimeException("Airline not found"));
     }
-
     public Map<String, Map<String, String>> getSeatStatuses(Long planeId) throws Exception {
         Planes plane = planeRepository.findById(planeId).orElseThrow(() -> new RuntimeException("Plane not found"));
         String seatStatusesJson = plane.getSeatStatuses();
@@ -95,7 +94,6 @@ public class PlaneService {
         Map<String, Map<String, String>> sortedSeatStatuses = new TreeMap<>(seatStatuses);
         return sortedSeatStatuses;
     }
-
     public boolean holdSeats(Long planeId, Set<String> seatNumbers) throws Exception {
         logger.info("Attempting to hold seats for planeId: {}", planeId);
         Planes plane = planeRepository.findById(planeId)
@@ -142,7 +140,6 @@ public class PlaneService {
 
         return true;
     }
-
     public void releaseSeats(Long planeId, Set<String> seatNumbers) throws Exception {
         logger.info("Releasing seats for planeId: {}", planeId);
         Planes plane = planeRepository.findById(planeId).orElseThrow(() -> new RuntimeException("Plane not found"));
@@ -162,7 +159,6 @@ public class PlaneService {
         planeRepository.save(plane);
         logger.info("Seats released successfully for planeId: {}", planeId);
     }
-
     public boolean bookSeats(Long planeId, Set<String> seatNumbers) throws Exception {
         logger.info("Booking seats for planeId: {}", planeId);
         Planes plane = planeRepository.findById(planeId).orElseThrow(() -> new RuntimeException("Plane not found"));
@@ -190,7 +186,6 @@ public class PlaneService {
 
         return true;
     }
-
     public double calculateTotalPrice(SelectSeatDTO selectedSeatsDTO) throws Exception {
         Flights flight = flightRepository.findById(selectedSeatsDTO.getFlightId())
                 .orElseThrow(() -> new RuntimeException("Flight not found with id: " + selectedSeatsDTO.getFlightId()));

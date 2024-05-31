@@ -1,15 +1,14 @@
 package com.example.FlightBooking.Models;
 
+import com.example.FlightBooking.Components.Composite.AirlineComponent;
 import jakarta.persistence.*;
-import org.apache.commons.math3.geometry.euclidean.threed.Plane;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,17 +27,18 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @Table(name = "airlines")
-
 /*Annotation @Table là một annotation JPA được sử dụng
 để chỉ định tên bảng database mà một entity class liên kết đến.*/
-
-public class Airlines {
+public class Airlines implements AirlineComponent {
     @Id  //Khóa chính
     @GeneratedValue (strategy = GenerationType.IDENTITY) // Sử dụng sequence hoặc auto-increment trong database để tự động tạo giá trị.
     // thường thì nó sẽ có giá trị 1 ++ lên dân
     private Long id;
     private String airlineName;
     private String logoUrl;
+
+    @OneToMany(mappedBy = "airline", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+    private List<Planes> planes = new ArrayList<>();
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -47,4 +47,16 @@ public class Airlines {
     @Column(name = "updated_at")
     private Timestamp updatedAt;
 
+    public void addPlane(Planes plane) {
+        planes.add(plane);
+        plane.setAirline(this);
+    }
+
+    @Override
+    public void execute() {
+        System.out.println("Executing airline operations for: " + airlineName);
+        for (AirlineComponent plane : planes) {
+            plane.execute();
+        }
+    }
 }
