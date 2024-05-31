@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Controller.Payment;
 
+import com.example.FlightBooking.Components.Adapter.PaymentProcessor;
 import com.example.FlightBooking.Models.CreditCard;
 import com.example.FlightBooking.Models.Order;
 import com.example.FlightBooking.Models.Users;
@@ -9,6 +10,7 @@ import com.example.FlightBooking.Services.PaymentService.PaymentService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 
+import com.stripe.model.PaymentIntent;
 import com.stripe.model.PaymentMethod;
 import com.stripe.model.SetupIntent;
 import com.stripe.param.SetupIntentCreateParams;
@@ -27,55 +29,52 @@ import java.util.Map;
 @CrossOrigin
 @RequestMapping("/payment")
 @Tag(name = "Payment method", description = "APIs for payment and charge to buy or get somethings")
+
 public class PaymentController {
-    @Value("${stripe.api.secretKey}")
-    private String stripeSecretKey;
-    @Autowired
-    private PaymentService paymentService;
 
     @Autowired
-    private UserRepository userRepository;  // Assuming you have a UserRepository
+    private PaymentProcessor paymentProcessor;
 
     @Autowired
-    private CreditCardRepository creditCardRepository;  // Assuming you have a CreditCardRepository
+    private UserRepository userRepository;
+
+    @Autowired
+    private CreditCardRepository creditCardRepository;
 
     @GetMapping("/get-stripe-customer-id")
-    public ResponseEntity<?> getStripeCustomerId(@RequestParam String token)
-    {
+    public ResponseEntity<?> getStripeCustomerId(@RequestParam String token) {
         try {
-            String customerId = paymentService.getStripeCustomerId(token);
+            String customerId = paymentProcessor.getCustomerId(token);
             return ResponseEntity.ok(Collections.singletonMap("stripeCustomerId", customerId));
-        }
-        catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(404).body("Error: " + e.getMessage());
         }
     }
+
     @GetMapping("/get-stripe-setup-intent-id")
-    public ResponseEntity<?> getStripeSetupIntentId(@RequestParam String token)
-    {
+    public ResponseEntity<?> getStripeSetupIntentId(@RequestParam String token) {
         try {
-        String setupIntentId = paymentService.getStripeSetupIntentId(token);
-        return ResponseEntity.ok(Collections.singletonMap("stripeCustomerId", setupIntentId));
-        }
-        catch (RuntimeException e) {
-        return ResponseEntity.status(404).body("Error: " + e.getMessage());
-        }
-    }
-    @GetMapping("/get-stripe-payment-method-id")
-    public ResponseEntity<?> getStripePaymentMethodId (@RequestParam String token){
-        try {
-            String paymentMethodId = paymentService.getPaymentMethodId(token);
-            return ResponseEntity.ok(Collections.singletonMap("stripePaymentMethod", paymentMethodId));
-        }
-        catch (RuntimeException e) {
+            String setupIntentId = paymentProcessor.getSetupIntentId(token);
+            return ResponseEntity.ok(Collections.singletonMap("stripeSetupIntentId", setupIntentId));
+        } catch (RuntimeException e) {
             return ResponseEntity.status(404).body("Error: " + e.getMessage());
         }
     }
+
+    @GetMapping("/get-stripe-payment-method-id")
+    public ResponseEntity<?> getStripePaymentMethodId(@RequestParam String token) {
+        try {
+            String paymentMethodId = paymentProcessor.getPaymentMethodId(token);
+            return ResponseEntity.ok(Collections.singletonMap("stripePaymentMethod", paymentMethodId));
+        } catch (StripeException e) {
+            return ResponseEntity.status(404).body("Error: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/create-customer")
     public ResponseEntity<?> createCustomer(@RequestParam String email) {
         try {
-            Stripe.apiKey = stripeSecretKey;
-            String customerId = paymentService.createStripeCustomer(email);
+            String customerId = paymentProcessor.createCustomer(email);
             return ResponseEntity.ok().body(customerId);
         } catch (StripeException e) {
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
@@ -87,7 +86,6 @@ public class PaymentController {
     @PostMapping("/create-setup-intent")
     public ResponseEntity<?> createSetupIntent(@RequestParam String customerId) {
         try {
-            Stripe.apiKey = stripeSecretKey;
             SetupIntentCreateParams params = SetupIntentCreateParams.builder()
                     .setCustomer(customerId)
                     .addPaymentMethodType("card")
@@ -96,41 +94,26 @@ public class PaymentController {
             Map<String, String> responseData = new HashMap<>();
             responseData.put("clientSecret", setupIntent.getClientSecret());
             responseData.put("setupIntentId", setupIntent.getId());
-            Users users = userRepository.findByStripeCustomerId(customerId).orElseThrow(() -> new RuntimeException("User not found with this username: " + customerId));
-            users.setSetupIntentId(setupIntent.getId());
-            userRepository.save(users);
+            Users user = userRepository.findByStripeCustomerId(customerId).orElseThrow(() -> new RuntimeException("User not found with this username: " + customerId));
+            user.setSetupIntentId(setupIntent.getId());
+            userRepository.save(user);
             return ResponseEntity.ok().body(responseData);
         } catch (StripeException e) {
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
-
-    @PostMapping("/register-card")
-    public ResponseEntity<?> registerCard(@RequestParam String setupIntentId, @RequestParam String username) {
+    @PostMapping("/create-payment")
+    public ResponseEntity<?> createPayment (@RequestParam String token,@RequestParam double amount, @RequestParam Long flightId){
         try {
-            Users user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("User not found with this username: " + username));
-
-            String customerId = user.getStripeCustomerId();
-            if (customerId == null) {
-                customerId = paymentService.createStripeCustomer(user.getEmail());
-                user.setStripeCustomerId(customerId);
-                userRepository.save(user);
-            }
-            SetupIntent setupIntent = SetupIntent.retrieve(setupIntentId);
-            String paymentMethodId = setupIntent.getPaymentMethod();
-            PaymentMethod paymentMethod = PaymentMethod.retrieve(paymentMethodId);
-            PaymentMethod.Card cardDetails = paymentMethod.getCard();
-            CreditCard creditCard = new CreditCard();
-            creditCard.setUserId(user.getId());
-            creditCard.setStripePaymentMethodId(paymentMethodId);
-            creditCard.setLast4Digits(cardDetails.getLast4());
-            creditCard.setExpirationDate(cardDetails.getExpMonth() + "/" + cardDetails.getExpYear());
-            creditCardRepository.save(creditCard);
-
-            return ResponseEntity.ok().body("Card registered successfully");
+            PaymentIntent paymentIntent = paymentProcessor.processPayment(token, amount, flightId);
+            return ResponseEntity.ok(Collections.singletonMap("paymentIntent", paymentIntent.getId()));
         } catch (StripeException e) {
             return ResponseEntity.status(500).body("Error: " + e.getMessage());
         }
     }
 }
+
+
+
+
+
