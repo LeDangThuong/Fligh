@@ -1,12 +1,16 @@
 package com.example.FlightBooking.Services.PaymentService;
+import com.example.FlightBooking.Models.Statistics;
 import com.example.FlightBooking.Models.Users;
+import com.example.FlightBooking.Repositories.StatisticsRepository;
 import com.example.FlightBooking.Repositories.UserRepository;
 import com.example.FlightBooking.Services.AuthJWT.JwtService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
+import com.stripe.model.PaymentIntent;
 import com.stripe.model.SetupIntent;
 import com.stripe.param.CustomerCreateParams;
+import com.stripe.param.PaymentIntentCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -19,6 +23,8 @@ public class PaymentService {
     private JwtService jwtService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private StatisticsRepository statisticsRepository;
 
     public PaymentService() {
         Stripe.apiKey = stripeSecretKey;
@@ -63,5 +69,27 @@ public class PaymentService {
             throw new RuntimeException(e);
         }
         return setupIntent.getPaymentMethod();
+    }
+    public PaymentIntent createPayment(String token, double amount, Long flightId) throws StripeException {
+        String paymentMethodId = getPaymentMethodId(token);
+        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                .setAmount((long) (amount * 100))  // amount in cents
+                .setCurrency("usd")
+                .setPaymentMethod(paymentMethodId)
+                .setConfirm(true)
+                .setOffSession(true)
+                .build();
+        PaymentIntent paymentIntent = PaymentIntent.create(params);
+
+        String username = jwtService.getUsername(token);
+        Users user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with this username: " + username));
+
+        Statistics statistics = new Statistics();
+        statistics.setUserId(user.getId());
+        statistics.setAmount(amount);
+        statistics.setFlightId(flightId);
+        statisticsRepository.save(statistics);
+        return paymentIntent;
     }
 }
