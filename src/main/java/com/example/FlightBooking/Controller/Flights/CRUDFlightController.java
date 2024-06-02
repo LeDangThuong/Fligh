@@ -7,10 +7,12 @@ import com.example.FlightBooking.Services.FlightService.ExcelService;
 import com.example.FlightBooking.Services.FlightService.FlightService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -28,9 +30,13 @@ public class CRUDFlightController {
     private FlightRepository flightRepository;
 
     @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file) {
-        excelService.saveFlightsFromExcel(file);
-        return "File uploaded and data saved successfully!";
+    public ResponseEntity<String> uploadFlightData(@RequestPart("file") MultipartFile file, @RequestParam("planeId") Long planeId) {
+        try {
+            flightService.uploadFlightData(file, planeId);
+            return new ResponseEntity<>("File uploaded successfully!", HttpStatus.OK);
+        } catch (IOException e) {
+            return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping("/create-new-flight")
