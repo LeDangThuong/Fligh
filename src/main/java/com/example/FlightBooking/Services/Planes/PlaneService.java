@@ -77,4 +77,7 @@ public class PlaneService {
     public Planes getDetailPlane(Long planeId) {
         return planeRepository.findById(planeId).orElseThrow(() -> new RuntimeException("Airline not found"));
     }
+    public List<Planes> getAllPlanesByAirlineId(Long airlineId) {
+        return planeRepository.findByAirlineId(airlineId);
+    }
 }

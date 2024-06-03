@@ -3,12 +3,12 @@ package com.example.FlightBooking.Controller.Flights;
 import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
 import com.example.FlightBooking.Models.Flights;
 import com.example.FlightBooking.Repositories.FlightRepository;
-import com.example.FlightBooking.Services.FlightService.ExcelService;
 import com.example.FlightBooking.Services.FlightService.FlightService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,15 +24,14 @@ import java.util.Set;
 @Tag(name = "Flight CRUD", description = "APIs for create, read, update, delete flights")
 @RequestMapping("/flight")
 public class CRUDFlightController {
-    @Autowired
-    private ExcelService excelService;
+
     @Autowired
     private FlightService flightService;
 
     @Autowired
     private FlightRepository flightRepository;
 
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> uploadFlightData(@RequestPart("file") MultipartFile file, @RequestParam("planeId") Long planeId) {
         try {
             flightService.uploadFlightData(file, planeId);
