@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 @Setter
 public class AirlineResponse {
+    private Long id;
     private String airlineName;
     private String logoUrl;
-    private List<Planes> planes;
 }

@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Controller.Airline;
 
+import com.example.FlightBooking.DTOs.Response.Airline.PlaneResponse;
 import com.example.FlightBooking.Models.Airlines;
 import com.example.FlightBooking.Models.Planes;
 import com.example.FlightBooking.Services.Planes.PlaneService;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -42,14 +44,19 @@ public class PlaneController {
         }
     }
     @GetMapping("/get-all-plane-by-airline-id")
-    public ResponseEntity<?> getAllPlane(@RequestParam Long airlineId)
-    {
+    public ResponseEntity<?> getAllPlane(@RequestParam Long airlineId) {
         try {
-            List<Planes> plane = planeService.getAllPlanesByAirlineId(airlineId);
-            return ResponseEntity.ok(plane);
-
+            List<Planes> planes = planeService.getAllPlanesByAirlineId(airlineId);
+            List<PlaneResponse> planeResponses = planes.stream().map(this::convertToPlaneResponse).collect(Collectors.toList());
+            return ResponseEntity.ok(planeResponses);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error getting Plane detail: " + e.getMessage());
         }
+    }
+    private PlaneResponse convertToPlaneResponse(Planes planes) {
+        PlaneResponse response = new PlaneResponse();
+        response.setId(planes.getId());
+        response.setFlightNumber(planes.getFlightNumber());
+        return response;
     }
 }
