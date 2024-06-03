@@ -32,7 +32,7 @@ public class CRUDFlightController {
     private FlightRepository flightRepository;
 
     @PostMapping(value = "/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> uploadFlightData(@RequestPart("file") MultipartFile file, @RequestParam("planeId") Long planeId) {
+    public ResponseEntity<String> uploadFlightData(@RequestPart("file") MultipartFile file, @RequestBody Long planeId) {
         try {
             flightService.uploadFlightData(file, planeId);
             return new ResponseEntity<>("File uploaded successfully!", HttpStatus.OK);
