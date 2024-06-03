@@ -159,15 +159,19 @@ public class FlightService {
     }
 
     private boolean isConflict(Flights existingFlight, FlightDTO newFlight) {
-        long timeDifferenceDeparture = Math.abs(existingFlight.getDepartureDate().getTime() - newFlight.getDepartureDate().getTime());
-        long timeDifferenceArrival = Math.abs(existingFlight.getArrivalDate().getTime() - newFlight.getArrivalDate().getTime());
-        return timeDifferenceDeparture < 5 * 60 * 60 * 1000 || timeDifferenceArrival < 5 * 60 * 60 * 1000;
+        return existingFlight.getPlaneId().equals(newFlight.getPlaneId()) &&
+                (existingFlight.getDepartureDate().equals(newFlight.getDepartureDate()) ||
+                        existingFlight.getArrivalDate().equals(newFlight.getArrivalDate()) ||
+                        existingFlight.getDepartureAirportId().equals(newFlight.getDepartureAirportId()) ||
+                        existingFlight.getArrivalAirportId().equals(newFlight.getArrivalAirportId()));
     }
 
     private boolean isConflict(Flights existingFlight, Flights newFlight) {
-        long timeDifferenceDeparture = Math.abs(existingFlight.getDepartureDate().getTime() - newFlight.getDepartureDate().getTime());
-        long timeDifferenceArrival = Math.abs(existingFlight.getArrivalDate().getTime() - newFlight.getArrivalDate().getTime());
-        return timeDifferenceDeparture < 5 * 60 * 60 * 1000 || timeDifferenceArrival < 5 * 60 * 60 * 1000;
+        return existingFlight.getPlaneId().equals(newFlight.getPlaneId()) &&
+                (existingFlight.getDepartureDate().equals(newFlight.getDepartureDate()) ||
+                        existingFlight.getArrivalDate().equals(newFlight.getArrivalDate()) ||
+                        existingFlight.getDepartureAirportId().equals(newFlight.getDepartureAirportId()) ||
+                        existingFlight.getArrivalAirportId().equals(newFlight.getArrivalAirportId()));
     }
     public boolean holdSeats(Long flightId, Set<String> seatNumbers) throws Exception {
         logger.info("Attempting to hold seats for flightId: {}", flightId);
