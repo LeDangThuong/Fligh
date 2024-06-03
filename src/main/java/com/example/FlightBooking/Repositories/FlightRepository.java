@@ -39,4 +39,16 @@ public interface FlightRepository extends JpaRepository<Flights, Long> {
 //            @Param("departureStartDate") Timestamp departureStartDate,
 //            @Param("departureEndDate") Timestamp departureEndDate
 //    );
+
+    @Query("SELECT f FROM Flights f WHERE f.planeId = :planeId")
+    List<Flights> findAllByPlaneId(@Param("planeId") Long planeId);
+
+    @Query("SELECT f FROM Flights f WHERE f.planeId = :planeId AND " +
+            "(:departureDate BETWEEN f.departureDate AND f.arrivalDate OR " +
+            ":arrivalDate BETWEEN f.departureDate AND f.arrivalDate OR " +
+            "(f.departureDate BETWEEN :departureDate AND :arrivalDate) OR " +
+            "(f.arrivalDate BETWEEN :departureDate AND :arrivalDate))")
+    List<Flights> findConflictingFlights(@Param("planeId") Long planeId,
+                                         @Param("departureDate") Timestamp departureDate,
+                                         @Param("arrivalDate") Timestamp arrivalDate);
 }

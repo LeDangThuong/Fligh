@@ -22,4 +22,6 @@ public class FlightDTO {
     private Double economyPrice;
     private Double businessPrice;
     private Double firstClassPrice;
+
+    private String setSeatStatuses;
 }

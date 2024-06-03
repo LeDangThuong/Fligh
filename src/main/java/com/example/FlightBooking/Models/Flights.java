@@ -46,6 +46,9 @@ public class Flights {
     private Double businessPrice;
     private Double firstClassPrice;
     //
+    @Lob
+    @Column(name = "seat_statuses", nullable = false)
+    private String seatStatuses; // Sử dụng JSON để lưu trạng thái chỗ ngồi
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

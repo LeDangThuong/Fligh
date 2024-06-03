@@ -38,11 +38,12 @@ public class PaymentController {
     @Autowired
     private UserRepository userRepository;
 
+
     @Autowired
     private CreditCardRepository creditCardRepository;
 
     @GetMapping("/get-stripe-customer-id")
-    public ResponseEntity<?> getStripeCustomerId(@RequestParam String token) {
+    public ResponseEntity<?> getStripeCustomerId(@RequestParam String token) throws StripeException{
         try {
             String customerId = paymentProcessor.getCustomerId(token);
             return ResponseEntity.ok(Collections.singletonMap("stripeCustomerId", customerId));
@@ -52,10 +53,19 @@ public class PaymentController {
     }
 
     @GetMapping("/get-stripe-setup-intent-id")
-    public ResponseEntity<?> getStripeSetupIntentId(@RequestParam String token) {
+    public ResponseEntity<?> getStripeSetupIntentId(@RequestParam String token) throws StripeException{
         try {
             String setupIntentId = paymentProcessor.getSetupIntentId(token);
             return ResponseEntity.ok(Collections.singletonMap("stripeSetupIntentId", setupIntentId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body("Error: " + e.getMessage());
+        }
+    }
+    @GetMapping("/get-stripe-client-secret")
+    public ResponseEntity<?> getStripeClientSecret(@RequestParam String token) throws StripeException{
+        try {
+            String clientSecret = paymentProcessor.getStripeClientSecret(token);
+            return ResponseEntity.ok(Collections.singletonMap("clientSecret", clientSecret));
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body("Error: " + e.getMessage());
         }
