@@ -1,6 +1,7 @@
 package com.example.FlightBooking.Controller.Airline;
 
 import com.example.FlightBooking.DTOs.Request.AirlineAndAirport.AirlineRequest;
+import com.example.FlightBooking.DTOs.Response.Airline.AirlineResponse;
 import com.example.FlightBooking.Models.Airlines;
 import com.example.FlightBooking.Models.Planes;
 import com.example.FlightBooking.Repositories.AirlinesRepository;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -30,8 +32,16 @@ public class AirlinesController {
     private AirlinesRepository airlinesRepository;
 
     @GetMapping
-    public List<Airlines> getAllAirlines() {
-        return airlinesService.getAllAirlines();
+    public List<AirlineResponse> getAllAirlines() {
+        List<Airlines> airlinesList = airlinesService.getAllAirlines();
+        return airlinesList.stream().map(this::convertToAirlineResponse).collect(Collectors.toList());
+    }
+    private AirlineResponse convertToAirlineResponse(Airlines airlines) {
+        AirlineResponse response = new AirlineResponse();
+        response.setId(airlines.getId());
+        response.setAirlineName(airlines.getAirlineName());
+        response.setLogoUrl(airlines.getLogoUrl());
+        return response;
     }
 
     @GetMapping("/{id}")
