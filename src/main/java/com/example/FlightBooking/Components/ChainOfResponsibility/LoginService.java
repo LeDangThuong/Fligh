@@ -13,7 +13,6 @@ public class LoginService {
         validationHandler.setNext(authenticationHandler);
         authenticationHandler.setNext(jwtTokenHandler);
     }
-
     public void login(SignInDTO request) throws Exception {
         chain.handle(request);
     }

@@ -41,33 +41,36 @@ public class PaymentService {
         userRepository.save(users);
         return customer.getId();
     }
-
-
-    public String getStripeCustomerId (String token)
+    public String getStripeCustomerId (String token) throws StripeException
     {
         String username = jwtService.getUsername(token);
         Users users = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found with this username: " + username));
         return users.getStripeCustomerId();
     }
-    public String getStripeSetupIntentId (String token)
+    public String getStripeSetupIntentId (String token) throws StripeException
     {
         String username = jwtService.getUsername(token);
         Users users = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found with this username: " + username));
         return users.getSetupIntentId();
     }
-    public String getPaymentMethodId (String token) {
+    public String getStripeClientSecret(String token) throws StripeException
+    {
+        String username = jwtService.getUsername(token);
+        Users users = userRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("User not found with this username: " + username));
+        SetupIntent setupIntent = SetupIntent.retrieve(users.getSetupIntentId());
+        return setupIntent.getClientSecret();
+    }
+    public String getPaymentMethodId (String token) throws StripeException {
         Stripe.apiKey = stripeSecretKey;
         String username = jwtService.getUsername(token);
         Users users = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found with this username: " + username));
-        SetupIntent setupIntent = null;
-        try {
-            setupIntent = SetupIntent.retrieve(users.getSetupIntentId());
-        } catch (StripeException e) {
-            throw new RuntimeException(e);
-        }
+        // Lấy SetupIntent từ ID
+        SetupIntent setupIntent = SetupIntent.retrieve(users.getSetupIntentId());
+
         return setupIntent.getPaymentMethod();
     }
     public PaymentIntent createPayment(String token, double amount, Long flightId) throws StripeException {

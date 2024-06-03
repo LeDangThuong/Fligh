@@ -17,18 +17,23 @@ public class StripePaymentAdapter implements PaymentProcessor{
     }
 
     @Override
-    public String getCustomerId(String token) {
+    public String getCustomerId(String token) throws StripeException{
         return paymentService.getStripeCustomerId(token);
     }
 
     @Override
-    public String getSetupIntentId(String token) {
+    public String getSetupIntentId(String token) throws StripeException{
         return paymentService.getStripeSetupIntentId(token);
     }
 
     @Override
     public String getPaymentMethodId(String token) throws StripeException {
         return paymentService.getPaymentMethodId(token);
+    }
+    @Override
+    public String getStripeClientSecret(String token) throws StripeException
+    {
+        return paymentService.getStripeClientSecret(token);
     }
 
     @Override

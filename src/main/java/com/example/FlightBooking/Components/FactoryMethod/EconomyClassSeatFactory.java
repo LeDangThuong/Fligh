@@ -2,6 +2,7 @@ package com.example.FlightBooking.Components.FactoryMethod;
 
 import com.example.FlightBooking.Enum.SeatClass;
 import com.example.FlightBooking.Enum.SeatStatus;
+import com.example.FlightBooking.Models.Flights;
 import com.example.FlightBooking.Models.Planes;
 
 import java.util.HashMap;
@@ -13,7 +14,7 @@ public class EconomyClassSeatFactory implements SeatFactory {
     private static final String[] SEAT_LETTERS = {"M", "N", "O", "P", "Q", "R", "S", "T", "U", "V"};
 
     @Override
-    public Map<String, Map<String, String>> createSeats(Planes plane) {
+    public Map<String, Map<String, String>> createSeats(Flights flights) {
         Map<String, Map<String, String>> seatStatuses = new HashMap<>();
         for (int row = 1; row <= NUM_ROWS; row++) {
             for (int seat = 1; seat <= SEATS_PER_ROW; seat++) {
