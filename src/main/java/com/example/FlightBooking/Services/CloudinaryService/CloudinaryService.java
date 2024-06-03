@@ -74,6 +74,13 @@ public class CloudinaryService {
                 ));
         return (String) response.get("url");
     }
+
+    public String uploadReviewImage(MultipartFile file) throws IOException{
+        Map response = cloudinary.uploader().upload(file.getBytes(),
+                ObjectUtils.asMap("resource_type", "auto","folder", "Reviews"));
+        return  (String) response.get("url");
+    }
+
     private void deleteAvatar(String publicId) throws IOException {
         Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.asMap(
                 "resource_type", "image",

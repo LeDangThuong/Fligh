@@ -1,9 +1,14 @@
 package com.example.FlightBooking.Components.TemplateMethod;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 @Component
 public class TicketEmailSender extends AbstractEmailSender {
+    @Autowired
+    private SpringTemplateEngine templateEngine;
 
     @Override
     protected String getSubject() {
@@ -12,23 +17,27 @@ public class TicketEmailSender extends AbstractEmailSender {
 
     @Override
     protected String getBody(String ticketDetails) {
-        return """
-            <html>
-            <body>
-                <div style="font-family: Arial, sans-serif; line-height: 1.6; padding: 20px; border: 1px solid #ddd; border-radius: 10px; max-width: 600px; margin: auto;">
-                    <h2 style="text-align: center; color: #4CAF50;">Your Flight Ticket Details</h2>
-                    <p>Hello,</p>
-                    <p>Thank you for booking with us. Here are your flight ticket details:</p>
-                    <p>%s</p>
-                    <p>Thank you!</p>
-                    <hr style="border: none; border-top: 1px solid #eee;">
-                    <div style="text-align: center; color: #999; font-size: 12px;">
-                        <p>FlightBooking Team</p>
-                        <p>Do not reply to this email. If you have any questions, contact us at support@flightbooking.com.</p>
-                    </div>
-                </div>
-            </body>
-            </html>
-            """.formatted(ticketDetails);
+        String airline = "VietnamEline";
+        String departure = "SGN";
+        String arrival = "HAN";
+        String passengerName = "Ho Chi Minh City";
+        String flightNumber = "HG-9849";
+        String gate = "A01";
+        String seat = "B08";
+        String boardingTime = "Monday, Auguest 28 2034";
+
+        Context context = new Context();
+        context.setVariable("airline", airline);
+        context.setVariable("departure", departure);
+        context.setVariable("arrival", arrival);
+        context.setVariable("passengerName", passengerName);
+        context.setVariable("flightNumber", flightNumber);
+        context.setVariable("gate", gate);
+        context.setVariable("seat", seat);
+        context.setVariable("boardingTime", boardingTime);
+
+        String htmlContent = templateEngine.process("ticketsEmail", context);
+
+        return htmlContent;
     }
 }

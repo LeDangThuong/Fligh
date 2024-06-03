@@ -49,7 +49,7 @@ public class SecurityConfiguration {
                                 .policyDirectives("upgrade-insecure-requests;")))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/test", "/users/**", "/flight/**", "/booking/**", "/generate/**", "/payment/**",
-                                "/airports/**", "/seats/**", "/chat/**", "/voucher/**","/template-method/**",
+                                "/airports/**", "/seats/**","/reviews/**" ,"/chat/**", "/voucher/**","/template-method/**",
                                 "/baggage-fee/**", "/meal/**").permitAll()
                         .requestMatchers("/auth/**", "/airlines/**", "/fares/**").permitAll()
                         .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
