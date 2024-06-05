@@ -17,8 +17,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 @RestController
+@CrossOrigin
 @RequestMapping("/reviews")
+@Tag(name = "Review Controller ", description = "Review for some place")
 public class ReviewController {
     @Autowired
     private ReviewService reviewService;
