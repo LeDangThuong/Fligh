@@ -33,17 +33,17 @@ public class ReviewController {
     @Autowired
     private ObjectMapper objectMapper; // Để chuyển đổi JSON sang đối tượng
 
-    @GetMapping
+    @GetMapping("/getAllReview")
     public List<Review> getAllReviews() {
         return reviewService.findAll();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("getByID/{id}")
     public Review getReviewById(@PathVariable Long id) {
         return reviewService.findById(id);
     }
 
-    @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/add", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
     public Review createReview(@RequestPart("review") String reviewJson,
                                @RequestPart("reviewFiles") List<MultipartFile> reviewFiles,
                                @RequestPart("questionFiles") List<MultipartFile> questionFiles) throws IOException {
@@ -74,13 +74,13 @@ public class ReviewController {
     }
 
 
-    @PutMapping("/{id}")
+    @PutMapping("update/{id}")
     public Review updateReview(@PathVariable Long id, @RequestBody Review review) {
         review.setId(id);
         return reviewService.save(review);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public void deleteReview(@PathVariable Long id) {
         reviewService.deleteById(id);
     }

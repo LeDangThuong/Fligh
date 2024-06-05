@@ -51,7 +51,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/test", "/users/**", "/flight/**", "/booking/**", "/generate/**", "/payment/**",
                                 "/airports/**", "/seats/**","/reviews/**" ,"/chat/**", "/voucher/**","/template-method/**",
                                 "/baggage-fee/**", "/meal/**").permitAll()
-                        .requestMatchers("/auth/**", "/airlines/**", "/fares/**").permitAll()
+                        .requestMatchers("/auth/**", "/airlines/**", "/fares/**", "/regulations/**").permitAll()
                         .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
                                 "/swagger-resources/**", "configuration/ui", "configuration/security",
                                 "/swagger-ui.html", "/swagger-ui/**", "/webjars/**", "/swagger.json")
