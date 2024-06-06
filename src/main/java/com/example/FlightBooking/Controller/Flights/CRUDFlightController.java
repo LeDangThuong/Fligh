@@ -1,6 +1,8 @@
 package com.example.FlightBooking.Controller.Flights;
 
+import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
+import com.example.FlightBooking.Models.Booking;
 import com.example.FlightBooking.Models.Flights;
 import com.example.FlightBooking.Repositories.FlightRepository;
 import com.example.FlightBooking.Services.FlightService.FlightService;
@@ -70,9 +72,9 @@ public class CRUDFlightController {
     }
     // Cai nay la xem thu cai ghe do da duoc dat chua, hay la on hold theo user ID nao
     @GetMapping("/{flightId}/get-seat-status")
-    public ResponseEntity<?> getSeatStatuses(@PathVariable Long planeId) {
+    public ResponseEntity<?> getSeatStatuses(@RequestParam Long flightId) {
         try {
-            Map<String, Map<String, String>> seatStatuses = flightService.getSeatStatuses(planeId);
+            Map<String, Map<String, String>> seatStatuses = flightService.getSeatStatuses(flightId);
             return ResponseEntity.ok(seatStatuses);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error getting seat statuses: " + e.getMessage());
@@ -80,31 +82,36 @@ public class CRUDFlightController {
     }
 
     //Khi nguoi dung booking ve thi hold ve cho nguoi dung
-    @PostMapping("/{flightId}/hold")
-    public ResponseEntity<?> holdSeats(@PathVariable Long flightId, @RequestBody Set<String> seatNumbers) {
-        try {
-            boolean success = flightService.holdSeats(flightId, seatNumbers);
-            if (success) {
-                return ResponseEntity.ok("Seats held successfully.");
-            } else {
-                return ResponseEntity.status(400).body("One or more seats are not available.");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error holding seats: " + e.getMessage());
-        }
-    }
-    // Dat ve may bay
-    @PostMapping("/{flightId}/book")
-    public ResponseEntity<?> bookSeats(@PathVariable Long flightId, @RequestBody Set<String> seatNumbers) {
-        try {
-            boolean success = flightService.bookSeats(flightId, seatNumbers);
-            if (success) {
-                return ResponseEntity.ok("Seats booked successfully.");
-            } else {
-                return ResponseEntity.status(400).body("One or more seats are not available for booking.");
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error booking seats: " + e.getMessage());
-        }
-    }
+//    @PostMapping("/{flightId}/hold")
+//    public ResponseEntity<?> holdSeats(@PathVariable Long flightId, @RequestBody Set<String> seatNumbers) {
+//        try {
+//            boolean success = flightService.holdSeats(flightId, seatNumbers);
+//            if (success) {
+//                return ResponseEntity.ok("Seats held successfully.");
+//            } else {
+//                return ResponseEntity.status(400).body("One or more seats are not available.");
+//            }
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body("Error holding seats: " + e.getMessage());
+//        }
+//    }
+//    // Dat ve may bay
+//    @PostMapping("/{flightId}/book")
+//    public ResponseEntity<?> bookSeats(@RequestParam String token, @RequestBody BookingRequestDTO bookingRequestDTO) {
+//        try {
+//            Booking booking = flightService.createBooking(bookingRequestDTO, token);
+//            return ResponseEntity.ok(booking);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).build();
+//        }
+//    }
+//    @PostMapping("/finalize-booking/{bookingId}")
+//    public ResponseEntity<Boolean> finalizeBooking(@RequestParam Long bookingId) {
+//        try {
+//            boolean bookingSuccess = flightService.finalizeBooking(bookingId);
+//            return ResponseEntity.ok(bookingSuccess);
+//        } catch (Exception e) {
+//            return ResponseEntity.status(500).body(false);
+//        }
+//    }
 }
