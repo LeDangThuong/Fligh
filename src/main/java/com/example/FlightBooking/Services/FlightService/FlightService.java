@@ -19,6 +19,7 @@ import com.example.FlightBooking.Services.Planes.PlaneService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.transaction.Transactional;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -48,6 +49,7 @@ public class FlightService {
     @Autowired
     private TicketRepository ticketRepository;
 
+    @Transactional
     public Flights createFlight(FlightDTO flightDTO) throws JsonProcessingException {
         //Ràng buộc dữ liệu
         validateFlightData(flightDTO);
@@ -141,13 +143,17 @@ public class FlightService {
         return flightsList;
     }
     private void validateFlightData(FlightDTO flightDTO) {
-        List<Flights> existingFlights = flightRepository.findAllByPlaneId(flightDTO.getPlaneId());
-        for (Flights existingFlight : existingFlights) {
-            if (isConflict(existingFlight, flightDTO)) {
-                throw new IllegalArgumentException("Flight time conflicts with existing flight: " + existingFlight.getId());
-            }
+        List<Flights> conflictingFlights = flightRepository.findConflictingFlights(
+                flightDTO.getPlaneId(),
+                flightDTO.getDepartureDate(),
+                flightDTO.getArrivalDate()
+        );
+        if (!conflictingFlights.isEmpty()) {
+            throw new IllegalArgumentException("Flight time conflicts with existing flight(s): " +
+                    conflictingFlights.stream().map(Flights::getId).collect(Collectors.toList()));
         }
     }
+
 
     private void validateFlightData(Flights flight) {
         List<Flights> existingFlights = flightRepository.findAllByPlaneId(flight.getPlaneId());
@@ -159,20 +165,23 @@ public class FlightService {
     }
 
     private boolean isConflict(Flights existingFlight, FlightDTO newFlight) {
-        return existingFlight.getPlaneId().equals(newFlight.getPlaneId()) &&
-                (existingFlight.getDepartureDate().equals(newFlight.getDepartureDate()) ||
-                        existingFlight.getArrivalDate().equals(newFlight.getArrivalDate()) ||
-                        existingFlight.getDepartureAirportId().equals(newFlight.getDepartureAirportId()) ||
-                        existingFlight.getArrivalAirportId().equals(newFlight.getArrivalAirportId()));
+        long newFlightDeparture = newFlight.getDepartureDate().getTime();
+        long newFlightArrival = newFlight.getArrivalDate().getTime();
+        long existingFlightDeparture = existingFlight.getDepartureDate().getTime();
+        long existingFlightArrival = existingFlight.getArrivalDate().getTime();
+
+        return (newFlightDeparture < existingFlightArrival && newFlightArrival > existingFlightDeparture);
     }
 
     private boolean isConflict(Flights existingFlight, Flights newFlight) {
-        return existingFlight.getPlaneId().equals(newFlight.getPlaneId()) &&
-                (existingFlight.getDepartureDate().equals(newFlight.getDepartureDate()) ||
-                        existingFlight.getArrivalDate().equals(newFlight.getArrivalDate()) ||
-                        existingFlight.getDepartureAirportId().equals(newFlight.getDepartureAirportId()) ||
-                        existingFlight.getArrivalAirportId().equals(newFlight.getArrivalAirportId()));
+        long newFlightDeparture = newFlight.getDepartureDate().getTime();
+        long newFlightArrival = newFlight.getArrivalDate().getTime();
+        long existingFlightDeparture = existingFlight.getDepartureDate().getTime();
+        long existingFlightArrival = existingFlight.getArrivalDate().getTime();
+
+        return (newFlightDeparture < existingFlightArrival && newFlightArrival > existingFlightDeparture);
     }
+
     public boolean holdSeats(Long flightId, Set<String> seatNumbers) throws Exception {
         logger.info("Attempting to hold seats for flightId: {}", flightId);
         Flights flight = flightRepository.findById(flightId)
