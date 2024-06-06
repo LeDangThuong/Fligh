@@ -1,11 +1,17 @@
 package com.example.FlightBooking.Services.PaymentService;
 
+import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
+import com.example.FlightBooking.DTOs.Request.Booking.CombineBookingRequestDTO;
+import com.example.FlightBooking.Models.Booking;
+import com.example.FlightBooking.Models.Passengers;
 import com.example.FlightBooking.Models.Statistics;
 import com.example.FlightBooking.Models.Users;
+import com.example.FlightBooking.Repositories.BookingRepository;
 import com.example.FlightBooking.Repositories.PaymentMethodRepository;
 import com.example.FlightBooking.Repositories.StatisticsRepository;
 import com.example.FlightBooking.Repositories.UserRepository;
 import com.example.FlightBooking.Services.AuthJWT.JwtService;
+import com.example.FlightBooking.Services.BookingService.BookingService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
@@ -19,11 +25,14 @@ import com.stripe.param.SetupIntentCreateParams;
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class PaymentService {
@@ -42,6 +51,14 @@ public class PaymentService {
 
     @Autowired
     private PaymentMethodRepository paymentMethodRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
+
+    private final BookingService bookingService;
+    @Autowired
+    public PaymentService(@Lazy BookingService bookingService) {
+        this.bookingService = bookingService;
+    }
 
     @PostConstruct
     public void init() {
@@ -107,7 +124,7 @@ public class PaymentService {
         paymentMethodRepository.save(newPaymentMethod);
     }
 
-    public PaymentIntent createPaymentIntent(String token, double amount, Long flightId) throws StripeException {
+    public PaymentIntent createPaymentIntent(String token, double amount, Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException {
         String customerId = getStripeCustomerId(token);
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                 .setAmount((long) (amount * 100))  // amount in cents
@@ -123,11 +140,38 @@ public class PaymentService {
         Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found with this username: " + username));
 
+        Booking booking = new Booking();
+        BookingRequestDTO bookingRequestDTO = combineBookingRequestDTO.getBookingRequestDTO();
+        Set<String> seatNumber = combineBookingRequestDTO.getSeatNumber();
+        booking.setFlightId(flightId);
+        booking.setBookerFullName(bookingRequestDTO.getBookerFullName());
+        booking.setBookerEmail(bookingRequestDTO.getBookerEmail());
+        booking.setBookerPersonalId(bookingRequestDTO.getBookerPersonalId());
+        booking.setUserId(bookingRequestDTO.getUserId());
+        booking.setBookingDate(Timestamp.valueOf(LocalDateTime.now()));
+        List<Passengers> passengers = bookingRequestDTO.getPassengers().stream().map(dto -> {
+            Passengers passenger = new Passengers();
+            passenger.setFullName(dto.getFullName());
+            passenger.setEmail(dto.getEmail());
+            passenger.setPersonalId(dto.getPersonalId());
+            passenger.setSeatNumber(dto.getSeatNumber());
+            passenger.setBooking(booking);
+            return passenger;
+        }).collect(Collectors.toList());
+        booking.setPassengers(passengers);
+        bookingRepository.save(booking);
+
         Statistics statistics = new Statistics();
         statistics.setUserId(user.getId());
         statistics.setAmount(amount);
         statistics.setFlightId(flightId);
         statisticsRepository.save(statistics);
+
+        try {
+            bookingService.bookSeats(flightId, seatNumber);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return paymentIntent;
     }
 

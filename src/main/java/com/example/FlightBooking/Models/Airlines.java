@@ -40,6 +40,7 @@ public class Airlines implements AirlineComponent {
     @OneToMany(mappedBy = "airline", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Planes> planes = new ArrayList<>();
 
+    private List<String> promoForAirline;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;

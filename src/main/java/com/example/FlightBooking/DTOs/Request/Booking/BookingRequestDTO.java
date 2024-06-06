@@ -5,17 +5,19 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
 @Data
 public class BookingRequestDTO {
     private Long flightId;
-    private List<String> selectedSeats;
     private String bookerFullName;
     private String bookerEmail;
     private String bookerPersonalId;
     private Long userId;
+    private Timestamp bookingDate;
     private List<PassengerDTO> passengers;
 }

@@ -1,11 +1,14 @@
 package com.example.FlightBooking.Controller.Payment;
 
 import com.example.FlightBooking.Components.Adapter.PaymentProcessor;
+import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
+import com.example.FlightBooking.DTOs.Request.Booking.CombineBookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.PaymentMethodDTO;
 import com.example.FlightBooking.Models.PaymentMethod;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.PaymentMethodRepository;
 import com.example.FlightBooking.Repositories.UserRepository;
+import com.example.FlightBooking.Services.BookingService.BookingService;
 import com.example.FlightBooking.Services.PaymentService.PaymentService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
@@ -18,10 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @RestController
@@ -111,13 +111,15 @@ public class PaymentController {
 
     @PostMapping("/create-payment")
     @Transactional
-    public ResponseEntity<?> createPayment(@RequestParam String token, @RequestParam double amount, @RequestParam Long flightId) {
+    public ResponseEntity<?> createPayment(@RequestParam String token, @RequestParam double amount, @RequestParam Long flightId, @RequestBody CombineBookingRequestDTO combineBookingRequestDTO) {
         try {
-            PaymentIntent paymentIntent = paymentService.createPaymentIntent(token, amount, flightId);
+            PaymentIntent paymentIntent = paymentService.createPaymentIntent(token, amount, flightId, combineBookingRequestDTO);
             String clientSecret = paymentIntent.getClientSecret();
             return ResponseEntity.ok(Collections.singletonMap("clientSecret", clientSecret));
         } catch (StripeException e) {
             return ResponseEntity.status(500).body(Collections.singletonMap("error", e.getMessage()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

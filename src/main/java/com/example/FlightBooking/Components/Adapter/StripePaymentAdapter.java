@@ -1,10 +1,14 @@
 package com.example.FlightBooking.Components.Adapter;
 
+import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
+import com.example.FlightBooking.DTOs.Request.Booking.CombineBookingRequestDTO;
 import com.example.FlightBooking.Services.PaymentService.PaymentService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 public class StripePaymentAdapter implements PaymentProcessor{
@@ -47,7 +51,8 @@ public class StripePaymentAdapter implements PaymentProcessor{
     }
 
     @Override
-    public PaymentIntent processPayment(String token, double amount, Long flightId) throws StripeException {
-        return paymentService.createPaymentIntent(token, amount, flightId);
+    public PaymentIntent processPayment(String token, double amount,
+                                        Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException {
+        return paymentService.createPaymentIntent(token, amount, flightId, combineBookingRequestDTO);
     }
 }

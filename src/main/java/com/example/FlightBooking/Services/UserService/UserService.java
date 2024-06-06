@@ -30,11 +30,9 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-
     public List<Users> getAllUsers() {
         return userRepository.findAll();
     }
-
     public Users updateUser(String username, UserRequest updateRequest) {
         Optional<Users> userOptional = userRepository.findByUsername(username);
         if (userOptional.isPresent()) {

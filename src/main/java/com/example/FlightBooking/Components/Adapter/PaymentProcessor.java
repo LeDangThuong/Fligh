@@ -1,7 +1,11 @@
 package com.example.FlightBooking.Components.Adapter;
 
+import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
+import com.example.FlightBooking.DTOs.Request.Booking.CombineBookingRequestDTO;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
+
+import java.util.Set;
 
 public interface PaymentProcessor {
     String createCustomer(String email) throws StripeException;
@@ -11,6 +15,6 @@ public interface PaymentProcessor {
     String getSetupIntentId(String token) throws StripeException;
     String getPaymentMethodId(String token) throws StripeException;
     String getStripeClientSecret(String token) throws StripeException;
-    PaymentIntent processPayment(String token, double amount, Long flightId) throws StripeException;
+    PaymentIntent processPayment(String token, double amount, Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException;
 
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -27,20 +28,54 @@ public class BookingController {
     private BookingService bookingService;
     //Cai nay la cai de tinh so tien khi chon ve ne
     @PostMapping("/calculate-total-price-after-booking")
-    public ResponseEntity<Double> calculateTotalPrice(@RequestBody BookingRequestDTO bookingRequestDTO, @RequestParam String token) {
+    public ResponseEntity<Double> calculateTotalPrice(@RequestParam Long flightId, @RequestBody Set<String> seatNumbers) {
         try {
-            double totalPrice = bookingService.calculateTotalPriceAfter(bookingRequestDTO.getFlightId(), (Set<String>) bookingRequestDTO.getSelectedSeats(), token);
+            double totalPrice = bookingService.calculateTotalPriceAfter(flightId, seatNumbers);
             return ResponseEntity.ok(totalPrice);
         } catch (Exception e) {
             return ResponseEntity.status(500).body(null);
         }
     }
-    //Cai nay la cai de tinh so tien khi chon ve ne
-    @PostMapping("/fill-info-passenger-to-create-booking")
-    public ResponseEntity<Booking> createBooking(@RequestBody BookingRequestDTO bookingRequestDTO, @RequestParam String token) {
+
+    @PostMapping("/hold-seat-before-booking")
+    public ResponseEntity<?> holdSeat(@RequestBody Set<String>  seatNumbers, @RequestParam Long flightId)
+    {
         try {
-            Booking booking = bookingService.createBooking(bookingRequestDTO, token);
-            return ResponseEntity.ok(booking);
+            boolean booking = bookingService.holdSeats(flightId, seatNumbers);
+            if(booking)
+            {
+                return ResponseEntity.ok().body("Selected seat completed");
+            }
+            else
+            {
+                return ResponseEntity.ok().body("Selected seat error");
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+    @PostMapping("/release-seat-before-booking")
+    public ResponseEntity<?> releaseSeat(@RequestBody Set<String> seatNumbers, @RequestParam Long flightId)
+    {
+        try {
+            bookingService.releaseSeats(flightId, seatNumbers);
+            return ResponseEntity.ok().body("Release seat completed");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+    @PostMapping("/book-seat-before-booking")
+    public ResponseEntity<?> bookSeat(@RequestBody Set<String> seatNumbers, @RequestParam Long flightId)
+    {
+        try {
+            boolean booking = bookingService.bookSeats(flightId, seatNumbers);
+            if(booking) {
+                return ResponseEntity.ok().body("Book seat completed");
+            }
+            else
+            {
+                return ResponseEntity.ok().body("Book seat error");
+            }
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
