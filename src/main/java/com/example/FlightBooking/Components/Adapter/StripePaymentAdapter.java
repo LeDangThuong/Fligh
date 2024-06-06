@@ -22,6 +22,16 @@ public class StripePaymentAdapter implements PaymentProcessor{
     }
 
     @Override
+    public String createSetupIntent(String customerId) {
+        return "";
+    }
+
+    @Override
+    public String attachPaymentMethod(String customerId, String paymentMethodId) {
+        return "";
+    }
+
+    @Override
     public String getSetupIntentId(String token) throws StripeException{
         return paymentService.getStripeSetupIntentId(token);
     }
@@ -38,6 +48,6 @@ public class StripePaymentAdapter implements PaymentProcessor{
 
     @Override
     public PaymentIntent processPayment(String token, double amount, Long flightId) throws StripeException {
-        return paymentService.createPayment(token, amount, flightId);
+        return paymentService.createPaymentIntent(token, amount, flightId);
     }
 }

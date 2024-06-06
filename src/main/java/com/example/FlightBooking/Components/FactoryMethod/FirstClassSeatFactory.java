@@ -22,6 +22,7 @@ public class FirstClassSeatFactory implements SeatFactory{
                 Map<String, String> statusMap = new HashMap<>();
                 statusMap.put("status", SeatStatus.AVAILABLE.name());
                 statusMap.put("class", SeatClass.FIRST_CLASS.name());
+                statusMap.put("userId", "");
                 seatStatuses.put(seatNumber, statusMap);
             }
         }

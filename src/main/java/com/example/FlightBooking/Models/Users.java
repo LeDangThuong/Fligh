@@ -57,8 +57,15 @@ public class Users implements UserDetails {
     private String gender;
     @Enumerated(EnumType.STRING)
     private Roles role;
+
+    /// Phần này là stripe
     private String stripeCustomerId;
     private String setupIntentId;
+    @OneToMany(mappedBy = "user")
+    private Set<PaymentMethod> paymentMethods;
+
+    //
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
