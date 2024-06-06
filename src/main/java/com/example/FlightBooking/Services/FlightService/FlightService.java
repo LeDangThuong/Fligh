@@ -77,6 +77,7 @@ public class FlightService {
         flight.setSeatStatuses(seatStatusesJson);
         return flightRepository.save(flight);
     }
+    @org.springframework.transaction.annotation.Transactional
     public List<Flights> searchFlights(String type, Long departureAirportId, Long arrivalAirportId, Timestamp departureDate, Timestamp returnDate) {
         FlightSearchContext context = new FlightSearchContext();
 
@@ -85,7 +86,6 @@ public class FlightService {
         } else if (type.equalsIgnoreCase("ROUND_TRIP")) {
             context.setStrategy(new RoundTripFlightSearchStrategy(flightRepository));
         }
-
         return context.searchFlights(departureAirportId, arrivalAirportId, departureDate, returnDate);
     }
     public double calculateTotalPrice(Long flightId, int numberOfTickets, String ticketType, boolean isRoundTrip) {
