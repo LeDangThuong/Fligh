@@ -12,4 +12,5 @@ public class AirlineResponse {
     private Long id;
     private String airlineName;
     private String logoUrl;
+    private List<String> picture;
 }

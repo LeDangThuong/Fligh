@@ -1,18 +1,16 @@
 package com.example.FlightBooking.Controller.Airline;
 
-import com.example.FlightBooking.DTOs.Request.AirlineAndAirport.AirlineRequest;
 import com.example.FlightBooking.DTOs.Response.Airline.AirlineResponse;
 import com.example.FlightBooking.Models.Airlines;
-import com.example.FlightBooking.Models.Planes;
 import com.example.FlightBooking.Repositories.AirlinesRepository;
 import com.example.FlightBooking.Services.AirlineService.AirlinesService;
 
 import com.example.FlightBooking.Services.Planes.PlaneService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -32,6 +30,7 @@ public class AirlinesController {
     private AirlinesRepository airlinesRepository;
 
     @GetMapping
+    @Transactional
     public List<AirlineResponse> getAllAirlines() {
         List<Airlines> airlinesList = airlinesService.getAllAirlines();
         return airlinesList.stream().map(this::convertToAirlineResponse).collect(Collectors.toList());
@@ -41,14 +40,15 @@ public class AirlinesController {
         response.setId(airlines.getId());
         response.setAirlineName(airlines.getAirlineName());
         response.setLogoUrl(airlines.getLogoUrl());
+        response.setPicture(airlines.getPromoForAirline());
         return response;
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Airlines> getAirlinesById(@PathVariable Long id) {
+    @Transactional
+    public AirlineResponse getAirlinesById(@RequestParam Long id) {
         Optional<Airlines> airlines = airlinesService.getAirlinesById(id);
-        return airlines.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+        return convertToAirlineResponse(airlines.get());
     }
 
     @PostMapping
@@ -57,6 +57,7 @@ public class AirlinesController {
     }
 
     @PutMapping(value = "/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
+    @Transactional
     public ResponseEntity<Airlines> updateAirlines(@RequestParam Long id, @RequestPart List<MultipartFile> files) {
         try {
             Airlines updatedAirlines = airlinesService.updateAirlines(id, files);
@@ -94,8 +95,9 @@ public class AirlinesController {
         }
     }
     @GetMapping("/get-airline-by-planeId")
-    public ResponseEntity<Airlines> getAirlineByPlaneId(@RequestParam Long planeId)
+    @Transactional
+    public ResponseEntity<AirlineResponse> getAirlineByPlaneId(@RequestParam Long planeId)
     {
-        return ResponseEntity.ok(airlinesService.getAirlineByPlaneId(planeId));
+        return ResponseEntity.ok(convertToAirlineResponse(airlinesService.getAirlineByPlaneId(planeId)));
     }
 }
