@@ -103,5 +103,13 @@ public class CloudinaryService {
         }
         return path.substring(startIndex, endIndex);
     }
+
+    public List<String> uploadAirlinePromo(List<MultipartFile> files) throws IOException {
+        List<String> urls = new ArrayList<>();
+        for (MultipartFile file : files) {
+            urls.add(uploadAirlineLogo(file));
+        }
+        return urls;
+    }
 }
 

@@ -1,6 +1,7 @@
 package com.example.FlightBooking.Services.UserService;
 
 import com.example.FlightBooking.DTOs.Request.User.UserRequest;
+import com.example.FlightBooking.Enum.Roles;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.UserRepository;
 import com.example.FlightBooking.Services.AuthJWT.JwtService;
@@ -73,5 +74,9 @@ public class UserService {
         userRepository.save(user);
 
         return newAvatarUrl;
+    }
+
+    public List<Users> getUsersByRole(Roles role) {
+        return userRepository.findByRole(role);
     }
 }

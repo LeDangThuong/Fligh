@@ -56,13 +56,15 @@ public class AirlinesController {
         return airlinesService.addAirlines(airlines);
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Airlines> updateAirlines(@PathVariable Long id, @RequestBody Airlines airlinesDetails) {
+    @PutMapping(value = "/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Airlines> updateAirlines(@RequestParam Long id, @RequestPart List<MultipartFile> files) {
         try {
-            Airlines updatedAirlines = airlinesService.updateAirlines(id, airlinesDetails);
+            Airlines updatedAirlines = airlinesService.updateAirlines(id, files);
             return ResponseEntity.ok(updatedAirlines);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

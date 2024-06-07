@@ -2,6 +2,7 @@ package com.example.FlightBooking.Controller.Users;
 
 import com.example.FlightBooking.DTOs.Request.User.UserRequest;
 import com.example.FlightBooking.DTOs.Response.User.UserResponse;
+import com.example.FlightBooking.Enum.Roles;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.UserRepository;
 import com.example.FlightBooking.Services.AuthJWT.JwtService;
@@ -88,7 +89,10 @@ public class UserInfoController {
         Users updatedUser = userService.updateUser(username, updateRequest);
         return ResponseEntity.ok(updatedUser);
     }
-
+    @GetMapping("/admin/users/by-role")
+    public List<Users> getUsersByRole(@RequestParam("EMPLOYEE") Roles role) {
+        return userService.getUsersByRole(role);
+    }
     @DeleteMapping("/users/delete-user-by-id/{id}")
     public String deleteUserById(@PathVariable Long id) {
         if (!userRepository.existsById(id)) {

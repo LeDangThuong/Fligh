@@ -1,6 +1,8 @@
 package com.example.FlightBooking.Repositories;
 
+import com.example.FlightBooking.Enum.Roles;
 import com.example.FlightBooking.Models.Flights;
+import com.example.FlightBooking.Models.Users;
 import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -51,4 +53,5 @@ public interface FlightRepository extends JpaRepository<Flights, Long> {
     List<Flights> findConflictingFlights(@Param("planeId") Long planeId,
                                          @Param("departureDate") Timestamp departureDate,
                                          @Param("arrivalDate") Timestamp arrivalDate);
+
 }
