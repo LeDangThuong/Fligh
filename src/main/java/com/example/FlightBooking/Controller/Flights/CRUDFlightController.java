@@ -8,6 +8,7 @@ import com.example.FlightBooking.Repositories.FlightRepository;
 import com.example.FlightBooking.Services.FlightService.FlightService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -114,4 +115,20 @@ public class CRUDFlightController {
 //            return ResponseEntity.status(500).body(false);
 //        }
 //    }
+    @PostMapping("/delay")
+    public Flights delayFlight(@RequestParam Long flightId, @RequestParam String reason,
+                               @RequestParam Timestamp newDepartureTime, @RequestParam Timestamp newArrivalTime) throws MessagingException {
+        return flightService.delayFlight(flightId, reason, newDepartureTime, newArrivalTime);
+    }
+
+    @PostMapping("/cancel")
+    public Flights cancelFlight(@RequestParam Long flightId, @RequestParam String reason) throws MessagingException {
+        return flightService.cancelFlight(flightId, reason);
+    }
+
+    @PostMapping("/schedule")
+    public Flights scheduleFlight(@RequestParam Long flightId, @RequestParam String reason,
+                                  @RequestParam Timestamp newDepartureTime, @RequestParam Timestamp newArrivalTime) throws MessagingException {
+        return flightService.scheduleFlight(flightId, reason, newDepartureTime, newArrivalTime);
+    }
 }

@@ -48,9 +48,9 @@ public class SecurityConfiguration {
                         .contentSecurityPolicy(csp-> csp
                                 .policyDirectives("upgrade-insecure-requests;")))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/test", "/users/**", "/flight/**", "/booking/**", "/generate/**", "/payment/**",
+                        .requestMatchers("/test", "/ws/**", "/users/**", "/flight/**", "/booking/**", "/generate/**", "/payment/**",
                                 "/airports/**", "/seats/**","/reviews/**" ,"/chat/**", "/voucher/**","/template-method/**",
-                                "/baggage-fee/**", "/meal/**", "/admin/**").permitAll()
+                                "/baggage-fee/**", "/meal/**", "/admin/**", "/chat/**", "/statistic/**").permitAll()
                         .requestMatchers("/auth/**", "/airlines/**", "/fares/**", "/regulations/**").permitAll()
                         .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
                                 "/swagger-resources/**", "configuration/ui", "configuration/security",

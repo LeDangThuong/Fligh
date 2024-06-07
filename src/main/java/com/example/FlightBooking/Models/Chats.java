@@ -1,18 +1,12 @@
 package com.example.FlightBooking.Models;
 
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,8 +32,13 @@ public class Chats {
     private Long id;
     private String message;
 
-    @OneToOne
-    private Users users;
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    private Users sender;
+
+    @ManyToOne
+    @JoinColumn(name = "receiver_id")
+    private Users receiver;
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

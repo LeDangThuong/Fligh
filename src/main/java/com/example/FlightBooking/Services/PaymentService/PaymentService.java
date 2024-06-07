@@ -3,6 +3,7 @@ package com.example.FlightBooking.Services.PaymentService;
 import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.Booking.CombineBookingRequestDTO;
 import com.example.FlightBooking.Models.Booking;
+import com.example.FlightBooking.Models.Decorator.Vouchers;
 import com.example.FlightBooking.Models.Passengers;
 import com.example.FlightBooking.Models.Statistics;
 import com.example.FlightBooking.Models.Users;
@@ -160,6 +161,11 @@ public class PaymentService {
         }).collect(Collectors.toList());
         booking.setPassengers(passengers);
         bookingRepository.save(booking);
+        try {
+            bookingService.bookSeats(flightId, seatNumber);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         Statistics statistics = new Statistics();
         statistics.setUserId(user.getId());
@@ -167,11 +173,7 @@ public class PaymentService {
         statistics.setFlightId(flightId);
         statisticsRepository.save(statistics);
 
-        try {
-            bookingService.bookSeats(flightId, seatNumber);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+
         return paymentIntent;
     }
 
