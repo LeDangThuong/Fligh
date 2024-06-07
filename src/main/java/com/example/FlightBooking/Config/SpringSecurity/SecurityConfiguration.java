@@ -50,7 +50,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/test", "/users/**", "/flight/**", "/booking/**", "/generate/**", "/payment/**",
                                 "/airports/**", "/seats/**","/reviews/**" ,"/chat/**", "/voucher/**","/template-method/**",
-                                "/baggage-fee/**", "/meal/**").permitAll()
+                                "/baggage-fee/**", "/meal/**", "/admin/**").permitAll()
                         .requestMatchers("/auth/**", "/airlines/**", "/fares/**", "/regulations/**").permitAll()
                         .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
                                 "/swagger-resources/**", "configuration/ui", "configuration/security",

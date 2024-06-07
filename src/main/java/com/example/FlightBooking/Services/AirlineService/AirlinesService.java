@@ -37,12 +37,12 @@ public class AirlinesService {
         return airlinesRepository.save(airlines);
     }
 
-    public Airlines updateAirlines(Long id, Airlines airlinesDetails) {
+    public Airlines updateAirlines(Long id, List<MultipartFile> files) throws IOException {
+        List<String> promo = cloudinaryService.uploadAirlinePromo(files);
         Optional<Airlines> optionalAirlines = airlinesRepository.findById(id);
         if (optionalAirlines.isPresent()) {
             Airlines airlines = optionalAirlines.get();
-            airlines.setAirlineName(airlinesDetails.getAirlineName());
-            airlines.setLogoUrl(airlinesDetails.getLogoUrl());
+            airlines.setPromoForAirline(promo);
             return airlinesRepository.save(airlines);
         } else {
             throw new RuntimeException("Airline not found with id " + id);
