@@ -6,11 +6,11 @@ import com.example.FlightBooking.Components.FactoryMethod.FirstClassSeatFactory;
 import com.example.FlightBooking.Components.Strategy.FlightSearchContext;
 import com.example.FlightBooking.Components.Strategy.OneWayFlightSearchStrategy;
 import com.example.FlightBooking.Components.Strategy.RoundTripFlightSearchStrategy;
-import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
-import com.example.FlightBooking.DTOs.Request.Booking.SelectSeatDTO;
+import com.example.FlightBooking.Components.TemplateMethod.FlightCancelEmailSender;
+import com.example.FlightBooking.Components.TemplateMethod.FlightDelayEmailSender;
+import com.example.FlightBooking.Components.TemplateMethod.FlightScheduleEmailSender;
 import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
-import com.example.FlightBooking.Enum.SeatClass;
-import com.example.FlightBooking.Enum.SeatStatus;
+import com.example.FlightBooking.Enum.FlightStatus;
 import com.example.FlightBooking.Models.*;
 import com.example.FlightBooking.Repositories.BookingRepository;
 import com.example.FlightBooking.Repositories.FlightRepository;
@@ -18,9 +18,8 @@ import com.example.FlightBooking.Repositories.TicketRepository;
 import com.example.FlightBooking.Services.PaymentService.PaymentService;
 import com.example.FlightBooking.Services.Planes.PlaneService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.stripe.model.PaymentIntent;
+import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -34,7 +33,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -52,7 +50,12 @@ public class FlightService {
     private TicketRepository ticketRepository;
     @Autowired
     private PaymentService paymentService;
-
+    @Autowired
+    private FlightDelayEmailSender flightDelayEmailSender;
+    @Autowired
+    private FlightCancelEmailSender flightCancelEmailSender;
+    @Autowired
+    private FlightScheduleEmailSender flightScheduleEmailSender; // Component mới cho việc gửi email
     @Transactional
     public Flights createFlight(FlightDTO flightDTO) throws JsonProcessingException {
         //Ràng buộc dữ liệu
@@ -192,5 +195,56 @@ public class FlightService {
         Map<String, Map<String, String>> seatStatuses = objectMapper.readValue(seatStatusesJson, Map.class);
         Map<String, Map<String, String>> sortedSeatStatuses = new TreeMap<>(seatStatuses);
         return sortedSeatStatuses;
+    }
+    @Transactional
+    public Flights delayFlight(Long flightId, String reason, Timestamp newDepartureTime, Timestamp newArrivalTime) throws MessagingException {
+        Flights flight = flightRepository.findById(flightId)
+                .orElseThrow(() -> new RuntimeException("Flight not found"));
+
+        flight.setFlightStatus(FlightStatus.DELAYED.name());
+        flight.setDepartureDate(newDepartureTime);
+        flight.setArrivalDate(newArrivalTime);
+        flightRepository.save(flight);
+
+        List<Booking> bookings = bookingRepository.findAllByFlightId(flightId);
+        for (Booking booking : bookings) {
+            flightDelayEmailSender.sendEmail(booking.getBookerEmail(), reason);
+        }
+
+        return flight;
+    }
+
+    @Transactional
+    public Flights cancelFlight(Long flightId, String reason) throws MessagingException {
+        Flights flight = flightRepository.findById(flightId)
+                .orElseThrow(() -> new RuntimeException("Flight not found"));
+
+        flight.setFlightStatus(FlightStatus.CANCELED.name());
+        flightRepository.save(flight);
+
+        List<Booking> bookings = bookingRepository.findAllByFlightId(flightId);
+        for (Booking booking : bookings) {
+            flightCancelEmailSender.sendEmail(booking.getBookerEmail(), reason);
+        }
+
+        return flight;
+    }
+
+    @Transactional
+    public Flights scheduleFlight(Long flightId, String reason, Timestamp newDepartureTime, Timestamp newArrivalTime) throws MessagingException {
+        Flights flight = flightRepository.findById(flightId)
+                .orElseThrow(() -> new RuntimeException("Flight not found"));
+
+        flight.setFlightStatus(FlightStatus.SCHEDULED.name());
+        flight.setDepartureDate(newDepartureTime);
+        flight.setArrivalDate(newArrivalTime);
+        flightRepository.save(flight);
+
+        List<Booking> bookings = bookingRepository.findAllByFlightId(flightId);
+        for (Booking booking : bookings) {
+            flightScheduleEmailSender.sendEmail(booking.getBookerEmail(), reason);
+        }
+
+        return flight;
     }
  }
