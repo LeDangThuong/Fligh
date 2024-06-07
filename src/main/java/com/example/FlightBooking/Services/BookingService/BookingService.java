@@ -72,7 +72,7 @@ public class BookingService {
                 return false;
             }
             String status = seatStatuses.get(seatNumber).get("status");
-            if (!SeatStatus.AVAILABLE.name().equals(status) && !SeatStatus.ON_HOLD.name().equals(status)) {
+            if (!SeatStatus.AVAILABLE.name().equals(status)) {
                 logger.warn("Seat {} is not available, current status: {}", seatNumber, status);
                 return false;
             }
