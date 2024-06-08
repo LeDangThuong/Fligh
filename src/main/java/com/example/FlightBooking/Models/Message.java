@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -18,6 +19,9 @@ public class Message {
     private String content;
     private Long senderId;
     private Long receiverId;
+    private Timestamp timeSupport;
+    private Timestamp timeEndSupport;
+
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
 

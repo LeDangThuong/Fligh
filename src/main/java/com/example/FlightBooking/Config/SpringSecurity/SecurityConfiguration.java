@@ -50,7 +50,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/test", "/ws/**", "/users/**", "/flight/**", "/booking/**", "/generate/**", "/payment/**",
                                 "/airports/**", "/seats/**","/reviews/**" ,"/chat/**", "/voucher/**","/template-method/**",
-                                "/baggage-fee/**", "/meal/**", "/admin/**", "/chat/**", "/statistic/**").permitAll()
+                                "/baggage-fee/**", "/meal/**", "/admin/**", "/message/**", "/statistic/**").permitAll()
                         .requestMatchers("/auth/**", "/airlines/**", "/fares/**", "/regulations/**").permitAll()
                         .requestMatchers("/v3/api-docs", "/v3/api-docs/**", "/swagger-resources",
                                 "/swagger-resources/**", "configuration/ui", "configuration/security",
@@ -66,7 +66,7 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
-        configuration.setAllowedOrigins(List.of("http://localhost:7050","https://flightbooking-be.onrender.com", "https://flightbookingbe-production.up.railway.app", "http://localhost:5173")); // Specify your server's origin
+        configuration.setAllowedOrigins(List.of("http://localhost:7050","https://flightbooking-be.onrender.com", "https://flightbookingbe-production.up.railway.app", "http://localhost:5173", "http://localhost:5174")); // Specify your server's origin
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Accept", "Access-Control-Allow-Origin"));
         configuration.setAllowCredentials(true);
