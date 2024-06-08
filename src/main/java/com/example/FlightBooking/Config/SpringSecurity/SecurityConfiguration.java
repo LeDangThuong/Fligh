@@ -66,7 +66,7 @@ public class SecurityConfiguration {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
         configuration.setAllowedOrigins(List.of("http://localhost:7050","https://flightbooking-be.onrender.com",
-                "https://flightbookingbe-production-se.up.railway.app", "http://localhost:5173", "http://localhost:5174")); // Specify your server's origin
+                "https://flightbookingbe-production.up.railway.app", "http://localhost:5173", "http://localhost:5174")); // Specify your server's origin
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Accept", "Access-Control-Allow-Origin"));
         configuration.setAllowCredentials(true);
