@@ -68,9 +68,17 @@ dependencies {
 	// https://mvnrepository.com/artifact/com.rabbitmq/amqp-client
 	implementation("com.rabbitmq:amqp-client:5.21.0")
 
+	//WEB SOCKET
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-websocket
 	implementation("org.springframework.boot:spring-boot-starter-websocket:3.3.0")
-
+	// https://mvnrepository.com/artifact/org.springframework/spring-websocket
+	implementation("org.springframework:spring-websocket:6.1.8")
+	// https://mvnrepository.com/artifact/org.springframework/spring-messaging
+	implementation("org.springframework:spring-messaging:6.1.8")
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-core
+	implementation("com.fasterxml.jackson.core:jackson-core:2.17.1")
+	// https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.17.1")
 	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-thymeleaf
 	implementation("org.springframework.boot:spring-boot-starter-thymeleaf:3.3.0")
 

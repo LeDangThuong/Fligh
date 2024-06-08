@@ -10,5 +10,5 @@ import java.util.List;
 @Repository
 @Hidden
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    List<Message> findBySenderIdAndReceiverId(Long senderId, Long receiverId);
+    Message findTopBySenderIdAndReceiverIdOrderByCreatedAtDesc(Long senderId, Long receiverId);
 }
