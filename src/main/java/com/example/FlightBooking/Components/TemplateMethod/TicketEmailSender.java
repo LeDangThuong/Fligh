@@ -17,7 +17,7 @@ public class TicketEmailSender extends AbstractEmailSender {
 
     @Override
     protected String getBody(String ticketDetails) {
-        String airline = "VietnamEline";
+        String airline = "VietnamAirline";
         String departure = "SGN";
         String arrival = "HAN";
         String passengerName = "Ho Chi Minh City";
