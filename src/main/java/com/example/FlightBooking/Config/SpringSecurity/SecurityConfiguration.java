@@ -38,7 +38,6 @@ public class SecurityConfiguration {
         this.authenticationProvider = authenticationProvider;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -48,7 +47,7 @@ public class SecurityConfiguration {
                         .contentSecurityPolicy(csp-> csp
                                 .policyDirectives("upgrade-insecure-requests;")))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/test", "/ws/**", "/users/**", "/flight/**", "/booking/**", "/generate/**", "/payment/**",
+                        .requestMatchers("/test","/api/**", "/ws/**", "/users/**", "/flight/**", "/booking/**", "/generate/**", "/payment/**",
                                 "/airports/**", "/seats/**","/reviews/**" ,"/chat/**", "/voucher/**","/template-method/**",
                                 "/baggage-fee/**", "/meal/**", "/admin/**", "/message/**", "/statistic/**").permitAll()
                         .requestMatchers("/auth/**", "/airlines/**", "/fares/**", "/regulations/**").permitAll()
@@ -66,7 +65,8 @@ public class SecurityConfiguration {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration().applyPermitDefaultValues();
-        configuration.setAllowedOrigins(List.of("http://localhost:7050","https://flightbooking-be.onrender.com", "https://flightbookingbe-production.up.railway.app", "http://localhost:5173", "http://localhost:5174")); // Specify your server's origin
+        configuration.setAllowedOrigins(List.of("http://localhost:7050","https://flightbooking-be.onrender.com",
+                "https://flightbookingbe-production-se.up.railway.app", "http://localhost:5173", "http://localhost:5174")); // Specify your server's origin
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(List.of("Authorization", "Cache-Control", "Content-Type", "Accept", "Access-Control-Allow-Origin"));
         configuration.setAllowCredentials(true);
