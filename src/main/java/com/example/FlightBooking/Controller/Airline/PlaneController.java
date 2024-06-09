@@ -3,7 +3,9 @@ package com.example.FlightBooking.Controller.Airline;
 import com.example.FlightBooking.DTOs.Response.Airline.PlaneResponse;
 import com.example.FlightBooking.Models.Airlines;
 import com.example.FlightBooking.Models.Planes;
+import com.example.FlightBooking.Repositories.PlaneRepository;
 import com.example.FlightBooking.Services.Planes.PlaneService;
+import com.stripe.model.Plan;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +23,14 @@ import java.util.stream.Collectors;
 public class PlaneController {
     @Autowired
     private PlaneService planeService;
+    @Autowired
+    private PlaneRepository planeRepository;
 
+    @GetMapping("/get-all-plane")
+    public List<Planes> getAll()
+    {
+        return planeRepository.findAll();
+    }
     @PostMapping("/create-new-plane")
     public ResponseEntity<?> createNewPlane(@RequestParam Long airlineId) {
         try {

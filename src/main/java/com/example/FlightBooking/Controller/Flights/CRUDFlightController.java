@@ -131,4 +131,10 @@ public class CRUDFlightController {
                                   @RequestParam Timestamp newDepartureTime, @RequestParam Timestamp newArrivalTime) throws MessagingException {
         return flightService.scheduleFlight(flightId, reason, newDepartureTime, newArrivalTime);
     }
+
+    @GetMapping("/get-all-flight")
+    public List<Flights> getAll ()
+    {
+        return flightRepository.findAll();
+    }
 }
