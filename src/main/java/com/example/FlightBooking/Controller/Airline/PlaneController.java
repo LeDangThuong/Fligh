@@ -52,6 +52,20 @@ public class PlaneController {
             return ResponseEntity.status(500).body("Error getting Plane detail: " + e.getMessage());
         }
     }
+    @GetMapping("/get-plane-number")
+    public ResponseEntity<?> getPlaneNumber(@RequestParam Long planeId)
+    {
+        try {
+            Planes planes = planeService.getDetailPlane(planeId);
+            PlaneResponse planeResponse = new PlaneResponse();
+            planeResponse.setFlightNumber(planes.getFlightNumber());
+            planeResponse.setId(planes.getId());
+            return ResponseEntity.ok(planeResponse);
+
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error getting Plane detail: " + e.getMessage());
+        }
+    }
     @GetMapping("/get-all-plane-by-airline-id")
     public ResponseEntity<?> getAllPlane(@RequestParam Long airlineId) {
         try {
