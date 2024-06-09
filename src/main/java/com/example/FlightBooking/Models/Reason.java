@@ -18,7 +18,6 @@ public class Reason {
     private String question;
     private String image;
     private String description;
-
     private String imageAlt;
 
 }

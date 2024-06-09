@@ -45,6 +45,7 @@ public class Flights {
     private Double economyPrice;
     private Double businessPrice;
     private Double firstClassPrice;
+
     //
     @Lob
     @Column(name = "seat_statuses", nullable = false)

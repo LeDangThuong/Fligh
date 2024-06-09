@@ -53,6 +53,7 @@ public class UserInfoController {
         userResponse.setFullName(user.getFullName());
         userResponse.setRole(user.getRole());
         userResponse.setAvatarUrl(user.getAvatarUrl());
+        userResponse.setPersonalId(user.getPersonalId());
         userResponse.setDayOfBirth(user.getDayOfBirth());
         userResponse.setPhoneNumber(user.getPhoneNumber());
         userResponse.setAddress(user.getAddress());
@@ -80,6 +81,7 @@ public class UserInfoController {
         userResponse.setRole(user.getRole());
         userResponse.setAvatarUrl(user.getAvatarUrl());
         userResponse.setDayOfBirth(user.getDayOfBirth());
+        userResponse.setPersonalId(user.getPersonalId());
         userResponse.setPhoneNumber(user.getPhoneNumber());
         userResponse.setAddress(user.getAddress());
         return ResponseEntity.ok(userResponse);

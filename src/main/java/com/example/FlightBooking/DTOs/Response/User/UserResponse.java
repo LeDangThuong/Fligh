@@ -21,5 +21,6 @@ public class UserResponse {
     private String avatarUrl;
     private Timestamp dayOfBirth;
     private String phoneNumber;
+    private String personalId;
     private String address;
 }

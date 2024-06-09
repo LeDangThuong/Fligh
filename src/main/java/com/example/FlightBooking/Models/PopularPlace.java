@@ -1,20 +1,12 @@
 package com.example.FlightBooking.Models;
 
-
 import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
-
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.experimental.FieldDefaults;
 
 @Data
 @Entity
@@ -24,22 +16,14 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @Getter
 @Setter
-@Table(name = "chats")
-
-public class Chats {
+@Table(name = "popular_place")
+public class PopularPlace {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String message;
 
-    @ManyToOne
-    @JoinColumn(name = "sender_id")
-    private Users sender;
-
-    @ManyToOne
-    @JoinColumn(name = "receiver_id")
-    private Users receiver;
-
+    private String imgUrl;
+    private Long flightId;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;

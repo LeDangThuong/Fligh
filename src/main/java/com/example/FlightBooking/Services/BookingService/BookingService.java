@@ -1,11 +1,10 @@
 package com.example.FlightBooking.Services.BookingService;
 
+import com.example.FlightBooking.DTOs.Request.AirlineAndAirport.AirlineRequest;
 import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
+import com.example.FlightBooking.DTOs.Response.Ticket.TicketResponse;
 import com.example.FlightBooking.Enum.SeatStatus;
-import com.example.FlightBooking.Models.Booking;
-import com.example.FlightBooking.Models.Flights;
-import com.example.FlightBooking.Models.Passengers;
-import com.example.FlightBooking.Models.Users;
+import com.example.FlightBooking.Models.*;
 import com.example.FlightBooking.Repositories.*;
 import com.example.FlightBooking.Services.AuthJWT.JwtService;
 import com.example.FlightBooking.Services.PaymentService.PaymentService;
@@ -14,10 +13,13 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.stripe.model.PaymentIntent;
 import jakarta.transaction.Transactional;
+import net.bytebuddy.implementation.auxiliary.AuxiliaryType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -44,6 +46,12 @@ public class BookingService {
     private JwtService jwtService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PlaneRepository planeRepository;
+    @Autowired
+    private AirlinesRepository airlinesRepository;
+    @Autowired
+    private AirportsRepository airportsRepository;
 
     private final PaymentService paymentService;
     private final FlightRepository flightRepository;
@@ -168,5 +176,35 @@ public class BookingService {
         }
 
         return totalPrice;
+    }
+
+    public List<TicketResponse> getAllTicketByUserId(Long userId)
+    {
+        List<Booking> bookings = bookingRepository.findAllByUserId(userId);
+        if (bookings.isEmpty()) {
+            throw new RuntimeException("No bookings found with user-id: " + userId);
+        }
+        List<TicketResponse> ticketResponses = new ArrayList<>();
+        for (Booking booking : bookings) {
+            List<Passengers> passengersList = passengerRepository.findByBooking(booking);
+            Flights flights = flightRepository.findById(booking.getFlightId()).orElseThrow(() -> new RuntimeException("Flight not found with id: " + booking.getFlightId()));
+            Planes planes = planeRepository.findById(flights.getPlaneId()).orElseThrow(() -> new RuntimeException("Plane not found with id: " + flights.getPlaneId()));
+            Airlines airlines = airlinesRepository.findByPlanes(planes).orElseThrow(() -> new RuntimeException("Airlin not found with id: " + planes));
+            Airports departureAirport = airportsRepository.findById(flights.getDepartureAirportId()).orElseThrow(() -> new RuntimeException("Airport not found with id: " + flights.getDepartureAirportId()));
+            Airports arrivalAirport = airportsRepository.findById(flights.getArrivalAirportId()).orElseThrow(() -> new RuntimeException("Airport not found with id: " + flights.getArrivalAirportId()));
+            for (Passengers passengers : passengersList) {
+                TicketResponse ticketResponse = new TicketResponse();
+                ticketResponse.setAirlineLogo(airlines.getLogoUrl());
+                ticketResponse.setSeatNumber(passengers.getSeatNumber());
+                ticketResponse.setDepartAirport(departureAirport.getAirportName());
+                ticketResponse.setArrivalAirport(arrivalAirport.getAirportName());
+                ticketResponse.setDepartDate(flights.getDepartureDate());
+                ticketResponse.setArrivalDate(flights.getArrivalDate());
+                ticketResponse.setIataCodeDepart(departureAirport.getIataCode());
+                ticketResponse.setIataCodeArrival(arrivalAirport.getIataCode());
+                ticketResponses.add(ticketResponse);
+            }
+        }
+        return ticketResponses;
     }
 }

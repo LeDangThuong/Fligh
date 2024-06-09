@@ -24,4 +24,5 @@ public class FlightDTO {
     private Double firstClassPrice;
 
     private String setSeatStatuses;
+    private String popularPlaceUrl;
 }

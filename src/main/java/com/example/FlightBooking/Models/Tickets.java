@@ -26,7 +26,6 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @Table(name ="tickets")
 public class Tickets {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
