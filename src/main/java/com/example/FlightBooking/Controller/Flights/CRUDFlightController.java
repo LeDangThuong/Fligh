@@ -4,7 +4,10 @@ import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
 import com.example.FlightBooking.Models.Booking;
 import com.example.FlightBooking.Models.Flights;
+import com.example.FlightBooking.Models.PopularPlace;
 import com.example.FlightBooking.Repositories.FlightRepository;
+import com.example.FlightBooking.Repositories.PopularPlaceRepository;
+import com.example.FlightBooking.Services.CloudinaryService.CloudinaryService;
 import com.example.FlightBooking.Services.FlightService.FlightService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,7 +37,11 @@ public class CRUDFlightController {
 
     @Autowired
     private FlightRepository flightRepository;
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
+    @Autowired
+    private PopularPlaceRepository popularPlaceRepository;
     @PostMapping(value = "/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> uploadFlightData(@RequestPart("file") MultipartFile file, @RequestBody Long planeId) {
         try {
@@ -136,5 +144,20 @@ public class CRUDFlightController {
     public List<Flights> getAll ()
     {
         return flightRepository.findAll();
+    }
+
+    @PutMapping(value = "/update-popular-place-image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
+    public PopularPlace upload(@RequestParam MultipartFile multipartFile, @RequestParam Long flightId) throws IOException {
+        String popularUrl = cloudinaryService.uploadPopularPlaceImage(multipartFile);
+        PopularPlace popularPlace = new PopularPlace();
+        popularPlace.setFlightId(flightId);
+        popularPlace.setImgUrl(popularUrl);
+       return popularPlaceRepository.save(popularPlace);
+    }
+
+    @GetMapping("get-popular-image-by-flight-id")
+    public PopularPlace getPopularImage(@RequestParam Long flightId)
+    {
+        return popularPlaceRepository.findByFlightId(flightId).orElseThrow(() -> new RuntimeException("Popular place image not found with this id: " + flightId));
     }
 }
