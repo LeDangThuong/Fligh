@@ -146,7 +146,7 @@ public class CRUDFlightController {
         return flightRepository.findAll();
     }
 
-    @PutMapping(value = "/update-popular-place-image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/update-popular-place-image", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
     public PopularPlace upload(@RequestParam MultipartFile multipartFile, @RequestParam Long flightId) throws IOException {
         String popularUrl = cloudinaryService.uploadPopularPlaceImage(multipartFile);
         PopularPlace popularPlace = new PopularPlace();
