@@ -7,9 +7,11 @@ import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @Hidden
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findAllByFlightId(Long flightId);
+    List<Booking> findAllByUserId(Long userId);
 }
