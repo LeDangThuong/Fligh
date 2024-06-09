@@ -9,9 +9,13 @@ import com.example.FlightBooking.Repositories.FlightRepository;
 import com.example.FlightBooking.Repositories.PopularPlaceRepository;
 import com.example.FlightBooking.Services.CloudinaryService.CloudinaryService;
 import com.example.FlightBooking.Services.FlightService.FlightService;
+import com.example.FlightBooking.Services.Planes.PlaneService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
+import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -53,9 +57,15 @@ public class CRUDFlightController {
     }
 
     @PostMapping("/create-new-flight")
-    public ResponseEntity<Flights> createFlight(@RequestBody FlightDTO flightDTO) throws JsonProcessingException {
-        Flights flight = flightService.createFlight(flightDTO);
-        return ResponseEntity.ok(flight);
+    public ResponseEntity<?> createFlight(@Valid @RequestBody FlightDTO flightDTO) throws JsonProcessingException {
+        try {
+            Flights flight = flightService.createFlight(flightDTO);
+            return ResponseEntity.ok(flight);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return new ResponseEntity<>("Failed to create flight", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     @GetMapping("/search-flight-by-type")
     public ResponseEntity<List<Flights>> searchFlightOneWay(
@@ -90,39 +100,6 @@ public class CRUDFlightController {
         }
     }
 
-    //Khi nguoi dung booking ve thi hold ve cho nguoi dung
-//    @PostMapping("/{flightId}/hold")
-//    public ResponseEntity<?> holdSeats(@PathVariable Long flightId, @RequestBody Set<String> seatNumbers) {
-//        try {
-//            boolean success = flightService.holdSeats(flightId, seatNumbers);
-//            if (success) {
-//                return ResponseEntity.ok("Seats held successfully.");
-//            } else {
-//                return ResponseEntity.status(400).body("One or more seats are not available.");
-//            }
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body("Error holding seats: " + e.getMessage());
-//        }
-//    }
-//    // Dat ve may bay
-//    @PostMapping("/{flightId}/book")
-//    public ResponseEntity<?> bookSeats(@RequestParam String token, @RequestBody BookingRequestDTO bookingRequestDTO) {
-//        try {
-//            Booking booking = flightService.createBooking(bookingRequestDTO, token);
-//            return ResponseEntity.ok(booking);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).build();
-//        }
-//    }
-//    @PostMapping("/finalize-booking/{bookingId}")
-//    public ResponseEntity<Boolean> finalizeBooking(@RequestParam Long bookingId) {
-//        try {
-//            boolean bookingSuccess = flightService.finalizeBooking(bookingId);
-//            return ResponseEntity.ok(bookingSuccess);
-//        } catch (Exception e) {
-//            return ResponseEntity.status(500).body(false);
-//        }
-//    }
     @PostMapping("/delay")
     public Flights delayFlight(@RequestParam Long flightId, @RequestParam String reason,
                                @RequestParam Timestamp newDepartureTime, @RequestParam Timestamp newArrivalTime) throws MessagingException {
