@@ -1,8 +1,6 @@
 package com.example.FlightBooking.Services.FlightService;
 
-import com.example.FlightBooking.Components.FactoryMethod.BusinessClassSeatFactory;
-import com.example.FlightBooking.Components.FactoryMethod.EconomyClassSeatFactory;
-import com.example.FlightBooking.Components.FactoryMethod.FirstClassSeatFactory;
+import com.example.FlightBooking.Components.FactoryMethod.*;
 import com.example.FlightBooking.Components.Strategy.FlightSearchContext;
 import com.example.FlightBooking.Components.Strategy.OneWayFlightSearchStrategy;
 import com.example.FlightBooking.Components.Strategy.RoundTripFlightSearchStrategy;
@@ -66,9 +64,15 @@ public class FlightService {
         validateFlightData(flightDTO);
         Flights flight = new Flights();
         Map<String, Map<String, String>> seatStatuses = new HashMap<>();
-        seatStatuses.putAll(new FirstClassSeatFactory().createSeats(flight));
-        seatStatuses.putAll(new BusinessClassSeatFactory().createSeats(flight));
-        seatStatuses.putAll(new EconomyClassSeatFactory().createSeats(flight));
+        //Using factory to manage seat in a flight
+        SeatCreator firstClassSeatCreator = new FirstClassSeatCreator();
+        SeatCreator businessClassSeatCreator = new BusinessClassSeatCreator();
+        SeatCreator economyClassSeatCreator = new EconomyClassSeatCreator();
+
+        seatStatuses.putAll(firstClassSeatCreator.generateSeats(flight));
+        seatStatuses.putAll(businessClassSeatCreator.generateSeats(flight));
+        seatStatuses.putAll(economyClassSeatCreator.generateSeats(flight));
+
         String seatStatusesJson = objectMapper.writeValueAsString(seatStatuses);
 
         flight.setFlightStatus(flightDTO.getFlightStatus());
