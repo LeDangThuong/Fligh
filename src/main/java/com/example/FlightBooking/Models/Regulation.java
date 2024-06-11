@@ -28,8 +28,7 @@ public class Regulation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int firstClassPrice;
-    private int businessPrice;
-    private int economyPrice;
-
+    private double firstClassPrice;
+    private double businessPrice;
+    private double economyPrice;
 }

@@ -1,8 +1,6 @@
 package com.example.FlightBooking.Services.FlightService;
 
-import com.example.FlightBooking.Components.FactoryMethod.BusinessClassSeatFactory;
-import com.example.FlightBooking.Components.FactoryMethod.EconomyClassSeatFactory;
-import com.example.FlightBooking.Components.FactoryMethod.FirstClassSeatFactory;
+import com.example.FlightBooking.Components.FactoryMethod.*;
 import com.example.FlightBooking.Components.Strategy.FlightSearchContext;
 import com.example.FlightBooking.Components.Strategy.OneWayFlightSearchStrategy;
 import com.example.FlightBooking.Components.Strategy.RoundTripFlightSearchStrategy;
@@ -17,6 +15,7 @@ import com.example.FlightBooking.Repositories.FlightRepository;
 import com.example.FlightBooking.Repositories.TicketRepository;
 import com.example.FlightBooking.Services.PaymentService.PaymentService;
 import com.example.FlightBooking.Services.Planes.PlaneService;
+import com.example.FlightBooking.Services.RegulationService.RegulationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.mail.MessagingException;
@@ -43,7 +42,6 @@ public class FlightService {
     private FlightRepository flightRepository;
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private BookingRepository bookingRepository;
     @Autowired
@@ -56,17 +54,27 @@ public class FlightService {
     private FlightCancelEmailSender flightCancelEmailSender;
     @Autowired
     private FlightScheduleEmailSender flightScheduleEmailSender; // Component mới cho việc gửi email
+    @Autowired
+    private RegulationService regulationService;
+
+
     @Transactional
     public Flights createFlight(FlightDTO flightDTO) throws JsonProcessingException {
         //Ràng buộc dữ liệu
         validateFlightData(flightDTO);
-
         Flights flight = new Flights();
         Map<String, Map<String, String>> seatStatuses = new HashMap<>();
-        seatStatuses.putAll(new FirstClassSeatFactory().createSeats(flight));
-        seatStatuses.putAll(new BusinessClassSeatFactory().createSeats(flight));
-        seatStatuses.putAll(new EconomyClassSeatFactory().createSeats(flight));
+        //Using factory to manage seat in a flight
+        SeatCreator firstClassSeatCreator = new FirstClassSeatCreator();
+        SeatCreator businessClassSeatCreator = new BusinessClassSeatCreator();
+        SeatCreator economyClassSeatCreator = new EconomyClassSeatCreator();
+
+        seatStatuses.putAll(firstClassSeatCreator.generateSeats(flight));
+        seatStatuses.putAll(businessClassSeatCreator.generateSeats(flight));
+        seatStatuses.putAll(economyClassSeatCreator.generateSeats(flight));
+
         String seatStatusesJson = objectMapper.writeValueAsString(seatStatuses);
+
         flight.setFlightStatus(flightDTO.getFlightStatus());
         flight.setDepartureDate(flightDTO.getDepartureDate());
         flight.setArrivalDate(flightDTO.getArrivalDate());
@@ -74,10 +82,28 @@ public class FlightService {
         flight.setDepartureAirportId(flightDTO.getDepartureAirportId());
         flight.setArrivalAirportId(flightDTO.getArrivalAirportId());
         flight.setPlaneId(flightDTO.getPlaneId());
-        flight.setEconomyPrice(flightDTO.getEconomyPrice());
-        flight.setBusinessPrice(flightDTO.getBusinessPrice());
-        flight.setFirstClassPrice(flightDTO.getFirstClassPrice());
+
+        flight.setEconomyPrice(regulationService.getEconomyPrice(1L));
+        flight.setBusinessPrice(regulationService.getBusinessPrice(1L));
+        flight.setFirstClassPrice(regulationService.getFirstClassPrice(1L));
         flight.setSeatStatuses(seatStatusesJson);
+        // Thêm ràng buộc: Thời gian hạ cánh phải cách thời gian cất cánh ít nhất 1 tiếng
+        if (flight.getArrivalDate().getTime() - flight.getDepartureDate().getTime() < 3600000) { // 1 tiếng = 3600000 ms
+            throw new IllegalArgumentException("Thời gian cất cánh và hạ cánh phải cách nhau ít nhất 1 tiếng.");
+        }
+        // Kiểm tra ràng buộc mới: Các chuyến bay của cùng một máy bay phải cách nhau ít nhất 20 tiếng
+        List<Flights> conflictingFlights = flightRepository.findConflictingFlights(
+                flightDTO.getPlaneId(),
+                flightDTO.getDepartureDate(),
+                flightDTO.getArrivalDate()
+        );
+
+        for (Flights existingFlight : conflictingFlights) {
+            if (Math.abs(existingFlight.getDepartureDate().getTime() - flight.getDepartureDate().getTime()) < 72000000 || // 20 tiếng = 72000000 ms
+                    Math.abs(existingFlight.getArrivalDate().getTime() - flight.getArrivalDate().getTime()) < 72000000) {
+                throw new IllegalArgumentException("Chuyến bay mới phải cách chuyến bay cũ ít nhất 20 tiếng.");
+            }
+        }
         return flightRepository.save(flight);
     }
     @org.springframework.transaction.annotation.Transactional

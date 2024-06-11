@@ -24,9 +24,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @RequestMapping("/regulations")
 @Tag(name = "Regulations Controller ", description = "Regulation for tickets price")
 public class RegulationController {
+
     @Autowired
     private RegulationService regulationService;
-
 
     @GetMapping("/getRegulation")
     public Regulation getRegulationById() {
@@ -48,10 +48,9 @@ public class RegulationController {
         return null;
     }
 
-
     // Endpoints for each type
     @GetMapping("/getFirstClassPrice")
-    public int getFirstClassPrice() {
+    public double getFirstClassPrice() {
         return regulationService.getFirstClassPrice(1L);
     }
 
@@ -61,7 +60,7 @@ public class RegulationController {
     }
 
     @GetMapping("/getBusinessPrice")
-    public int getBusinessPrice() {
+    public double getBusinessPrice() {
         return regulationService.getBusinessPrice(1L);
     }
 
@@ -71,7 +70,7 @@ public class RegulationController {
     }
 
     @GetMapping("/getEconomyPrice")
-    public int getEconomyPrice() {
+    public double getEconomyPrice() {
         return regulationService.getEconomyPrice(1L);
     }
 

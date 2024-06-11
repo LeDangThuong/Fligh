@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 @Service
 public class RegulationService {
+
     @Autowired
     private RegulationRepository regulationRepository;
 
@@ -29,7 +30,7 @@ public class RegulationService {
     }
 
     // Get and update methods for each type
-    public int getFirstClassPrice(Long id) {
+    public double getFirstClassPrice(Long id) {
         Regulation regulation = getRegulationById(id);
         return regulation != null ? regulation.getFirstClassPrice() : null;
     }
@@ -43,7 +44,7 @@ public class RegulationService {
         return null;
     }
 
-    public int getBusinessPrice(Long id) {
+    public double getBusinessPrice(Long id) {
         Regulation regulation = getRegulationById(id);
         return regulation != null ? regulation.getBusinessPrice() : null;
     }
@@ -57,7 +58,7 @@ public class RegulationService {
         return null;
     }
 
-    public int getEconomyPrice(Long id) {
+    public double getEconomyPrice(Long id) {
         Regulation regulation = getRegulationById(id);
         return regulation != null ? regulation.getEconomyPrice() : null;
     }
