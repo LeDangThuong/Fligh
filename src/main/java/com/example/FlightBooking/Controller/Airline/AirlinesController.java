@@ -71,8 +71,8 @@ public class AirlinesController {
     @PostMapping(value = "/upload-new-airline", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<Airlines> createNewAirline(
             @RequestParam String airlineName,
-            @RequestParam MultipartFile logoFile,
-            @RequestParam List<MultipartFile> promoFiles,
+            @RequestPart MultipartFile logoFile,
+            @RequestPart List<MultipartFile> promoFiles,
             @RequestParam double firstClassPrice,
             @RequestParam double businessPrice,
             @RequestParam double economyPrice) throws IOException {
