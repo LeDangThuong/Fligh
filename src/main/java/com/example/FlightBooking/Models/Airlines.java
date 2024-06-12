@@ -37,8 +37,8 @@ public class Airlines implements AirlineComponent {
     private String airlineName;
     private String logoUrl;
 
-    @OneToMany(mappedBy = "airline", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<Planes> planes;
+    @OneToMany(mappedBy = "airline", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Planes> planes = new ArrayList<>();
 
     private List<String> promoForAirline;
     @CreationTimestamp
@@ -52,7 +52,10 @@ public class Airlines implements AirlineComponent {
         planes.add(plane);
         plane.setAirline(this);
     }
-
+    public void removePlane(Planes plane) {
+        planes.remove(plane);
+        plane.setAirline(null);
+    }
     @Override
     public void execute() {
         System.out.println("Executing airline operations for: " + airlineName);
