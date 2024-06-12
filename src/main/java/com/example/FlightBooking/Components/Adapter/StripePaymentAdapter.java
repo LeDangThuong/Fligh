@@ -51,8 +51,8 @@ public class StripePaymentAdapter implements PaymentProcessor{
     }
 
     @Override
-    public PaymentIntent processPayment(String token, double amount,
+    public PaymentIntent processPayment(String token, Long ibVoucher, double amount,
                                         Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException {
-        return paymentService.createPaymentIntent(token, amount, flightId, combineBookingRequestDTO);
+        return paymentService.createPaymentIntent(token, ibVoucher, amount, flightId, combineBookingRequestDTO);
     }
 }

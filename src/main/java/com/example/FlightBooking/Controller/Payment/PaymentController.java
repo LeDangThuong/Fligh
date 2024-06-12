@@ -111,9 +111,9 @@ public class PaymentController {
 
     @PostMapping("/create-payment")
     @Transactional
-    public ResponseEntity<?> createPayment(@RequestParam String token, @RequestParam double amount, @RequestParam Long flightId, @RequestBody CombineBookingRequestDTO combineBookingRequestDTO) {
+    public ResponseEntity<?> createPayment(@RequestParam String token, @RequestParam Long idVoucher, @RequestParam double amount, @RequestParam Long flightId, @RequestBody CombineBookingRequestDTO combineBookingRequestDTO) {
         try {
-            PaymentIntent paymentIntent = paymentService.createPaymentIntent(token, amount, flightId, combineBookingRequestDTO);
+            PaymentIntent paymentIntent = paymentService.createPaymentIntent(token, idVoucher, amount, flightId, combineBookingRequestDTO);
             String clientSecret = paymentIntent.getClientSecret();
             return ResponseEntity.ok(Collections.singletonMap("clientSecret", clientSecret));
         } catch (StripeException e) {

@@ -21,10 +21,12 @@ public class Vouchers {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
     private String code;
-    private BigDecimal discountAmount; // Số tiền giảm giá
+    private Long discountAmount; // Số tiền giảm giá
     private String voucherImageUrl;
     private String voucherName;
+    private Long minOrder;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
