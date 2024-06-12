@@ -138,26 +138,64 @@ public class CRUDFlightController {
     {
         return popularPlaceRepository.findByFlightId(flightId).orElseThrow(() -> new RuntimeException("Popular place image not found with this id: " + flightId));
     }
-    @GetMapping("/filter-flights-by-time-frame")
+    @GetMapping("/filter-flights")
     public ResponseEntity<List<Flights>> filterFlightsByTimeFrame(
             @RequestParam("ROUND_TRIP or ONE_WAY") String flightType,
             @RequestParam Long departureAirportId,
             @RequestParam Long arrivalAirportId,
             @RequestParam Timestamp departureDate,
             @RequestParam(required = false) Timestamp returnDate,
-            @RequestParam (required = false) Integer startHour,
-            @RequestParam (required = false)Integer startMinute,
-            @RequestParam (required = false)Integer endHour,
-            @RequestParam (required = false)Integer endMinute) {
+            @RequestParam(required = false) Integer startHour,
+            @RequestParam(required = false) Integer startMinute,
+            @RequestParam(required = false) Integer endHour,
+            @RequestParam(required = false) Integer endMinute,
+            @RequestParam(required = false) String classType,
+            @RequestParam(required = false) String order) {
         try {
             List<Flights> flights;
-            if (startHour == null || startMinute == null || endHour == null || endMinute == null) {
+            if ((startHour == null || startMinute == null || endHour == null || endMinute == null) && (classType == null || order == null)) {
+                // Case 3: Both time and price parameters are null, search normally
                 flights = flightService.searchFlights(flightType, departureAirportId, arrivalAirportId, departureDate, returnDate);
-            } else {
+            } else if (classType == null || order == null) {
+                // Case 1: Only time parameters are not null
                 LocalTime startTime = LocalTime.of(startHour, startMinute);
                 LocalTime endTime = LocalTime.of(endHour, endMinute);
                 flights = flightService.filterFlightsByTimeFrame(flightType, departureAirportId, arrivalAirportId, departureDate, returnDate, startTime, endTime);
+            } else if (startHour == null || startMinute == null || endHour == null || endMinute == null) {
+                // Case 2: Only price parameters are not null
+                flights = flightService.searchFlights(flightType, departureAirportId, arrivalAirportId, departureDate, returnDate);
+                switch (classType.toLowerCase()) {
+                    case "economy":
+                        if (order.equalsIgnoreCase("asc")) {
+                            flights.sort((f1, f2) -> Double.compare(f1.getEconomyPrice(), f2.getEconomyPrice()));
+                        } else {
+                            flights.sort((f1, f2) -> Double.compare(f2.getEconomyPrice(), f1.getEconomyPrice()));
+                        }
+                        break;
+                    case "business":
+                        if (order.equalsIgnoreCase("asc")) {
+                            flights.sort((f1, f2) -> Double.compare(f1.getBusinessPrice(), f2.getBusinessPrice()));
+                        } else {
+                            flights.sort((f1, f2) -> Double.compare(f2.getBusinessPrice(), f1.getBusinessPrice()));
+                        }
+                        break;
+                    case "firstclass":
+                        if (order.equalsIgnoreCase("asc")) {
+                            flights.sort((f1, f2) -> Double.compare(f1.getFirstClassPrice(), f2.getFirstClassPrice()));
+                        } else {
+                            flights.sort((f1, f2) -> Double.compare(f2.getFirstClassPrice(), f1.getFirstClassPrice()));
+                        }
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Invalid class type");
+                }
+            } else {
+                // Case 4: Both time and price parameters are not null
+                LocalTime startTime = LocalTime.of(startHour, startMinute);
+                LocalTime endTime = LocalTime.of(endHour, endMinute);
+                flights = flightService.filterFlightsByTimeFrameAndPrice(flightType, departureAirportId, arrivalAirportId, departureDate, returnDate, startTime, endTime, classType, order);
             }
+
             return ResponseEntity.ok(flights);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
