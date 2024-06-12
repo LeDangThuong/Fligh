@@ -89,7 +89,7 @@ public class FlightService {
         // Lấy giá vé từ Regulation của Airlines thông qua planeId
         Planes planes = planeRepository.findById(flightDTO.getPlaneId()).orElseThrow(() -> new IllegalArgumentException("Invalid plane ID"));
         Airlines airlines = airlinesRepository.findByPlanes(planes).orElseThrow(() -> new IllegalArgumentException("Invalid plane"));
-        RegulationDTO regulation = regulationService.getRegulationByAirlineId(airlines.getId());
+        RegulationDTO regulation = regulationService.getRegulationByPlaneId(airlines.getId());
         flight.setEconomyPrice(regulation.getEconomyPrice());
         flight.setBusinessPrice(regulation.getBusinessPrice());
         flight.setFirstClassPrice(regulation.getFirstClassPrice());

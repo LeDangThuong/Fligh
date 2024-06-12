@@ -51,9 +51,9 @@ public class RegulationController {
 
     @PutMapping("/updatePrice/{id}")
     public ResponseEntity<RegulationDTO> updatePricing(@PathVariable Long id,
-                                                       @RequestParam double firstClassPrice,
-                                                       @RequestParam double businessPrice,
-                                                       @RequestParam double economyPrice) {
+                                                       @RequestParam(required = false) Double firstClassPrice,
+                                                       @RequestParam(required = false) Double businessPrice,
+                                                       @RequestParam(required = false) Double economyPrice) {
         RegulationDTO updatedPricing = regulationService.updatePricing(id, firstClassPrice, businessPrice, economyPrice);
         return updatedPricing != null ? ResponseEntity.ok(updatedPricing) : ResponseEntity.notFound().build();
     }
@@ -63,10 +63,20 @@ public class RegulationController {
         regulationService.deletePricing(id);
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping("/getAllWithRegulations")
     public ResponseEntity<List<AirlineDTO>> getAllAirlinesWithRegulations() {
         List<AirlineDTO> airlines = regulationService.getAllAirlinesWithRegulations();
         return ResponseEntity.ok(airlines);
+    }
+
+    @PostMapping("/addPricing")
+    public ResponseEntity<RegulationDTO> addPricing(@RequestParam Long airlineId,
+                                                    @RequestParam double firstClassPrice,
+                                                    @RequestParam double businessPrice,
+                                                    @RequestParam double economyPrice) {
+        RegulationDTO addedPricing = regulationService.addPricing(airlineId, firstClassPrice, businessPrice, economyPrice);
+        return ResponseEntity.ok(addedPricing);
     }
 
 }
