@@ -16,11 +16,21 @@ public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "content", nullable = false)
     private String content;
-    private Long senderId;
-    private Long receiverId;
+
+    @Column(name = "sender_id", nullable = false)
+    private Integer senderId;
+
+    @Column(name = "receiver_id")
+    private Integer receiverId;
+
+    @Column(name = "time_support", nullable = false)
     private Timestamp timeSupport;
-    private Timestamp timeEndSupport;
+
+    @Column(name = "type")
+    private String type;
 
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
