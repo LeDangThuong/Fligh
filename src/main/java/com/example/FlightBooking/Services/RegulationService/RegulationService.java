@@ -1,6 +1,9 @@
 package com.example.FlightBooking.Services.RegulationService;
 
+import com.example.FlightBooking.Models.Airlines;
+import com.example.FlightBooking.Models.Planes;
 import com.example.FlightBooking.Models.Regulation;
+import com.example.FlightBooking.Repositories.PlaneRepository;
 import com.example.FlightBooking.Repositories.RegulationRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +15,8 @@ public class RegulationService {
 
     @Autowired
     private RegulationRepository regulationRepository;
+    @Autowired
+    private PlaneRepository planeRepository;
 
     public List<Regulation> getAllPricingByAirline(Long airlineId) {
         return regulationRepository.findByAirlineId(airlineId);
@@ -38,5 +43,11 @@ public class RegulationService {
             return regulationRepository.save(regulation);
         }
         return null;
+    }
+    public Regulation getRegulationByPlaneId(Long planeId) {
+        Planes plane = planeRepository.findById(planeId)
+                .orElseThrow(() -> new RuntimeException("Plane not found"));
+        Airlines airline = plane.getAirline();
+        return regulationRepository.findByAirline(airline);
     }
 }

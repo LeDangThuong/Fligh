@@ -2,6 +2,7 @@ package com.example.FlightBooking.Repositories;
 
 
 
+import com.example.FlightBooking.Models.Airlines;
 import com.example.FlightBooking.Models.Regulation;
 
 import io.swagger.v3.oas.annotations.Hidden;
@@ -15,4 +16,5 @@ import java.util.List;
 public interface RegulationRepository extends JpaRepository<Regulation, Long> {
     // custom query methods if needed
     List<Regulation> findByAirlineId(Long airlineId);
+    Regulation findByAirline(Airlines airlines);
 }

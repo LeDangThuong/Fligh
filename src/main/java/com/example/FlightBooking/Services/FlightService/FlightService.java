@@ -84,9 +84,12 @@ public class FlightService {
         flight.setArrivalAirportId(flightDTO.getArrivalAirportId());
         flight.setPlaneId(flightDTO.getPlaneId());
 
-        flight.setEconomyPrice(regulationService.getEconomyPrice(1L));
-        flight.setBusinessPrice(regulationService.getBusinessPrice(1L));
-        flight.setFirstClassPrice(regulationService.getFirstClassPrice(1L));
+        // Lấy giá vé từ Regulation của Airlines thông qua planeId
+        Regulation regulation = regulationService.getRegulationByPlaneId(flightDTO.getPlaneId());
+        flight.setEconomyPrice(regulation.getEconomyPrice());
+        flight.setBusinessPrice(regulation.getBusinessPrice());
+        flight.setFirstClassPrice(regulation.getFirstClassPrice());
+
         flight.setSeatStatuses(seatStatusesJson);
         // Thêm ràng buộc: Thời gian hạ cánh phải cách thời gian cất cánh ít nhất 1 tiếng
         if (flight.getArrivalDate().getTime() - flight.getDepartureDate().getTime() < 3600000) { // 1 tiếng = 3600000 ms
