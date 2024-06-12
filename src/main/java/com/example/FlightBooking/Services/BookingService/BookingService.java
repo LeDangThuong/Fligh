@@ -192,18 +192,20 @@ public class BookingService {
             Airlines airlines = airlinesRepository.findByPlanes(planes).orElseThrow(() -> new RuntimeException("Airlin not found with id: " + planes));
             Airports departureAirport = airportsRepository.findById(flights.getDepartureAirportId()).orElseThrow(() -> new RuntimeException("Airport not found with id: " + flights.getDepartureAirportId()));
             Airports arrivalAirport = airportsRepository.findById(flights.getArrivalAirportId()).orElseThrow(() -> new RuntimeException("Airport not found with id: " + flights.getArrivalAirportId()));
+            List<String> seatNumbers = new ArrayList<>();
             for (Passengers passengers : passengersList) {
-                TicketResponse ticketResponse = new TicketResponse();
-                ticketResponse.setAirlineLogo(airlines.getLogoUrl());
-                ticketResponse.setSeatNumber(passengers.getSeatNumber());
-                ticketResponse.setDepartAirport(departureAirport.getAirportName());
-                ticketResponse.setArrivalAirport(arrivalAirport.getAirportName());
-                ticketResponse.setDepartDate(flights.getDepartureDate());
-                ticketResponse.setArrivalDate(flights.getArrivalDate());
-                ticketResponse.setIataCodeDepart(departureAirport.getIataCode());
-                ticketResponse.setIataCodeArrival(arrivalAirport.getIataCode());
-                ticketResponses.add(ticketResponse);
+                seatNumbers.add(passengers.getSeatNumber());
             }
+            TicketResponse ticketResponse = new TicketResponse();
+            ticketResponse.setAirlineLogo(airlines.getLogoUrl());
+            ticketResponse.setDepartAirport(departureAirport.getAirportName());
+            ticketResponse.setArrivalAirport(arrivalAirport.getAirportName());
+            ticketResponse.setDepartDate(flights.getDepartureDate());
+            ticketResponse.setArrivalDate(flights.getArrivalDate());
+            ticketResponse.setIataCodeDepart(departureAirport.getIataCode());
+            ticketResponse.setIataCodeArrival(arrivalAirport.getIataCode());
+            ticketResponse.setSeatNumber(seatNumbers);
+            ticketResponses.add(ticketResponse);
         }
         return ticketResponses;
     }
