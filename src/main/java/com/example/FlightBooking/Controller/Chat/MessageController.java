@@ -1,13 +1,21 @@
 package com.example.FlightBooking.Controller.Chat;
 
+import com.example.FlightBooking.Config.WebSocket.UserWithLatestMessageDTO;
 import com.example.FlightBooking.Models.Message;
+import com.example.FlightBooking.Models.SupportSession;
+import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.MessageRepository;
+import com.example.FlightBooking.Repositories.SupportSessionRepository;
+import com.example.FlightBooking.Repositories.UserRepository;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -17,19 +25,78 @@ public class MessageController {
     @Autowired
     private MessageRepository messageRepository;
 
-    @PostMapping("/start/{senderId}/{receiverId}")
-    public Message startSupport(@RequestParam Long senderId, @RequestParam Long receiverId) {
-        Message message = new Message();
-        message.setSenderId(senderId);
-        message.setReceiverId(receiverId);
-        message.setTimeSupport(Timestamp.valueOf(LocalDateTime.now()));
-        return messageRepository.save(message);
+    @Autowired
+    private SupportSessionRepository supportSessionRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @PostMapping("/sendMessage")
+    public Message sendMessage(@RequestBody Message message) {
+        message.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+
+        SupportSession supportSession = supportSessionRepository.findByCustomerIdAndStatus(message.getSenderId(), "pending");
+
+        if (supportSession == null) {
+            supportSession = new SupportSession();
+            supportSession.setCustomerId(message.getSenderId());
+            supportSession.setStatus("pending");
+            supportSession.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+            supportSession = supportSessionRepository.save(supportSession);
+        } else if (supportSession.getStatus().equals("closed")) {
+            supportSession.setStatus("pending");
+            supportSession.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+            supportSessionRepository.save(supportSession);
+        }
+
+        message.setSessionId(supportSession.getId());
+        messageRepository.save(message);
+
+        // Update latest message and timestamp in support session
+        supportSession.setLatestMessage(message.getContent());
+        supportSession.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+        supportSessionRepository.save(supportSession);
+
+        return message;
     }
 
-    @PostMapping("/end/{senderId}/{receiverId}")
-    public Message endSupport(@RequestParam Long senderId, @RequestParam Long receiverId) {
-        Message message = messageRepository.findTopBySenderIdAndReceiverIdOrderByCreatedAtDesc(senderId, receiverId);
-        message.setTimeEndSupport(Timestamp.valueOf(LocalDateTime.now()));
-        return messageRepository.save(message);
+    @PostMapping("/endSession")
+    public void endSession(@RequestBody SupportSession session) {
+        SupportSession supportSession = supportSessionRepository.findById(session.getId()).orElseThrow();
+        supportSession.setStatus("closed");
+        supportSession.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+        supportSessionRepository.save(supportSession);
+    }
+
+    @GetMapping("/sessions")
+    public List<SupportSession> getSessions() {
+        return supportSessionRepository.findAll();
+    }
+
+    @GetMapping("/sessions/{sessionId}/messages")
+    public List<Message> getMessages(@PathVariable Long sessionId) {
+        return messageRepository.findBySessionId(sessionId);
+    }
+
+    @PostMapping("/startSupport")
+    public void startSupport(@RequestParam Long sessionId, @RequestParam Long adminId) {
+        SupportSession supportSession = supportSessionRepository.findById(sessionId).orElseThrow();
+        supportSession.setStatus("active");
+        supportSession.setAdminId(adminId);
+        supportSession.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+        supportSessionRepository.save(supportSession);
+
+        Message notificationMessage = new Message();
+        notificationMessage.setContent("Nhân viên đang hỗ trợ bạn...");
+        notificationMessage.setSenderId(adminId);
+        notificationMessage.setReceiverId(supportSession.getCustomerId());
+        notificationMessage.setSessionId(sessionId);
+        notificationMessage.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+        messageRepository.save(notificationMessage);
+    }
+
+    @GetMapping("/admin/{adminId}")
+    public Users getAdmin(@PathVariable Long adminId) {
+        return userRepository.findById(adminId).orElseThrow();
     }
 }

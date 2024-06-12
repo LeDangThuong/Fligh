@@ -7,6 +7,8 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.*;
 
 import java.net.http.WebSocket;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 
 @Configuration
@@ -22,5 +24,9 @@ public class WebSocketConfig implements WebSocketConfigurer {
     WebSocketHandler tutorialHandler()
     {
         return new TutorialHandler();
+    }
+    @Bean
+    public ConcurrentMap<Integer, Long> chatEndTimes() {
+        return new ConcurrentHashMap<>();
     }
 }

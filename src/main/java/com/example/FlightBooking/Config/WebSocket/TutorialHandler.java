@@ -1,7 +1,9 @@
 package com.example.FlightBooking.Config.WebSocket;
 
 import com.example.FlightBooking.Models.Message;
+import com.example.FlightBooking.Models.SupportSession;
 import com.example.FlightBooking.Repositories.MessageRepository;
+import com.example.FlightBooking.Repositories.SupportSessionRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Slf4j
 public class TutorialHandler implements WebSocketHandler {
@@ -20,6 +23,12 @@ public class TutorialHandler implements WebSocketHandler {
 
     @Autowired
     private MessageRepository messageRepository;
+
+    @Autowired
+    private SupportSessionRepository supportSessionRepository;
+
+    @Autowired
+    private ConcurrentMap<Integer, Long> chatEndTimes;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -35,7 +44,27 @@ public class TutorialHandler implements WebSocketHandler {
         ObjectMapper objectMapper = new ObjectMapper();
         Message receivedMessage = objectMapper.readValue(payload, Message.class);
 
-        receivedMessage.setTimeSupport(Timestamp.valueOf(LocalDateTime.now()));
+        if (receivedMessage.getContent() == null || receivedMessage.getContent().isEmpty()) {
+            throw new RuntimeException("Message content cannot be null or empty");
+        }
+
+        receivedMessage.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+
+        SupportSession supportSession = supportSessionRepository.findByCustomerIdAndStatus(receivedMessage.getSenderId(), "pending");
+
+        if (supportSession == null) {
+            supportSession = new SupportSession();
+            supportSession.setCustomerId(receivedMessage.getSenderId());
+            supportSession.setStatus("pending");
+            supportSession.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+            supportSession = supportSessionRepository.save(supportSession);
+        } else if (supportSession.getStatus().equals("closed")) {
+            supportSession.setStatus("pending");
+            supportSession.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+            supportSessionRepository.save(supportSession);
+        }
+
+        receivedMessage.setSessionId(supportSession.getId());
         messageRepository.save(receivedMessage);
 
         for (WebSocketSession sess : sessions) {

@@ -17,29 +17,18 @@ import java.sql.Timestamp;
 @Builder
 @Getter
 @Setter
-@Table(name = "support_request")
-public class SupportRequest {
+@Table(name = "support_session")
+public class SupportSession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "customer_id", nullable = false)
-    private Users customer;
-
-    @ManyToOne
-    @JoinColumn(name = "admin_id")
-    private Users admin;
-
-    @Enumerated(EnumType.STRING)
-    private SupportRequestStatus status;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    private Long customerId;
+    private Long adminId;
+    private String status;
+    private String latestMessage;
     private Timestamp createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
     private Timestamp updatedAt;
+
 
 }
