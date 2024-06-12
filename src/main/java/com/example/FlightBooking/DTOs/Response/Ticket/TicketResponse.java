@@ -3,6 +3,7 @@ package com.example.FlightBooking.DTOs.Response.Ticket;
 import lombok.Data;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 public class TicketResponse {
@@ -13,5 +14,5 @@ public class TicketResponse {
     private Timestamp arrivalDate;
     private String iataCodeDepart;
     private String iataCodeArrival;
-    private String seatNumber;
+    private List<String> seatNumber;
 }
