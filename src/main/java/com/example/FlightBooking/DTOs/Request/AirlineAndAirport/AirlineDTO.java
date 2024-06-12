@@ -1,5 +1,6 @@
 package com.example.FlightBooking.DTOs.Request.AirlineAndAirport;
 
+import com.example.FlightBooking.DTOs.Request.RegulationDTO;
 import lombok.Data;
 
 import java.util.List;

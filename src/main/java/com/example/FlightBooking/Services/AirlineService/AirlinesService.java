@@ -13,6 +13,7 @@ import com.example.FlightBooking.Repositories.RegulationRepository;
 import com.example.FlightBooking.Services.CloudinaryService.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -34,18 +35,18 @@ public class AirlinesService {
 
     @Autowired
     private PlaneRepository planeRepository;
-
+    @Transactional
     public List<AirlineDTO> getAllAirlines() {
         List<Airlines> airlines = airlineRepository.findAll();
         return airlines.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
-
+    @Transactional
     public AirlineDTO getAirlinesById(Long id) {
         Airlines airline = airlineRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Airline not found with id " + id));
         return convertToDTO(airline);
     }
-
+    @Transactional
     public AirlineDTO addAirlines(AirlineDTO airline) {
         Airlines airlines = new Airlines();
         airlines.setAirlineName(airline.getAirlineName());
@@ -55,7 +56,7 @@ public class AirlinesService {
         Airlines savedAirline = airlineRepository.save(airlines);
         return convertToDTO(savedAirline);
     }
-
+    @Transactional
     public AirlineDTO updateAirlines(Long id, List<MultipartFile> files) throws IOException {
         List<String> promo = cloudinaryService.uploadAirlinePromo(files);
         Airlines airline = airlineRepository.findById(id)
@@ -64,7 +65,7 @@ public class AirlinesService {
         Airlines updatedAirline = airlineRepository.save(airline);
         return convertToDTO(updatedAirline);
     }
-
+    @Transactional
     public boolean deleteAirlines(Long id) {
         if (airlineRepository.existsById(id)) {
             airlineRepository.deleteById(id);
@@ -73,7 +74,7 @@ public class AirlinesService {
             return false;
         }
     }
-
+    @Transactional
     public AirlineDTO createNewAirline(String airlineName, MultipartFile file, List<MultipartFile> files,
                                        double firstClassPrice, double businessPrice, double economyPrice) throws IOException {
         String logoUrl = cloudinaryService.uploadAirlineLogo(file);
@@ -95,13 +96,13 @@ public class AirlinesService {
 
         return convertToDTO(savedAirline);
     }
-
+    @Transactional
     public AirlineDTO getAirlineByPlaneId(Long planeId) {
         Planes plane = planeRepository.findById(planeId)
                 .orElseThrow(() -> new RuntimeException("Plane not found with id " + planeId));
         return convertToDTO(plane.getAirline());
     }
-
+    @Transactional
     private AirlineDTO convertToDTO(Airlines airline) {
         AirlineDTO dto = new AirlineDTO();
         dto.setId(airline.getId());
@@ -114,7 +115,7 @@ public class AirlinesService {
         dto.setPlanes(planeDTOs);
         return dto;
     }
-
+    @Transactional
     private PlaneDTO convertToDTO(Planes plane) {
         PlaneDTO dto = new PlaneDTO();
         dto.setId(plane.getId());

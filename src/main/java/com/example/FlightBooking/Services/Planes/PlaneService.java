@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ public class PlaneService {
 
     @Autowired
     private AirlinesRepository airlineRepository;
-
+    @Transactional
     public PlaneDTO createPlaneWithSeats(Long airlineId) throws Exception {
         Airlines airline = getAirlineById(airlineId);
         String flightNumber = generateUniqueFlightNumber(airline);
@@ -38,10 +39,10 @@ public class PlaneService {
         plane.setFlightNumber(flightNumber);
         plane.setAirline(airline);
         airline.addPlane(plane);
-        airlineRepository.save(airline);
-        return convertToDTO(plane);
+        Planes savedPlane = planeRepository.save(plane);
+        return convertToDTO(savedPlane );
     }
-
+    @Transactional
     private String generateUniqueFlightNumber(Airlines airline) {
         String flightNumber;
         Random random = new Random();
@@ -50,7 +51,7 @@ public class PlaneService {
         } while (planeRepository.existsByFlightNumber(flightNumber));
         return flightNumber;
     }
-
+    @Transactional
     private String generateFlightNumber(Airlines airline, Random random) {
         int number = 100 + random.nextInt(900);
         switch (airline.getAirlineName()) {
@@ -66,23 +67,23 @@ public class PlaneService {
                 return "UNDEFINED";
         }
     }
-
+    @Transactional
     public Airlines getAirlineById(Long airlineId) {
         return airlineRepository.findById(airlineId)
                 .orElseThrow(() -> new RuntimeException("Airline not found with id " + airlineId));
     }
-
+    @Transactional
     public PlaneDTO getDetailPlane(Long planeId) {
         Planes plane = planeRepository.findById(planeId)
                 .orElseThrow(() -> new RuntimeException("Plane not found with id " + planeId));
         return convertToDTO(plane);
     }
-
+    @Transactional
     public List<PlaneDTO> getAllPlanesByAirlineId(Long airlineId) {
         List<Planes> planes = planeRepository.findByAirlineId(airlineId);
         return planes.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
-
+    @Transactional
     private PlaneDTO convertToDTO(Planes plane) {
         PlaneDTO dto = new PlaneDTO();
         dto.setId(plane.getId());
