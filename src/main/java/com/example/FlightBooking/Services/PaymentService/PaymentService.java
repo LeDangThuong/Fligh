@@ -1,15 +1,23 @@
 package com.example.FlightBooking.Services.PaymentService;
 
+import com.example.FlightBooking.Components.TemplateMethod.TicketEmailSender;
 import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.Booking.CombineBookingRequestDTO;
+import com.example.FlightBooking.Models.Airlines;
+import com.example.FlightBooking.Models.Airports;
 import com.example.FlightBooking.Models.Booking;
 import com.example.FlightBooking.Models.Decorator.Vouchers;
+import com.example.FlightBooking.Models.Flights;
 import com.example.FlightBooking.Models.Passengers;
+import com.example.FlightBooking.Models.Planes;
 import com.example.FlightBooking.Models.Statistics;
 import com.example.FlightBooking.Models.Users;
+import com.example.FlightBooking.Repositories.AirportsRepository;
 import com.example.FlightBooking.Repositories.BookingRepository;
 import com.example.FlightBooking.Repositories.Decorator.VoucherRepository;
+import com.example.FlightBooking.Repositories.FlightRepository;
 import com.example.FlightBooking.Repositories.PaymentMethodRepository;
+import com.example.FlightBooking.Repositories.PlaneRepository;
 import com.example.FlightBooking.Repositories.StatisticsRepository;
 import com.example.FlightBooking.Repositories.UserRepository;
 import com.example.FlightBooking.Services.AuthJWT.JwtService;
@@ -25,6 +33,8 @@ import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.PaymentMethodAttachParams;
 import com.stripe.param.SetupIntentCreateParams;
 import jakarta.annotation.PostConstruct;
+import jakarta.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
@@ -34,6 +44,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,10 +62,22 @@ public class PaymentService {
     private UserRepository userRepository;
 
     @Autowired
+    private TicketEmailSender ticketEmailSender;
+
+    @Autowired
     private StatisticsRepository statisticsRepository;
 
     @Autowired
     private PaymentMethodRepository paymentMethodRepository;
+
+    @Autowired
+    private FlightRepository flightRepository;
+
+    @Autowired
+    private PlaneRepository planeRepository;
+
+    @Autowired
+    private AirportsRepository airportsRepository;
     @Autowired
     private BookingRepository bookingRepository;
 
@@ -130,7 +154,7 @@ public class PaymentService {
         paymentMethodRepository.save(newPaymentMethod);
     }
 
-    public PaymentIntent createPaymentIntent(String token, Long idVoucher, double amount, Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException {
+    public PaymentIntent createPaymentIntent(String token, Long idVoucher, double amount, Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException, MessagingException {
         Long discount;
         if(idVoucher == 0){
             discount = 0L;
@@ -186,7 +210,44 @@ public class PaymentService {
         statistics.setFlightId(flightId);
         statisticsRepository.save(statistics);
 
+        //Lay thong tin ve chuyen bay
+        String email = bookingRequestDTO.getBookerEmail();
+        Flights flights = flightRepository.findById(flightId).orElseThrow();
+        Timestamp arrival = flights.getArrivalDate();
+        Timestamp departure = flights.getDepartureDate();
+        String arrivalTime = formatTimestamp(arrival);
+        String departureTime = formatTimestamp(departure);
+        Timestamp boardingTime = subtractHours(departure, 1);
+        String boadingTimeS = formatTimestamp(boardingTime);
+        Long idPlane = flights.getPlaneId();
+        Long idArrivalAirport = flights.getArrivalAirportId();
+        Long idDepartAirport = flights.getDepartureAirportId();
 
+
+        //Lay thong tin ve may bay
+        Planes planes = planeRepository.findById(idPlane).orElseThrow();
+        String flightNumber = planes.getFlightNumber();
+        Airlines airline = planes.getAirline();
+
+
+
+        //Lay thong tin hang hang khong
+        String airlineName = airline.getAirlineName();
+        //Lay thong tin san bay
+        Airports arrivalAirport = airportsRepository.findById(idArrivalAirport).orElseThrow();
+        String arrivalCity = arrivalAirport.getAirportName() + ", " + arrivalAirport.getCity();
+        String codeArrival = arrivalAirport.getIataCode();
+        Airports departureAirport = airportsRepository.findById(idDepartAirport).orElseThrow();
+        String departureCity = departureAirport.getAirportName() + ", " + departureAirport.getCity();
+        String codeDeparture = departureAirport.getIataCode();
+
+        // Gửi email cho từng hành khách
+        for (Passengers passenger : passengers) {
+            ticketEmailSender.sendTicketToEmail(
+                    email, departureTime, arrivalTime, airlineName, codeDeparture, departureCity,
+                    codeArrival, passenger.getFullName(), arrivalCity, boadingTimeS, flightNumber, passenger.getSeatNumber()
+            );
+        }
         return paymentIntent;
     }
 
@@ -196,5 +257,23 @@ public class PaymentService {
                 .orElseThrow(() -> new RuntimeException("User not found with this username: " + username));
         SetupIntent setupIntent = SetupIntent.retrieve(user.getSetupIntentId());
         return setupIntent.getPaymentMethod();
+    }
+    public String formatTimestamp(Timestamp t){
+        // Chuyển đổi timestamp thành đối tượng LocalDateTime
+        LocalDateTime dateTime = LocalDateTime.ofEpochSecond(t, 0, ZoneOffset.UTC);
+
+        // Định dạng đối tượng LocalDateTime thành chuỗi theo định dạng "4:00 PM, Monday August 13 2024"
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a, EEEE MMMM d yyyy");
+        return dateTime.format(formatter);
+    }
+    public static Timestamp subtractHours(Timestamp timestamp, int hours) {
+        // Chuyển đổi Timestamp sang LocalDateTime
+        LocalDateTime dateTime = timestamp.toLocalDateTime();
+
+        // Trừ đi 2 giờ
+        LocalDateTime adjustedDateTime = dateTime.minusHours(hours);
+
+        // Chuyển đổi ngược lại thành Timestamp
+        return Timestamp.valueOf(adjustedDateTime);
     }
 }

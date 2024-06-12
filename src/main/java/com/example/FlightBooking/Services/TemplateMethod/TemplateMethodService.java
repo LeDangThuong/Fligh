@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class TemplateMethodService {
     private final OtpEmailSender otpEmailSender;
-    private final TicketEmailSender ticketEmailSender;
+    //private final TicketEmailSender ticketEmailSender;
 
     @Autowired
     public TemplateMethodService(OtpEmailSender otpEmailSender, TicketEmailSender ticketEmailSender) {
         this.otpEmailSender = otpEmailSender;
-        this.ticketEmailSender = ticketEmailSender;
+        //this.ticketEmailSender = ticketEmailSender;
     }
     public void registerUser(String email) {
         try {
@@ -33,11 +33,7 @@ public class TemplateMethodService {
     }
 
     public void bookTicket(String email, String ticketDetails) {
-        try {
-            ticketEmailSender.sendEmail(email, ticketDetails);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        //ticketEmailSender.sendEmail(email, ticketDetails);
     }
 
     public boolean verifyOTP(String email, Long inputOTP) {
