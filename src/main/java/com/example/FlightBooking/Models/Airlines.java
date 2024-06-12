@@ -38,8 +38,9 @@ public class Airlines implements AirlineComponent {
     private String logoUrl;
 
     @OneToMany(mappedBy = "airline", cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    private List<Planes> planes = new ArrayList<>();
-
+    private List<Planes> planes;
+    @OneToOne(mappedBy = "airline", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Regulation pricing;
     private List<String> promoForAirline;
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
