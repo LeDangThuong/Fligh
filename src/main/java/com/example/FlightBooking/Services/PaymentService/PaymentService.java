@@ -260,7 +260,7 @@ public class PaymentService {
     }
     public String formatTimestamp(Timestamp t){
         // Chuyển đổi timestamp thành đối tượng LocalDateTime
-        LocalDateTime dateTime = LocalDateTime.ofEpochSecond(t, 0, ZoneOffset.UTC);
+        LocalDateTime dateTime = t.toLocalDateTime();
 
         // Định dạng đối tượng LocalDateTime thành chuỗi theo định dạng "4:00 PM, Monday August 13 2024"
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("h:mm a, EEEE MMMM d yyyy");
