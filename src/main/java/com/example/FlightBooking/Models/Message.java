@@ -3,6 +3,7 @@ package com.example.FlightBooking.Models;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
@@ -21,10 +22,10 @@ public class Message {
     private String content;
 
     @Column(name = "sender_id", nullable = false)
-    private Integer senderId;
+    private Long senderId;
 
     @Column(name = "receiver_id")
-    private Integer receiverId;
+    private Long receiverId;
 
     @Column(name = "time_support", nullable = false)
     private Timestamp timeSupport;
@@ -32,6 +33,7 @@ public class Message {
     @Column(name = "type")
     private String type;
 
+    @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private Timestamp createdAt;
 

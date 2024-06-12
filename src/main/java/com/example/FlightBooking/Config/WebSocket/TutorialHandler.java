@@ -40,11 +40,11 @@ public class TutorialHandler implements WebSocketHandler {
 
         // Identify message type and sender
         if ("JOIN".equals(receivedMessage.getType())) {
-            customerSessions.put(receivedMessage.getSenderId(), session);
+            customerSessions.put(Math.toIntExact(receivedMessage.getSenderId()), session);
             log.info("Customer {} joined with session {}", receivedMessage.getSenderId(), session.getId());
             return;
         } else if ("JOIN_ADMIN".equals(receivedMessage.getType())) {
-            adminSessions.put(receivedMessage.getSenderId(), session);
+            adminSessions.put(Math.toIntExact(receivedMessage.getSenderId()), session);
             log.info("Admin {} joined with session {}", receivedMessage.getSenderId(), session.getId());
             return;
         }

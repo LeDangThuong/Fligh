@@ -11,6 +11,7 @@ import java.util.List;
 @Repository
 @Hidden
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    List<Message> findByReceiverIdAndTimeSupportBefore(Integer receiverId, Timestamp timeSupport);
+    Message findTopBySenderIdOrderByCreatedAtDesc(Long senderId);
+    Message findTopBySenderIdAndReceiverIdOrderByCreatedAtDesc(Long senderId, Long receiverId);
     void deleteByTimeSupportBefore(Timestamp timeSupport);
 }
