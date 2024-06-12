@@ -56,19 +56,6 @@ public class AirlinesController {
         return airlinesService.addAirlines(airlines);
     }
 
-    @PutMapping(value = "/{id}", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
-    @Transactional
-    public ResponseEntity<Airlines> updateAirlines(@RequestParam Long id, @RequestPart List<MultipartFile> files) {
-        try {
-            Airlines updatedAirlines = airlinesService.updateAirlines(id, files);
-            return ResponseEntity.ok(updatedAirlines);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteAirlines(@PathVariable Long id) {
         boolean isDeleted = airlinesService.deleteAirlines(id);
@@ -83,9 +70,10 @@ public class AirlinesController {
 
     @PostMapping(value = "/upload-new-airline", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<?> createNewAirline(@RequestParam("airlineName") String airlineName,
-                                              @RequestPart("file") MultipartFile file) {
+                                              @RequestPart("logo") MultipartFile file,
+                                              @RequestPart("popular-place") List<MultipartFile> files) {
         try {
-            Airlines airline = airlinesService.createNewAirline(airlineName, file);
+            Airlines airline = airlinesService.createNewAirline(airlineName, file, files);
             return ResponseEntity.ok(airline);
         } catch (IOException e) {
             return ResponseEntity.status(500).body("Error uploading logo: " + e.getMessage());
