@@ -256,26 +256,32 @@ public class FlightService {
 
         return flight;
     }
-
     @Transactional
     public Flights scheduleFlight(Long flightId, String reason, Timestamp newDepartureTime, Timestamp newArrivalTime) throws MessagingException {
         Flights flight = flightRepository.findById(flightId)
                 .orElseThrow(() -> new RuntimeException("Flight not found"));
-
         flight.setFlightStatus(FlightStatus.SCHEDULED.name());
         flight.setDepartureDate(newDepartureTime);
         flight.setArrivalDate(newArrivalTime);
         flightRepository.save(flight);
-
         List<Booking> bookings = bookingRepository.findAllByFlightId(flightId);
         for (Booking booking : bookings) {
             flightScheduleEmailSender.sendEmail(booking.getBookerEmail(), reason);
         }
-
         return flight;
     }
     @org.springframework.transaction.annotation.Transactional
     public List<Flights> filterFlightsByTimeFrame(String type, Long departureAirportId, Long arrivalAirportId, Timestamp departureDate, Timestamp returnDate, LocalTime startTime, LocalTime endTime) {
+        List<Flights> flights = searchFlights(type, departureAirportId, arrivalAirportId, departureDate, returnDate);
+        return flights.stream()
+                .filter(flight -> {
+                    LocalTime departureTime = flight.getDepartureDate().toLocalDateTime().toLocalTime();
+                    return !departureTime.isBefore(startTime) && !departureTime.isAfter(endTime);
+                })
+                .collect(Collectors.toList());
+    }
+    @org.springframework.transaction.annotation.Transactional
+    public List<Flights> filterByPrice(String type, Long departureAirportId, Long arrivalAirportId, Timestamp departureDate, Timestamp returnDate, LocalTime startTime, LocalTime endTime) {
         List<Flights> flights = searchFlights(type, departureAirportId, arrivalAirportId, departureDate, returnDate);
         return flights.stream()
                 .filter(flight -> {
