@@ -145,16 +145,20 @@ public class CRUDFlightController {
             @RequestParam Long arrivalAirportId,
             @RequestParam Timestamp departureDate,
             @RequestParam(required = false) Timestamp returnDate,
-            @RequestParam int startHour,
-            @RequestParam int startMinute,
-            @RequestParam int endHour,
-            @RequestParam int endMinute) {
+            @RequestParam (required = false) Integer startHour,
+            @RequestParam (required = false)Integer startMinute,
+            @RequestParam (required = false)Integer endHour,
+            @RequestParam (required = false)Integer endMinute) {
         try {
-            LocalTime startTime = LocalTime.of(startHour, startMinute);
-            LocalTime endTime = LocalTime.of(endHour, endMinute);
-
-            List<Flights> filteredFlights = flightService.filterFlightsByTimeFrame(flightType, departureAirportId, arrivalAirportId, departureDate, returnDate, startTime, endTime);
-            return ResponseEntity.ok(filteredFlights);
+            List<Flights> flights;
+            if (startHour == null || startMinute == null || endHour == null || endMinute == null) {
+                flights = flightService.searchFlights(flightType, departureAirportId, arrivalAirportId, departureDate, returnDate);
+            } else {
+                LocalTime startTime = LocalTime.of(startHour, startMinute);
+                LocalTime endTime = LocalTime.of(endHour, endMinute);
+                flights = flightService.filterFlightsByTimeFrame(flightType, departureAirportId, arrivalAirportId, departureDate, returnDate, startTime, endTime);
+            }
+            return ResponseEntity.ok(flights);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
