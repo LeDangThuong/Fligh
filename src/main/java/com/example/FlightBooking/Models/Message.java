@@ -1,8 +1,8 @@
 package com.example.FlightBooking.Models;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,32 +13,16 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Table(name = "message")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "content", nullable = false)
-    private String content;
-
-    @Column(name = "sender_id", nullable = false)
+    private Long sessionId;
     private Long senderId;
 
-    @Column(name = "receiver_id")
     private Long receiverId;
-
-    @Column(name = "time_support", nullable = false)
-    private Timestamp timeSupport;
-
-    @Column(name = "type")
-    private String type;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
+    private String content;
     private Timestamp createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private Timestamp updatedAt;
-    // getters and setters
 }
