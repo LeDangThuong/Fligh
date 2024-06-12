@@ -12,6 +12,7 @@ import com.example.FlightBooking.Repositories.RegulationRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,26 +24,26 @@ public class RegulationService {
     private RegulationRepository regulationRepository;
     @Autowired
     private AirlinesRepository airlineRepository;
-
+    @Transactional
     public List<RegulationDTO> getAllPricingByAirline(Long airlineId) {
         List<Regulation> regulations = regulationRepository.findByAirlineId(airlineId);
         return regulations.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
-
+    @Transactional
     public RegulationDTO getPricingById(Long id) {
         Regulation regulation = regulationRepository.findById(id).orElseThrow(() -> new RuntimeException("Regulation not found"));
         return convertToDTO(regulation);
     }
-
+    @Transactional
     public RegulationDTO savePricing(Regulation pricing) {
         Regulation savedRegulation = regulationRepository.save(pricing);
         return convertToDTO(savedRegulation);
     }
-
+    @Transactional
     public void deletePricing(Long id) {
         regulationRepository.deleteById(id);
     }
-
+    @Transactional
     public RegulationDTO updatePricing(Long id, Double firstClassPrice, Double businessPrice, Double economyPrice) {
         Regulation regulation = regulationRepository.findById(id).orElseThrow(() -> new RuntimeException("Regulation not found"));
         if (firstClassPrice != null) {
@@ -57,16 +58,18 @@ public class RegulationService {
         Regulation updatedRegulation = regulationRepository.save(regulation);
         return convertToDTO(updatedRegulation);
     }
-
+    @Transactional
     public RegulationDTO getRegulationByAirlineId(Long airlineId) {
         Airlines airline = airlineRepository.findById(airlineId).orElseThrow(() -> new RuntimeException("Airline not found"));
         Regulation regulation = regulationRepository.findByAirline(airline);
         return convertToDTO(regulation);
     }
+    @Transactional
     public List<AirlineDTO> getAllAirlinesWithRegulations() {
         List<Airlines> airlines = airlineRepository.findAll();
         return airlines.stream().map(this::convertToAirlineDTO).collect(Collectors.toList());
     }
+    @Transactional
     private RegulationDTO convertToDTO(Regulation regulation) {
         RegulationDTO dto = new RegulationDTO();
         dto.setId(regulation.getId());
@@ -76,7 +79,7 @@ public class RegulationService {
         dto.setAirline(convertToDTO(regulation.getAirline()));
         return dto;
     }
-
+    @Transactional
     private AirlineDTO convertToDTO(Airlines airline) {
         AirlineDTO dto = new AirlineDTO();
         dto.setId(airline.getId());
@@ -85,6 +88,8 @@ public class RegulationService {
         dto.setPromoForAirline(airline.getPromoForAirline());
         return dto;
     }
+
+    @Transactional
     private AirlineDTO convertToAirlineDTO(Airlines airline) {
         AirlineDTO dto = new AirlineDTO();
         dto.setId(airline.getId());
@@ -95,6 +100,7 @@ public class RegulationService {
         dto.setPlanes(airline.getPlanes().stream().map(this::convertToPlaneDTO).collect(Collectors.toList()));
         return dto;
     }
+    @Transactional
     private PlaneDTO convertToPlaneDTO(Planes plane) {
         PlaneDTO dto = new PlaneDTO();
         dto.setId(plane.getId());
