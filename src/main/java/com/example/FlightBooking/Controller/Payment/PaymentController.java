@@ -1,14 +1,12 @@
 package com.example.FlightBooking.Controller.Payment;
 
 import com.example.FlightBooking.Components.Adapter.PaymentProcessor;
-import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.Booking.CombineBookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.PaymentMethodDTO;
 import com.example.FlightBooking.Models.PaymentMethod;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.PaymentMethodRepository;
 import com.example.FlightBooking.Repositories.UserRepository;
-import com.example.FlightBooking.Services.BookingService.BookingService;
 import com.example.FlightBooking.Services.PaymentService.PaymentService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
@@ -73,7 +71,28 @@ public class PaymentController {
             return ResponseEntity.status(404).body(Collections.singletonMap("error", e.getMessage()));
         }
     }
-
+    @GetMapping("/get-stripe-payment-method-id")
+    public ResponseEntity<?> getStripePaymentMethodId(@RequestParam String token) {
+        try {
+            String customerId = paymentService.getPaymentMethodId(token);
+            return ResponseEntity.ok(Collections.singletonMap("stripePaymentMethodId", customerId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(Collections.singletonMap("error", e.getMessage()));
+        } catch (StripeException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @GetMapping("/get-stripe-client-secret-id")
+    public ResponseEntity<?> getStripeClientSecretId(@RequestParam String token) {
+        try {
+            String customerId = paymentService.getStripeClientSecret(token);
+            return ResponseEntity.ok(Collections.singletonMap("stripeClientSecreteId", customerId));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(Collections.singletonMap("error", e.getMessage()));
+        } catch (StripeException e) {
+            throw new RuntimeException(e);
+        }
+    }
     @PostMapping("/create-setup-intent")
     public ResponseEntity<?> createSetupIntent(@RequestParam String customerId) {
         try {
@@ -108,7 +127,6 @@ public class PaymentController {
             return ResponseEntity.status(500).body(Collections.singletonMap("error", e.getMessage()));
         }
     }
-
     @PostMapping("/create-payment")
     @Transactional
     public ResponseEntity<?> createPayment(@RequestParam String token, @RequestParam double amount, @RequestParam Long flightId, @RequestBody CombineBookingRequestDTO combineBookingRequestDTO) {

@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Controller.Airline;
 
+import com.example.FlightBooking.DTOs.Response.Airline.AllPlanesResponse;
 import com.example.FlightBooking.DTOs.Response.Airline.PlaneResponse;
 import com.example.FlightBooking.Models.Airlines;
 import com.example.FlightBooking.Models.Planes;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -27,9 +29,19 @@ public class PlaneController {
     private PlaneRepository planeRepository;
 
     @GetMapping("/get-all-plane")
-    public List<Planes> getAll()
+    public List<AllPlanesResponse> getAll()
     {
-        return planeRepository.findAll();
+        List<Planes>  planes =  planeRepository.findAll();
+        List<AllPlanesResponse> allPlanesResponseList = new ArrayList<>();
+        for(Planes plane : planes)
+        {
+            AllPlanesResponse allPlanesResponse = new AllPlanesResponse();
+            allPlanesResponse.setId(plane.getId());
+            allPlanesResponse.setAirlineId(plane.getAirline().getId());
+            allPlanesResponse.setFlightNumber(plane.getFlightNumber());
+            allPlanesResponseList.add(allPlanesResponse);
+        }
+        return allPlanesResponseList;
     }
     @PostMapping("/create-new-plane")
     public ResponseEntity<?> createNewPlane(@RequestParam Long airlineId) {

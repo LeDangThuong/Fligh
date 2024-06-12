@@ -60,12 +60,14 @@ public class AirlinesService {
     private Airlines getAirlineById(Long airlineId) {
         return airlinesRepository.findById(airlineId).orElseThrow(() -> new RuntimeException("Airline not found"));
     }
-    public Airlines createNewAirline(String airlineName, MultipartFile file) throws IOException {
+    public Airlines createNewAirline(String airlineName, MultipartFile file, List<MultipartFile> files) throws IOException {
         // Tải lên logo và nhận URL mới
         String logoUrl = cloudinaryService.uploadAirlineLogo(file);
+        List<String> popularPlaceUrl = cloudinaryService.uploadAirlinePromo(files);
         // Tạo mới hãng hàng không với tên và logo URL
         Airlines airlines = new Airlines();
         airlines.setAirlineName(airlineName);
+        airlines.setPromoForAirline(popularPlaceUrl);
         airlines.setLogoUrl(logoUrl);
 
         return airlinesRepository.save(airlines);
