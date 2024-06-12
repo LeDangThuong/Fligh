@@ -150,7 +150,7 @@ public class CRUDFlightController {
             @RequestParam(required = false) Integer endHour,
             @RequestParam(required = false) Integer endMinute,
             @RequestParam(required = false) String classType,
-            @RequestParam(required = false) String order) {
+            @RequestParam(value = "economy or business or firstclass",required = false) String order) {
         try {
             List<Flights> flights;
             if ((startHour == null || startMinute == null || endHour == null || endMinute == null) && (classType == null || order == null)) {
