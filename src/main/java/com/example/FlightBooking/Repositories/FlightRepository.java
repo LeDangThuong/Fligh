@@ -11,6 +11,7 @@ import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,6 +65,5 @@ public interface FlightRepository extends JpaRepository<Flights, Long> {
     List<Flights> findByOrderByFirstClassPriceAsc();
     List<Flights> findByOrderByFirstClassPriceDesc();
 
-    List<Flights> findByDepartureDateBetween(Timestamp startTime, Timestamp endTime);
-
 }
+

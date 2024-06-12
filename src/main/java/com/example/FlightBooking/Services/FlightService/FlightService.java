@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -273,9 +274,14 @@ public class FlightService {
 
         return flight;
     }
-    @Transactional
-    public List<Flights> sortTimeFrames(Timestamp startTime, Timestamp endTime)
-    {
-        return flightRepository.findByDepartureDateBetween(startTime, endTime);
+    @org.springframework.transaction.annotation.Transactional
+    public List<Flights> filterFlightsByTimeFrame(String type, Long departureAirportId, Long arrivalAirportId, Timestamp departureDate, Timestamp returnDate, LocalTime startTime, LocalTime endTime) {
+        List<Flights> flights = searchFlights(type, departureAirportId, arrivalAirportId, departureDate, returnDate);
+        return flights.stream()
+                .filter(flight -> {
+                    LocalTime departureTime = flight.getDepartureDate().toLocalDateTime().toLocalTime();
+                    return !departureTime.isBefore(startTime) && !departureTime.isAfter(endTime);
+                })
+                .collect(Collectors.toList());
     }
  }

@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -137,16 +138,25 @@ public class CRUDFlightController {
     {
         return popularPlaceRepository.findByFlightId(flightId).orElseThrow(() -> new RuntimeException("Popular place image not found with this id: " + flightId));
     }
-    @GetMapping("/search-flight-by-time-frame")
-    public ResponseEntity<List<Flights>> getFlightsByTimeFrame(
-            @RequestParam Timestamp startTime,
-            @RequestParam Timestamp endTime) {
+    @GetMapping("/filter-flights-by-time-frame")
+    public ResponseEntity<List<Flights>> filterFlightsByTimeFrame(
+            @RequestParam("ROUND_TRIP or ONE_WAY") String flightType,
+            @RequestParam Long departureAirportId,
+            @RequestParam Long arrivalAirportId,
+            @RequestParam Timestamp departureDate,
+            @RequestParam(required = false) Timestamp returnDate,
+            @RequestParam int startHour,
+            @RequestParam int startMinute,
+            @RequestParam int endHour,
+            @RequestParam int endMinute) {
         try {
-            List<Flights> flights = flightService.sortTimeFrames(startTime, endTime);
-            return new ResponseEntity<>(flights, HttpStatus.OK);
+            LocalTime startTime = LocalTime.of(startHour, startMinute);
+            LocalTime endTime = LocalTime.of(endHour, endMinute);
+
+            List<Flights> filteredFlights = flightService.filterFlightsByTimeFrame(flightType, departureAirportId, arrivalAirportId, departureDate, returnDate, startTime, endTime);
+            return ResponseEntity.ok(filteredFlights);
         } catch (Exception e) {
-            // Xử lý ngoại lệ nếu có
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(500).build();
         }
     }
 }
