@@ -8,6 +8,7 @@ import com.example.FlightBooking.Components.TemplateMethod.FlightCancelEmailSend
 import com.example.FlightBooking.Components.TemplateMethod.FlightDelayEmailSender;
 import com.example.FlightBooking.Components.TemplateMethod.FlightScheduleEmailSender;
 import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
+import com.example.FlightBooking.DTOs.Request.RegulationDTO;
 import com.example.FlightBooking.Enum.FlightStatus;
 import com.example.FlightBooking.Models.*;
 import com.example.FlightBooking.Repositories.*;
@@ -88,7 +89,7 @@ public class FlightService {
         // Lấy giá vé từ Regulation của Airlines thông qua planeId
         Planes planes = planeRepository.findById(flightDTO.getPlaneId()).orElseThrow(() -> new IllegalArgumentException("Invalid plane ID"));
         Airlines airlines = airlinesRepository.findByPlanes(planes).orElseThrow(() -> new IllegalArgumentException("Invalid plane"));
-        Regulation regulation = regulationService.getRegulationByAirlineId(airlines.getId());
+        RegulationDTO regulation = regulationService.getRegulationByAirlineId(airlines.getId());
         flight.setEconomyPrice(regulation.getEconomyPrice());
         flight.setBusinessPrice(regulation.getBusinessPrice());
         flight.setFirstClassPrice(regulation.getFirstClassPrice());
