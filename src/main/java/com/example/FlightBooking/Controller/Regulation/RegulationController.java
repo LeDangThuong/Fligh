@@ -49,7 +49,7 @@ public class RegulationController {
         return ResponseEntity.ok(savedPricing);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/updatePrice/{id}")
     public ResponseEntity<RegulationDTO> updatePricing(@PathVariable Long id,
                                                        @RequestParam double firstClassPrice,
                                                        @RequestParam double businessPrice,
@@ -68,4 +68,5 @@ public class RegulationController {
         List<AirlineDTO> airlines = regulationService.getAllAirlinesWithRegulations();
         return ResponseEntity.ok(airlines);
     }
+
 }
