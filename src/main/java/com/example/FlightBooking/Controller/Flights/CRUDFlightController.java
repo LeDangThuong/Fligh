@@ -140,7 +140,7 @@ public class CRUDFlightController {
     }
     @GetMapping("/filter-flights")
     public ResponseEntity<List<Flights>> filterFlightsByTimeFrame(
-            @RequestParam("ROUND_TRIP or ONE_WAY") String flightType,
+            @RequestParam(defaultValue = "ROUND_TRIP or ONE_WAY") String flightType,
             @RequestParam Long departureAirportId,
             @RequestParam Long arrivalAirportId,
             @RequestParam Timestamp departureDate,
@@ -149,8 +149,8 @@ public class CRUDFlightController {
             @RequestParam(required = false) Integer startMinute,
             @RequestParam(required = false) Integer endHour,
             @RequestParam(required = false) Integer endMinute,
-            @RequestParam(value = "economy or business or firstclass", required = false) String classType,
-            @RequestParam(value = "asc (tang dan), dsc (giam dan)",required = false) String order) {
+            @RequestParam( defaultValue ="economy or business or firstclass", required = false) String classType,
+            @RequestParam(defaultValue ="asc (tang dan), dsc (giam dan)",required = false) String order) {
         try {
             List<Flights> flights;
             if ((startHour == null || startMinute == null || endHour == null || endMinute == null) && (classType == null || order == null)) {
