@@ -283,14 +283,42 @@ public class FlightService {
                 })
                 .collect(Collectors.toList());
     }
-    @org.springframework.transaction.annotation.Transactional
-    public List<Flights> filterByPrice(String type, Long departureAirportId, Long arrivalAirportId, Timestamp departureDate, Timestamp returnDate, LocalTime startTime, LocalTime endTime) {
+    @Transactional
+    public List<Flights> filterFlightsByTimeFrameAndPrice(String type, Long departureAirportId, Long arrivalAirportId, Timestamp departureDate, Timestamp returnDate, LocalTime startTime, LocalTime endTime, String classType, String order) {
         List<Flights> flights = searchFlights(type, departureAirportId, arrivalAirportId, departureDate, returnDate);
-        return flights.stream()
+        List<Flights> filteredFlightsByTime = flights.stream()
                 .filter(flight -> {
                     LocalTime departureTime = flight.getDepartureDate().toLocalDateTime().toLocalTime();
                     return !departureTime.isBefore(startTime) && !departureTime.isAfter(endTime);
                 })
                 .collect(Collectors.toList());
+
+        switch (classType.toLowerCase()) {
+            case "economy":
+                if (order.equalsIgnoreCase("asc")) {
+                    filteredFlightsByTime.sort((f1, f2) -> Double.compare(f1.getEconomyPrice(), f2.getEconomyPrice()));
+                } else {
+                    filteredFlightsByTime.sort((f1, f2) -> Double.compare(f2.getEconomyPrice(), f1.getEconomyPrice()));
+                }
+                break;
+            case "business":
+                if (order.equalsIgnoreCase("asc")) {
+                    filteredFlightsByTime.sort((f1, f2) -> Double.compare(f1.getBusinessPrice(), f2.getBusinessPrice()));
+                } else {
+                    filteredFlightsByTime.sort((f1, f2) -> Double.compare(f2.getBusinessPrice(), f1.getBusinessPrice()));
+                }
+                break;
+            case "firstclass":
+                if (order.equalsIgnoreCase("asc")) {
+                    filteredFlightsByTime.sort((f1, f2) -> Double.compare(f1.getFirstClassPrice(), f2.getFirstClassPrice()));
+                } else {
+                    filteredFlightsByTime.sort((f1, f2) -> Double.compare(f2.getFirstClassPrice(), f1.getFirstClassPrice()));
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("Invalid class type");
+        }
+
+        return filteredFlightsByTime;
     }
  }
