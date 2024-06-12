@@ -29,17 +29,35 @@ public class VoucherController {
     @PostMapping(value = "/add", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseEntity<String> addVoucher(@RequestParam("Voucher Code") String code,
                                              @RequestParam("Voucher Name") String voucherName,
-                                             @RequestParam("Voucher Discount") BigDecimal discountAmount,
+                                             @RequestParam("Minimum Order") Long minOrder,
+                                             @RequestParam("Voucher Discount") Long discountAmount,
                                              @RequestPart("File") MultipartFile file) throws IOException {
         String imgUrl = cloudinaryService.uploadVoucherImage(file);
         Vouchers voucher = new Vouchers();
         voucher.setCode(code);
+        voucher.setMinOrder(minOrder);
         voucher.setVoucherName(voucherName);
         voucher.setDiscountAmount(discountAmount);
         voucher.setVoucherImageUrl(imgUrl);
         observerService.addVoucher(voucher);
         return ResponseEntity.ok("Voucher added and emails sent.");
     }
+
+    @GetMapping("/check")
+    public ResponseEntity<Boolean> checkVoucher(
+            @RequestParam Long voucherId,
+            @RequestParam Long orderAmount) {
+        boolean isValid = voucherService.checkVoucherMinOrder(voucherId, orderAmount);
+        return ResponseEntity.ok(isValid);
+    }
+
+    @GetMapping("/get-by-code")
+    public ResponseEntity<Vouchers> getVoucherByCode(@RequestParam String code) {
+        Vouchers voucher = voucherService.getVoucherByCode(code);
+        return ResponseEntity.ok(voucher);
+    }
+
+
 
     @GetMapping("/get-by-id")
     public ResponseEntity<Vouchers> getVoucherById(@RequestParam Long id) {

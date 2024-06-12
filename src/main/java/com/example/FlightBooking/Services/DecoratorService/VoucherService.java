@@ -19,6 +19,9 @@ public class VoucherService {
     public Vouchers getVoucherById(Long id) {
         return voucherRepository.findById(id).orElseThrow(() -> new RuntimeException("Voucher not found with this id: " + id));
     }
+    public Vouchers getVoucherByCode(String code){
+        return voucherRepository.findByCodeAndCreatedToday(code).orElseThrow(() -> new RuntimeException("Voucher not found"));
+    }
 
     public List<Vouchers> getAllVouchers() {
         return voucherRepository.findAll();
@@ -29,6 +32,13 @@ public class VoucherService {
         voucher.setCode(voucherDetails.getCode());
         voucher.setDiscountAmount(voucherDetails.getDiscountAmount());
         return voucherRepository.save(voucher);
+    }
+    public boolean checkVoucherMinOrder(Long voucherId, Long orderAmount) {
+        Vouchers voucher = voucherRepository.findById(voucherId)
+                .orElseThrow(() -> new RuntimeException("Voucher not found with id: " + voucherId));
+
+        Long minOrderAmount = voucher.getMinOrder();
+        return orderAmount.compareTo(minOrderAmount) >= 0;
     }
 
     public void deleteVoucher(Long id) {
