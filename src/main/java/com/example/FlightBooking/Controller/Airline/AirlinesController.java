@@ -69,18 +69,15 @@ public class AirlinesController {
     private PlaneService planeService;
 
     @PostMapping(value = "/upload-new-airline", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> createNewAirline(@RequestParam("airlineName") String airlineName,
-                                              @RequestPart("logo") MultipartFile file,
-                                              @RequestPart("popular-place") List<MultipartFile> files) {
-        try {
-            Airlines airline = airlinesService.createNewAirline(airlineName, file, files);
-            return ResponseEntity.ok(airline);
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body("Error uploading logo: " + e.getMessage());
-        }
-        catch (RuntimeException e) {
-            return ResponseEntity.status(403).body("Error uploading logo: " + e.getMessage());
-        }
+    public ResponseEntity<Airlines> createNewAirline(
+            @RequestParam String airlineName,
+            @RequestPart MultipartFile logoFile,
+            @RequestPart List<MultipartFile> promoFiles,
+            @RequestParam double firstClassPrice,
+            @RequestParam double businessPrice,
+            @RequestParam double economyPrice) throws IOException {
+        Airlines newAirlines = airlinesService.createNewAirline(airlineName, logoFile, promoFiles, firstClassPrice, businessPrice, economyPrice);
+        return ResponseEntity.ok(newAirlines);
     }
     @GetMapping("/get-airline-by-planeId")
     @Transactional

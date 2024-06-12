@@ -84,9 +84,12 @@ public class FlightService {
         flight.setArrivalAirportId(flightDTO.getArrivalAirportId());
         flight.setPlaneId(flightDTO.getPlaneId());
 
-        flight.setEconomyPrice(regulationService.getEconomyPrice(1L));
-        flight.setBusinessPrice(regulationService.getBusinessPrice(1L));
-        flight.setFirstClassPrice(regulationService.getFirstClassPrice(1L));
+        // Lấy giá vé từ Regulation của Airlines thông qua planeId
+        Regulation regulation = regulationService.getRegulationByPlaneId(flightDTO.getPlaneId());
+        flight.setEconomyPrice(regulation.getEconomyPrice());
+        flight.setBusinessPrice(regulation.getBusinessPrice());
+        flight.setFirstClassPrice(regulation.getFirstClassPrice());
+
         flight.setSeatStatuses(seatStatusesJson);
         // Thêm ràng buộc: Thời gian hạ cánh phải cách thời gian cất cánh ít nhất 1 tiếng
         if (flight.getArrivalDate().getTime() - flight.getDepartureDate().getTime() < 3600000) { // 1 tiếng = 3600000 ms
@@ -256,26 +259,32 @@ public class FlightService {
 
         return flight;
     }
-
     @Transactional
     public Flights scheduleFlight(Long flightId, String reason, Timestamp newDepartureTime, Timestamp newArrivalTime) throws MessagingException {
         Flights flight = flightRepository.findById(flightId)
                 .orElseThrow(() -> new RuntimeException("Flight not found"));
-
         flight.setFlightStatus(FlightStatus.SCHEDULED.name());
         flight.setDepartureDate(newDepartureTime);
         flight.setArrivalDate(newArrivalTime);
         flightRepository.save(flight);
-
         List<Booking> bookings = bookingRepository.findAllByFlightId(flightId);
         for (Booking booking : bookings) {
             flightScheduleEmailSender.sendEmail(booking.getBookerEmail(), reason);
         }
-
         return flight;
     }
     @org.springframework.transaction.annotation.Transactional
     public List<Flights> filterFlightsByTimeFrame(String type, Long departureAirportId, Long arrivalAirportId, Timestamp departureDate, Timestamp returnDate, LocalTime startTime, LocalTime endTime) {
+        List<Flights> flights = searchFlights(type, departureAirportId, arrivalAirportId, departureDate, returnDate);
+        return flights.stream()
+                .filter(flight -> {
+                    LocalTime departureTime = flight.getDepartureDate().toLocalDateTime().toLocalTime();
+                    return !departureTime.isBefore(startTime) && !departureTime.isAfter(endTime);
+                })
+                .collect(Collectors.toList());
+    }
+    @org.springframework.transaction.annotation.Transactional
+    public List<Flights> filterByPrice(String type, Long departureAirportId, Long arrivalAirportId, Timestamp departureDate, Timestamp returnDate, LocalTime startTime, LocalTime endTime) {
         List<Flights> flights = searchFlights(type, departureAirportId, arrivalAirportId, departureDate, returnDate);
         return flights.stream()
                 .filter(flight -> {
