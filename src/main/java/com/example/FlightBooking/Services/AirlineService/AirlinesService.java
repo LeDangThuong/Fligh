@@ -46,8 +46,13 @@ public class AirlinesService {
         return convertToDTO(airline);
     }
 
-    public AirlineDTO addAirlines(Airlines airline) {
-        Airlines savedAirline = airlineRepository.save(airline);
+    public AirlineDTO addAirlines(AirlineDTO airline) {
+        Airlines airlines = new Airlines();
+        airlines.setAirlineName(airline.getAirlineName());
+        airlines.setLogoUrl(airline.getLogoUrl());
+        airlines.setPromoForAirline(airline.getPromoForAirline());
+        airlines.setPlanes(new ArrayList<>());
+        Airlines savedAirline = airlineRepository.save(airlines);
         return convertToDTO(savedAirline);
     }
 

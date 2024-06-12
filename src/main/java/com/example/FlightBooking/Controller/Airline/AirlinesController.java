@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Controller.Airline;
 
+import com.example.FlightBooking.DTOs.Request.AirlineAndAirport.AirlineDTO;
 import com.example.FlightBooking.DTOs.Response.Airline.AirlineResponse;
 import com.example.FlightBooking.Models.Airlines;
 import com.example.FlightBooking.Repositories.AirlinesRepository;
@@ -32,10 +33,10 @@ public class AirlinesController {
     @GetMapping
     @Transactional
     public List<AirlineResponse> getAllAirlines() {
-        List<Airlines> airlinesList = airlinesService.getAllAirlines();
+        List<AirlineDTO> airlinesList = airlinesService.getAllAirlines();
         return airlinesList.stream().map(this::convertToAirlineResponse).collect(Collectors.toList());
     }
-    private AirlineResponse convertToAirlineResponse(Airlines airlines) {
+    private AirlineResponse convertToAirlineResponse(AirlineDTO airlines) {
         AirlineResponse response = new AirlineResponse();
         response.setId(airlines.getId());
         response.setAirlineName(airlines.getAirlineName());
@@ -47,12 +48,12 @@ public class AirlinesController {
     @GetMapping("/{id}")
     @Transactional
     public AirlineResponse getAirlinesById(@RequestParam Long id) {
-        Optional<Airlines> airlines = airlinesService.getAirlinesById(id);
-        return convertToAirlineResponse(airlines.get());
+        AirlineDTO airlines = airlinesService.getAirlinesById(id);
+        return convertToAirlineResponse(airlines);
     }
 
     @PostMapping
-    public Airlines addAirlines(@RequestBody Airlines airlines) {
+    public AirlineDTO addAirlines(@RequestBody AirlineDTO airlines) {
         return airlinesService.addAirlines(airlines);
     }
 
@@ -69,14 +70,14 @@ public class AirlinesController {
     private PlaneService planeService;
 
     @PostMapping(value = "/upload-new-airline", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Airlines> createNewAirline(
+    public ResponseEntity<AirlineDTO> createNewAirline(
             @RequestParam String airlineName,
             @RequestPart MultipartFile logoFile,
             @RequestPart List<MultipartFile> promoFiles,
             @RequestParam double firstClassPrice,
             @RequestParam double businessPrice,
             @RequestParam double economyPrice) throws IOException {
-        Airlines newAirlines = airlinesService.createNewAirline(airlineName, logoFile, promoFiles, firstClassPrice, businessPrice, economyPrice);
+        AirlineDTO newAirlines = airlinesService.createNewAirline(airlineName, logoFile, promoFiles, firstClassPrice, businessPrice, economyPrice);
         return ResponseEntity.ok(newAirlines);
     }
     @GetMapping("/get-airline-by-planeId")
