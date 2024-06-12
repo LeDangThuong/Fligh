@@ -43,11 +43,17 @@ public class RegulationService {
         regulationRepository.deleteById(id);
     }
 
-    public RegulationDTO updatePricing(Long id, double firstClassPrice, double businessPrice, double economyPrice) {
+    public RegulationDTO updatePricing(Long id, Double firstClassPrice, Double businessPrice, Double economyPrice) {
         Regulation regulation = regulationRepository.findById(id).orElseThrow(() -> new RuntimeException("Regulation not found"));
-        regulation.setFirstClassPrice(firstClassPrice);
-        regulation.setBusinessPrice(businessPrice);
-        regulation.setEconomyPrice(economyPrice);
+        if (firstClassPrice != null) {
+            regulation.setFirstClassPrice(firstClassPrice);
+        }
+        if (businessPrice != null) {
+            regulation.setBusinessPrice(businessPrice);
+        }
+        if (economyPrice != null) {
+            regulation.setEconomyPrice(economyPrice);
+        }
         Regulation updatedRegulation = regulationRepository.save(regulation);
         return convertToDTO(updatedRegulation);
     }
