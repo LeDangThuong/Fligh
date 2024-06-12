@@ -3,6 +3,7 @@ package com.example.FlightBooking.Services.RegulationService;
 import com.example.FlightBooking.Models.Airlines;
 import com.example.FlightBooking.Models.Planes;
 import com.example.FlightBooking.Models.Regulation;
+import com.example.FlightBooking.Repositories.AirlinesRepository;
 import com.example.FlightBooking.Repositories.PlaneRepository;
 import com.example.FlightBooking.Repositories.RegulationRepository;
 
@@ -16,7 +17,7 @@ public class RegulationService {
     @Autowired
     private RegulationRepository regulationRepository;
     @Autowired
-    private PlaneRepository planeRepository;
+    private AirlinesRepository airlinesRepository;
 
     public List<Regulation> getAllPricingByAirline(Long airlineId) {
         return regulationRepository.findByAirlineId(airlineId);
@@ -44,10 +45,8 @@ public class RegulationService {
         }
         return null;
     }
-    public Regulation getRegulationByPlaneId(Long planeId) {
-        Planes plane = planeRepository.findById(planeId)
-                .orElseThrow(() -> new RuntimeException("Plane not found"));
-        Airlines airline = plane.getAirline();
+    public Regulation getRegulationByAirlineId(Long airlineId) {
+        Airlines airline = airlinesRepository.findById(airlineId).orElseThrow(() -> new RuntimeException("Airline not found"));
         return regulationRepository.findByAirline(airline);
     }
 }

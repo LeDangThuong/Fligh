@@ -10,9 +10,7 @@ import com.example.FlightBooking.Components.TemplateMethod.FlightScheduleEmailSe
 import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
 import com.example.FlightBooking.Enum.FlightStatus;
 import com.example.FlightBooking.Models.*;
-import com.example.FlightBooking.Repositories.BookingRepository;
-import com.example.FlightBooking.Repositories.FlightRepository;
-import com.example.FlightBooking.Repositories.TicketRepository;
+import com.example.FlightBooking.Repositories.*;
 import com.example.FlightBooking.Services.PaymentService.PaymentService;
 import com.example.FlightBooking.Services.Planes.PlaneService;
 import com.example.FlightBooking.Services.RegulationService.RegulationService;
@@ -57,7 +55,10 @@ public class FlightService {
     private FlightScheduleEmailSender flightScheduleEmailSender; // Component mới cho việc gửi email
     @Autowired
     private RegulationService regulationService;
-
+    @Autowired
+    private AirlinesRepository airlinesRepository;
+    @Autowired
+    private PlaneRepository planeRepository;
 
     @Transactional
     public Flights createFlight(FlightDTO flightDTO) throws JsonProcessingException {
@@ -85,7 +86,9 @@ public class FlightService {
         flight.setPlaneId(flightDTO.getPlaneId());
 
         // Lấy giá vé từ Regulation của Airlines thông qua planeId
-        Regulation regulation = regulationService.getRegulationByPlaneId(flightDTO.getPlaneId());
+        Planes planes = planeRepository.findById(flightDTO.getPlaneId()).orElseThrow(() -> new IllegalArgumentException("Invalid plane ID"));
+        Airlines airlines = airlinesRepository.findByPlanes(planes).orElseThrow(() -> new IllegalArgumentException("Invalid plane"));
+        Regulation regulation = regulationService.getRegulationByAirlineId(airlines.getId());
         flight.setEconomyPrice(regulation.getEconomyPrice());
         flight.setBusinessPrice(regulation.getBusinessPrice());
         flight.setFirstClassPrice(regulation.getFirstClassPrice());

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,9 +68,9 @@ public class AirlinesService {
         // Tải lên logo và nhận URL mới
         String logoUrl = cloudinaryService.uploadAirlineLogo(file);
         List<String> popularPlaceUrl = cloudinaryService.uploadAirlinePromo(files);
-
         // Tạo mới hãng hàng không với tên và logo URL
         Airlines airlines = new Airlines();
+        airlines.setPlanes(new ArrayList<>());
         airlines.setAirlineName(airlineName);
         airlines.setPromoForAirline(popularPlaceUrl);
         airlines.setLogoUrl(logoUrl);
