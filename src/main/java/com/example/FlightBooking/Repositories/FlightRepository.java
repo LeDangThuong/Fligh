@@ -54,4 +54,16 @@ public interface FlightRepository extends JpaRepository<Flights, Long> {
                                          @Param("departureDate") Timestamp departureDate,
                                          @Param("arrivalDate") Timestamp arrivalDate);
 
+
+    List<Flights> findByOrderByEconomyPriceAsc();
+    List<Flights> findByOrderByEconomyPriceDesc();
+
+    List<Flights> findByOrderByBusinessPriceAsc();
+    List<Flights> findByOrderByBusinessPriceDesc();
+
+    List<Flights> findByOrderByFirstClassPriceAsc();
+    List<Flights> findByOrderByFirstClassPriceDesc();
+
+    List<Flights> findByDepartureDateBetween(Timestamp startTime, Timestamp endTime);
+
 }

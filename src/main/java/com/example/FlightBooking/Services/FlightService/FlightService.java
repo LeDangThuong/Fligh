@@ -273,5 +273,9 @@ public class FlightService {
 
         return flight;
     }
-
+    @Transactional
+    public List<Flights> sortTimeFrames(Timestamp startTime, Timestamp endTime)
+    {
+        return flightRepository.findByDepartureDateBetween(startTime, endTime);
+    }
  }

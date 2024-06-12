@@ -137,4 +137,16 @@ public class CRUDFlightController {
     {
         return popularPlaceRepository.findByFlightId(flightId).orElseThrow(() -> new RuntimeException("Popular place image not found with this id: " + flightId));
     }
+    @GetMapping("/search-flight-by-time-frame")
+    public ResponseEntity<List<Flights>> getFlightsByTimeFrame(
+            @RequestParam Timestamp startTime,
+            @RequestParam Timestamp endTime) {
+        try {
+            List<Flights> flights = flightService.sortTimeFrames(startTime, endTime);
+            return new ResponseEntity<>(flights, HttpStatus.OK);
+        } catch (Exception e) {
+            // Xử lý ngoại lệ nếu có
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
