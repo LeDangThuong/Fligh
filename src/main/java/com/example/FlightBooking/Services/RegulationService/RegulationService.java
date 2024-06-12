@@ -51,8 +51,13 @@ public class RegulationService {
         Regulation regulation = regulationRepository.findByAirline(airline);
         return convertToDTO(regulation);
     }
-
-
+    @Transactional
+    public RegulationDTO getRegulationByAirlineId(Long airlineId) {
+        Airlines airline = airlineRepository.findById(airlineId).orElseThrow(() -> new IllegalArgumentException("Invalid airline ID"));
+        Regulation regulation = regulationRepository.findByAirline(airline);
+        return convertToDTO(regulation);
+    }
+    @Transactional
     public List<RegulationDTO> getAllPricingByAirline(Long airlineId) {
         List<Regulation> regulations = regulationRepository.findByAirlineId(airlineId);
         return regulations.stream().map(this::convertToDTO).collect(Collectors.toList());
