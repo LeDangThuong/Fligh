@@ -15,6 +15,6 @@ public interface PaymentProcessor {
     String getSetupIntentId(String token) throws StripeException;
     String getPaymentMethodId(String token) throws StripeException;
     String getStripeClientSecret(String token) throws StripeException;
-    PaymentIntent processPayment(String token, double amount, Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException;
+    PaymentIntent processPayment(String token, Long idVoucher, double amount, Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException;
 
 }

@@ -35,8 +35,8 @@ public class EmailNotificationSubscriber implements Subscriber {
             Vouchers voucher = voucherService.getVoucherById(voucherId);
             SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
             String formattedDate = formatter.format(voucher.getCreatedAt());
-            BigDecimal discountAmount = voucher.getDiscountAmount();
-            double doubleDiscountAmount = discountAmount.doubleValue(); // Chuyển đổi BigDecimal thành double
+            Long discountAmount = voucher.getDiscountAmount();
+            double doubleDiscountAmount = discountAmount.doubleValue(); // Chuyển đổi Long thành double
             long floorDiscountAmount = (long) Math.floor(doubleDiscountAmount); // Làm tròn xuống và lấy phần nguyên
             String roundedDiscountAmount = Double.toString(floorDiscountAmount);
             List<Users> users = userRepository.findAll();

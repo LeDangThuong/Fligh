@@ -8,6 +8,7 @@ import com.example.FlightBooking.Models.Passengers;
 import com.example.FlightBooking.Models.Statistics;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.BookingRepository;
+import com.example.FlightBooking.Repositories.Decorator.VoucherRepository;
 import com.example.FlightBooking.Repositories.PaymentMethodRepository;
 import com.example.FlightBooking.Repositories.StatisticsRepository;
 import com.example.FlightBooking.Repositories.UserRepository;
@@ -30,6 +31,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -54,6 +56,9 @@ public class PaymentService {
     private PaymentMethodRepository paymentMethodRepository;
     @Autowired
     private BookingRepository bookingRepository;
+
+    @Autowired
+    private VoucherRepository voucherRepository;
 
     private final BookingService bookingService;
     @Autowired
@@ -125,10 +130,18 @@ public class PaymentService {
         paymentMethodRepository.save(newPaymentMethod);
     }
 
-    public PaymentIntent createPaymentIntent(String token, double amount, Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException {
+    public PaymentIntent createPaymentIntent(String token, Long idVoucher, double amount, Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException {
+        Long discount;
+        if(idVoucher == 0){
+            discount = 0L;
+        }else {
+            Vouchers voucher = voucherRepository.findById(idVoucher).orElseThrow();
+            discount = voucher.getDiscountAmount();
+        }
+
         String customerId = getStripeCustomerId(token);
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                .setAmount((long) (amount * 100))  // amount in cents
+                .setAmount((long) (amount * (1-discount/100) * 100))  // amount in cents
                 .setCurrency("usd")
                 .setCustomer(customerId)
                 .setPaymentMethod(getPaymentMethodId(token))
