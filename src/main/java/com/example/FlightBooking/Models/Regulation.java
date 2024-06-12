@@ -24,9 +24,11 @@ public class Regulation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @OneToOne
     @JoinColumn(name = "airline_id", nullable = false)
     private Airlines airline;
+
     private double firstClassPrice;
     private double businessPrice;
     private double economyPrice;

@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Controller.Airline;
 
+import com.example.FlightBooking.DTOs.Request.AirlineAndAirport.PlaneDTO;
 import com.example.FlightBooking.DTOs.Response.Airline.AllPlanesResponse;
 import com.example.FlightBooking.DTOs.Response.Airline.PlaneResponse;
 import com.example.FlightBooking.Models.Airlines;
@@ -46,7 +47,7 @@ public class PlaneController {
     @PostMapping("/create-new-plane")
     public ResponseEntity<?> createNewPlane(@RequestParam Long airlineId) {
         try {
-            Planes plane = planeService.createPlaneWithSeats(airlineId);
+            PlaneDTO plane = planeService.createPlaneWithSeats(airlineId);
             return ResponseEntity.ok(plane);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error creating plane: " + e.getMessage());
@@ -57,7 +58,7 @@ public class PlaneController {
     public ResponseEntity<?> getDetailPlane(@RequestParam Long planeId)
     {
         try {
-            Planes planes = planeService.getDetailPlane(planeId);
+            PlaneDTO planes = planeService.getDetailPlane(planeId);
             return ResponseEntity.ok(planes);
 
         } catch (Exception e) {
@@ -68,7 +69,7 @@ public class PlaneController {
     public ResponseEntity<?> getPlaneNumber(@RequestParam Long planeId)
     {
         try {
-            Planes planes = planeService.getDetailPlane(planeId);
+            PlaneDTO planes = planeService.getDetailPlane(planeId);
             PlaneResponse planeResponse = new PlaneResponse();
             planeResponse.setFlightNumber(planes.getFlightNumber());
             planeResponse.setId(planes.getId());
@@ -81,14 +82,14 @@ public class PlaneController {
     @GetMapping("/get-all-plane-by-airline-id")
     public ResponseEntity<?> getAllPlane(@RequestParam Long airlineId) {
         try {
-            List<Planes> planes = planeService.getAllPlanesByAirlineId(airlineId);
+            List<PlaneDTO> planes = planeService.getAllPlanesByAirlineId(airlineId);
             List<PlaneResponse> planeResponses = planes.stream().map(this::convertToPlaneResponse).collect(Collectors.toList());
             return ResponseEntity.ok(planeResponses);
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error getting Plane detail: " + e.getMessage());
         }
     }
-    private PlaneResponse convertToPlaneResponse(Planes planes) {
+    private PlaneResponse convertToPlaneResponse(PlaneDTO planes) {
         PlaneResponse response = new PlaneResponse();
         response.setId(planes.getId());
         response.setFlightNumber(planes.getFlightNumber());

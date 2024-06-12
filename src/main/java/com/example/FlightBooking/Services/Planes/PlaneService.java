@@ -3,6 +3,7 @@ package com.example.FlightBooking.Services.Planes;
 import com.example.FlightBooking.Components.FactoryMethod.BusinessClassSeatFactory;
 import com.example.FlightBooking.Components.FactoryMethod.EconomyClassSeatFactory;
 import com.example.FlightBooking.Components.FactoryMethod.FirstClassSeatFactory;
+import com.example.FlightBooking.DTOs.Request.AirlineAndAirport.PlaneDTO;
 import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.Booking.SelectSeatDTO;
 import com.example.FlightBooking.Enum.SeatStatus;
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -23,31 +25,24 @@ import java.util.stream.Collectors;
 
 @Service
 public class PlaneService {
-    private static final Logger logger = LoggerFactory.getLogger(PlaneService.class);
 
     @Autowired
     private PlaneRepository planeRepository;
-    @Autowired
-    private AirlinesRepository airlinesRepository;
-    @Autowired
-    private FlightRepository flightRepository;
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Autowired
-    private BookingRepository bookingRepository;
-    @Autowired
-    private TicketRepository ticketRepository;
-    public Planes createPlaneWithSeats(Long airlineId) throws Exception {
+    private AirlinesRepository airlineRepository;
+    @Transactional
+    public PlaneDTO createPlaneWithSeats(Long airlineId) throws Exception {
         Airlines airline = getAirlineById(airlineId);
         String flightNumber = generateUniqueFlightNumber(airline);
         Planes plane = new Planes();
         plane.setFlightNumber(flightNumber);
         plane.setAirline(airline);
-        airline.addPlane(plane); // Add plane to the airline composite
-        airlinesRepository.save(airline); // Save airline to persist changes
-        return plane;
+        airline.addPlane(plane);
+        Planes savedPlane = planeRepository.save(plane);
+        return convertToDTO(savedPlane );
     }
+    @Transactional
     private String generateUniqueFlightNumber(Airlines airline) {
         String flightNumber;
         Random random = new Random();
@@ -56,6 +51,7 @@ public class PlaneService {
         } while (planeRepository.existsByFlightNumber(flightNumber));
         return flightNumber;
     }
+    @Transactional
     private String generateFlightNumber(Airlines airline, Random random) {
         int number = 100 + random.nextInt(900);
         switch (airline.getAirlineName()) {
@@ -71,13 +67,27 @@ public class PlaneService {
                 return "UNDEFINED";
         }
     }
+    @Transactional
     public Airlines getAirlineById(Long airlineId) {
-        return airlinesRepository.findById(airlineId).orElseThrow(() -> new RuntimeException("Airline not found"));
+        return airlineRepository.findById(airlineId)
+                .orElseThrow(() -> new RuntimeException("Airline not found with id " + airlineId));
     }
-    public Planes getDetailPlane(Long planeId) {
-        return planeRepository.findById(planeId).orElseThrow(() -> new RuntimeException("Airline not found"));
+    @Transactional
+    public PlaneDTO getDetailPlane(Long planeId) {
+        Planes plane = planeRepository.findById(planeId)
+                .orElseThrow(() -> new RuntimeException("Plane not found with id " + planeId));
+        return convertToDTO(plane);
     }
-    public List<Planes> getAllPlanesByAirlineId(Long airlineId) {
-        return planeRepository.findByAirlineId(airlineId);
+    @Transactional
+    public List<PlaneDTO> getAllPlanesByAirlineId(Long airlineId) {
+        List<Planes> planes = planeRepository.findByAirlineId(airlineId);
+        return planes.stream().map(this::convertToDTO).collect(Collectors.toList());
+    }
+    @Transactional
+    private PlaneDTO convertToDTO(Planes plane) {
+        PlaneDTO dto = new PlaneDTO();
+        dto.setId(plane.getId());
+        dto.setFlightNumber(plane.getFlightNumber());
+        return dto;
     }
 }
