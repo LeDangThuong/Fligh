@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
+import jakarta.mail.MessagingException;
+
 @Service
 public class StripePaymentAdapter implements PaymentProcessor{
     @Autowired
@@ -52,7 +54,7 @@ public class StripePaymentAdapter implements PaymentProcessor{
 
     @Override
     public PaymentIntent processPayment(String token, Long ibVoucher, double amount,
-                                        Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException {
+                                        Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException, MessagingException {
         return paymentService.createPaymentIntent(token, ibVoucher, amount, flightId, combineBookingRequestDTO);
     }
 }

@@ -57,12 +57,22 @@
     </div>
     <div class="content">
         <table width="100%" cellpadding="0" cellspacing="0">
-            <tr>
-                <td style="font-size: 30px; color: #222; text-align: right;" th:text="${departure}"></td>
-                <td style="text-align: center;">
+            <tr style="display: flex;">
+                <td style="flex: 1; font-size: 30px; color: #222; text-align: right;"  th:text="${departure}"></td>
+                <td style=" flex: 1; text-align: center;">
                     <img src="https://firebasestorage.googleapis.com/v0/b/shoppingapp-a20a4.appspot.com/o/test%2Fairplane-takeoff-fill%20(1).png?alt=media&token=4fcfdcec-5147-40f9-8f57-708bfe576dc8" alt="Plane" style="height: 50px; width: 50px;">
                 </td>
-                <td style="font-size: 30px; color: #222; margin-right: 20px;" th:text="${arrival}"></td>
+                <td style="flex: 1; font-size: 30px; color: #222; " th:text="${arrival}"></td>
+            </tr>
+            <tr style="display: flex;">
+                <td style=" flex: 1; font-size: 18px; color: #222; text-align: right;" th:text="${departureTime}"></td>
+                <td style="flex: 1;"></td>
+                <td style="flex: 1; font-size: 18px; color: #222;" th:text="${arrivalTime}"></td>
+            </tr>
+            <tr style="display: flex;">
+                <td style="flex: 1; font-size: 14px; color: #999; text-align: center;" th:text="${departureCity}"></td>
+
+                <td style="flex: 1; font-size: 14px; color: #999; text-align: center;" th:text="${arrivalCity}"></td>
             </tr>
         </table>
     </div>
