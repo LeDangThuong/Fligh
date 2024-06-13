@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -84,6 +85,10 @@ public class BookingController {
     @GetMapping("/get-ticket-by-user-id")
     public List<TicketResponse> getTicket(@RequestParam Long userId)
     {
+        if(bookingService.getAllTicketByUserId(userId) == null)
+        {
+            return new ArrayList<>();
+        }
         return bookingService.getAllTicketByUserId(userId);
     }
 }
