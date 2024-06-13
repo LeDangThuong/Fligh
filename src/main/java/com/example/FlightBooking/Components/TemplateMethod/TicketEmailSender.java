@@ -30,7 +30,7 @@ public class TicketEmailSender {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, "utf-8");
         mimeMessageHelper.setTo(email);
-        mimeMessageHelper.setSubject("New Voucher Available!");
+        mimeMessageHelper.setSubject("New Ticket Available!");
 
         String gate = "A01";
 
