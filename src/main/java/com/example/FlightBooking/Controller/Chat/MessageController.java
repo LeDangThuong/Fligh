@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @RestController
 @CrossOrigin
 @RequestMapping("/message")
-@Tag(name ="Message Controller")
+@Tag(name = "Message Controller")
 public class MessageController {
     @Autowired
     private MessageRepository messageRepository;
@@ -69,7 +69,7 @@ public class MessageController {
         supportSession.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         supportSessionRepository.save(supportSession);
 
-        // Optionally delete all messages in the session
+        // Delete all messages in the session
         List<Message> messages = messageRepository.findBySessionId(sessionId);
         messageRepository.deleteAll(messages);
     }
@@ -122,3 +122,4 @@ public class MessageController {
         return userRepository.findById(adminId).orElseThrow();
     }
 }
+
