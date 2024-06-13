@@ -196,7 +196,9 @@ public class BookingService {
             for (Passengers passengers : passengersList) {
                 seatNumbers.add(passengers.getSeatNumber());
             }
+
             TicketResponse ticketResponse = new TicketResponse();
+            ticketResponse.setBookingId(booking.getId());
             ticketResponse.setAirlineLogo(airlines.getLogoUrl());
             ticketResponse.setDepartAirport(departureAirport.getAirportName());
             ticketResponse.setArrivalAirport(arrivalAirport.getAirportName());

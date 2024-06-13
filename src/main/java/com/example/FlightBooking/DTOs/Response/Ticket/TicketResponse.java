@@ -15,4 +15,5 @@ public class TicketResponse {
     private String iataCodeDepart;
     private String iataCodeArrival;
     private List<String> seatNumber;
+    private Long bookingId;
 }
