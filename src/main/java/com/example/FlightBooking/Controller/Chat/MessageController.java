@@ -107,14 +107,6 @@ public class MessageController {
         supportSession.setAdminId(adminId);
         supportSession.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
         supportSessionRepository.save(supportSession);
-
-        Message notificationMessage = new Message();
-        notificationMessage.setContent("Nhân viên đang hỗ trợ bạn...");
-        notificationMessage.setSenderId(adminId);
-        notificationMessage.setReceiverId(supportSession.getCustomerId());
-        notificationMessage.setSessionId(sessionId);
-        notificationMessage.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-        messageRepository.save(notificationMessage);
     }
 
     @GetMapping("/admin/{adminId}")
@@ -122,4 +114,3 @@ public class MessageController {
         return userRepository.findById(adminId).orElseThrow();
     }
 }
-
