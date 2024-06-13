@@ -17,7 +17,7 @@ import java.util.List;
 
 @RestController
 @CrossOrigin
-@RequestMapping("/reviews")
+@RequestMapping("/review")
 public class UserReviewController {
     @Autowired
     private UserReviewService userReviewService;
