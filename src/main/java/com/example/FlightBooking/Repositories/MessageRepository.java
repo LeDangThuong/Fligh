@@ -14,4 +14,5 @@ import java.util.Optional;
 @Hidden
 public interface MessageRepository extends JpaRepository<Message, Long> {
     List<Message> findBySessionId(Long sessionId);
+    Message deleteBySessionId(Long sessionId);
 }

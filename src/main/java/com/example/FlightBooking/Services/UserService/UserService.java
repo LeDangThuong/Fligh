@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Services.UserService;
 
+import com.example.FlightBooking.Config.WebSocket.DTO.UserWithLatestMessageDTO;
 import com.example.FlightBooking.DTOs.Request.User.UserRequest;
 import com.example.FlightBooking.Enum.Roles;
 import com.example.FlightBooking.Models.Users;
@@ -16,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.Setter;
 
 @Service
 public class UserService {
@@ -81,5 +81,9 @@ public class UserService {
     }
     public Users findById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+    public UserWithLatestMessageDTO getUserById(Long id) {
+        Users user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return new UserWithLatestMessageDTO(user.getId(), user.getFullName(), user.getAvatarUrl());
     }
 }

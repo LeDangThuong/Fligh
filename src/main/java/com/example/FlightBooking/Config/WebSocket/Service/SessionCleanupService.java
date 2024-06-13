@@ -1,4 +1,4 @@
-package com.example.FlightBooking.Config.WebSocket;
+package com.example.FlightBooking.Config.WebSocket.Service;
 
 import com.example.FlightBooking.Repositories.SupportSessionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
