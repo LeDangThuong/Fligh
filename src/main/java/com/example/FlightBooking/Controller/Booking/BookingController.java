@@ -85,10 +85,12 @@ public class BookingController {
     @GetMapping("/get-ticket-by-user-id")
     public List<TicketResponse> getTicket(@RequestParam Long userId)
     {
-        if(bookingService.getAllTicketByUserId(userId) == null)
+        try {
+            return bookingService.getAllTicketByUserId(userId);
+        }
+        catch(Exception e)
         {
             return new ArrayList<>();
         }
-        return bookingService.getAllTicketByUserId(userId);
     }
 }
