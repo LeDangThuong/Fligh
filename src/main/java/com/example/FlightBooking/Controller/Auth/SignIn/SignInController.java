@@ -62,10 +62,10 @@ public class SignInController {
         return new ResponseEntity<>(loginResponse, HttpStatus.OK);
     }
     @PostMapping("/auth/signin-update")
-    public ResponseEntity<String> authenticateUpdate(@RequestBody SignInDTO request) {
+    public ResponseEntity<?> authenticateUpdate(@RequestBody SignInDTO request) {
         try {
-            loginService.login(request);
-            return ResponseEntity.ok("Login successful.");
+            LoginResponse loginResponse = loginService.login(request);
+            return ResponseEntity.ok().body(loginResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Login failed: " + e.getMessage());
         }
