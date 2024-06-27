@@ -13,5 +13,6 @@ import java.util.Optional;
 @Repository
 @Hidden
 public interface MessageRepository extends JpaRepository<Message, Long> {
-    List<Message> findBySenderIdOrReceiverId(String senderId, String receiverId);
+    List<Message> findBySenderIdAndReceiverId(String senderId, String receiverId);
+    List<Message> findByReceiverId(String receiverId);
 }
