@@ -35,4 +35,14 @@ public class MessageController {
     public List<Message> getMessagesByReceiver(@PathVariable String receiverId) {
         return messageRepository.findByReceiverId(receiverId);
     }
+
+    // Get chat history between two users (bi-directional)
+    @GetMapping("/history/{userId1}/{userId2}")
+    public List<Message> getChatHistory(@PathVariable String userId1, @PathVariable String userId2) {
+        List<Message> messagesFromUser1ToUser2 = messageRepository.findBySenderIdAndReceiverId(userId1, userId2);
+        List<Message> messagesFromUser2ToUser1 = messageRepository.findBySenderIdAndReceiverId(userId2, userId1);
+        messagesFromUser1ToUser2.addAll(messagesFromUser2ToUser1);
+        messagesFromUser1ToUser2.sort((m1, m2) -> m1.getCreatedAt().compareTo(m2.getCreatedAt()));
+        return messagesFromUser1ToUser2;
+    }
 }
