@@ -116,5 +116,13 @@ public class CloudinaryService {
                 ObjectUtils.asMap("resource_type", "auto","folder", "Popular Place"));
         return  (String) response.get("url");
     }
+    public String uploadUserReview(MultipartFile file) throws IOException {
+        Map response = cloudinary.uploader().upload(file.getBytes(),
+                ObjectUtils.asMap(
+                        "resource_type", "auto",
+                        "folder", "User review"
+                ));
+        return (String) response.get("url");
+    }
 }
 

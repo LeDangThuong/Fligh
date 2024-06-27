@@ -33,8 +33,8 @@ public class UserInfoController {
     private JwtService jwtService;
 
     @GetMapping("/users")
-    public ResponseEntity<List<Users>> getAllUsers() {
-        List<Users> users = userService.getAllUsers();
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        List<UserResponse> users = userService.getAllUsers();
 
         if (users.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
