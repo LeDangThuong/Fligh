@@ -2,6 +2,7 @@ package com.example.FlightBooking.Services.UserService;
 
 import com.example.FlightBooking.Config.WebSocket.DTO.UserWithLatestMessageDTO;
 import com.example.FlightBooking.DTOs.Request.User.UserRequest;
+import com.example.FlightBooking.DTOs.Response.User.UserResponse;
 import com.example.FlightBooking.Enum.Roles;
 import com.example.FlightBooking.Models.Users;
 import com.example.FlightBooking.Repositories.UserRepository;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,8 +33,19 @@ public class UserService {
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
-    public List<Users> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+
+        List<Users> userList = userRepository.findAll();
+        List<UserResponse> userResponseList = new ArrayList<>();
+        for (Users users : userList)
+        {
+            UserResponse userResponse = new UserResponse();
+            userResponse.setId(users.getId());
+            userResponse.setRole(users.getRole());
+            userResponse.setFullName(users.getFullName());
+            userResponseList.add(userResponse);
+        }
+        return userResponseList;
     }
     public Users updateUser(String username, UserRequest updateRequest) {
         Optional<Users> userOptional = userRepository.findByUsername(username);
