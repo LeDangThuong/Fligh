@@ -40,8 +40,9 @@ public class TutorialHandler implements WebSocketHandler {
         }
 
         receivedMessage.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
-
         messageRepository.save(receivedMessage);
+
+        log.info("Sending message: {}", receivedMessage); // Debug log
 
         for (WebSocketSession sess : sessions) {
             if (sess.isOpen()) {

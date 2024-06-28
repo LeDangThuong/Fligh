@@ -8,6 +8,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -36,7 +38,7 @@ public class MessageController {
         return messageRepository.findByReceiverId(receiverId);
     }
 
-    // Get chat history between two users (bi-directional)
+    // Get chat history between two users
     @GetMapping("/history/{userId1}/{userId2}")
     public List<Message> getChatHistory(@PathVariable String userId1, @PathVariable String userId2) {
         List<Message> messagesFromUser1ToUser2 = messageRepository.findBySenderIdAndReceiverId(userId1, userId2);
@@ -45,4 +47,20 @@ public class MessageController {
         messagesFromUser1ToUser2.sort((m1, m2) -> m1.getCreatedAt().compareTo(m2.getCreatedAt()));
         return messagesFromUser1ToUser2;
     }
+
+    // Get latest message for each user
+    @GetMapping("/latest")
+    public List<Message> getLatestMessages() {
+        List<Message> allMessages = messageRepository.findAll();
+        Map<String, Message> latestMessagesMap = allMessages.stream()
+                .collect(Collectors.groupingBy(
+                        Message::getReceiverId,
+                        Collectors.collectingAndThen(
+                                Collectors.maxBy((m1, m2) -> m1.getCreatedAt().compareTo(m2.getCreatedAt())),
+                                optionalMessage -> optionalMessage.orElse(null)
+                        )
+                ));
+        return latestMessagesMap.values().stream().collect(Collectors.toList());
+    }
+
 }
