@@ -25,4 +25,10 @@ public class FlightDTO {
     private Long arrivalAirportId;
     @NotNull(message = "Plane ID is required")
     private Long planeId;
+
+    @NotNull(message = "Airline ID is required")
+    private Long airlineId;
+
+    @NotNull(message = "Airline name is required")
+    private String airlineName;
 }

@@ -2,10 +2,10 @@ package com.example.FlightBooking.Controller.Flights;
 
 import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
-import com.example.FlightBooking.Models.Booking;
-import com.example.FlightBooking.Models.Flights;
-import com.example.FlightBooking.Models.PopularPlace;
+import com.example.FlightBooking.Models.*;
+import com.example.FlightBooking.Repositories.AirlinesRepository;
 import com.example.FlightBooking.Repositories.FlightRepository;
+import com.example.FlightBooking.Repositories.PlaneRepository;
 import com.example.FlightBooking.Repositories.PopularPlaceRepository;
 import com.example.FlightBooking.Services.CloudinaryService.CloudinaryService;
 import com.example.FlightBooking.Services.FlightService.FlightService;
@@ -44,7 +44,10 @@ public class CRUDFlightController {
     private FlightRepository flightRepository;
     @Autowired
     private CloudinaryService cloudinaryService;
-
+    @Autowired
+    private AirlinesRepository airlinesRepository;
+    @Autowired
+    private PlaneRepository planeRepository;
     @Autowired
     private PopularPlaceRepository popularPlaceRepository;
     @PostMapping(value = "/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -88,8 +91,10 @@ public class CRUDFlightController {
     @GetMapping ("/get-flight-by-id")
     public FlightDTO getFlightById(@RequestParam Long id)
     {
-
         Flights flights = flightRepository.findById(id).orElseThrow(() -> new RuntimeException("Flight not found with this id: " + id));
+        Planes planes = planeRepository.findById(flights.getPlaneId()).orElseThrow(()-> new RuntimeException("Plane not found with this id: " + id));
+
+        Airlines airlines = airlinesRepository.findByPlanes(planes).orElseThrow(()-> new RuntimeException("Airline not found with this id: " + id));
         FlightDTO flightDTO = new FlightDTO();
         flightDTO.setFlightStatus(flights.getFlightStatus());
         flightDTO.setDepartureDate(flights.getDepartureDate());
@@ -98,6 +103,8 @@ public class CRUDFlightController {
         flightDTO.setArrivalAirportId(flights.getArrivalAirportId());
         flightDTO.setDuration(flights.getDuration());
         flightDTO.setPlaneId(flights.getPlaneId());
+        flightDTO.setAirlineId(airlines.getId());
+        flightDTO.setAirlineName(airlines.getAirlineName());
         return  flightDTO;
     }
     // Cai nay la xem thu cai ghe do da duoc dat chua, hay la on hold theo user ID nao
