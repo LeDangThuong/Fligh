@@ -228,6 +228,9 @@ public class CRUDFlightController {
                 flightDTO.setPlaneId(flight.getPlaneId());
                 flightDTO.setAirlineId(airline.getId());
                 flightDTO.setAirlineName(airline.getAirlineName());
+                flightDTO.setEconomyPrice(flight.getEconomyPrice());
+                flightDTO.setBusinessPrice(flight.getBusinessPrice());
+                flightDTO.setFirstClassPrice(flight.getFirstClassPrice());
                 // Set other necessary fields...
                 return flightDTO;
             }).collect(Collectors.toList());

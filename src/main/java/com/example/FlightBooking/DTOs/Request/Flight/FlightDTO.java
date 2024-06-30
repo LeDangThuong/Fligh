@@ -31,4 +31,7 @@ public class FlightDTO {
 
     @NotNull(message = "Airline name is required")
     private String airlineName;
+    private Double economyPrice;
+    private Double businessPrice;
+    private Double firstClassPrice;
 }
