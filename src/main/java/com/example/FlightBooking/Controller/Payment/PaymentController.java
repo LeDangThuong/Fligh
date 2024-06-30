@@ -11,6 +11,7 @@ import com.example.FlightBooking.Services.PaymentService.PaymentService;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import com.stripe.model.SetupIntent;
+import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.SetupIntentCreateParams;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -150,6 +151,97 @@ public class PaymentController {
                 .map(pm -> new PaymentMethodDTO(pm.getStripePaymentMethodId(), pm.getCardLast4(), pm.getCardBrand()))
                 .collect(Collectors.toList());
         return ResponseEntity.ok(paymentMethodDTOs);
+    }
+
+    @PostMapping("/register-card")
+    public ResponseEntity<?> registerCard(
+            @RequestParam String customerId,
+            @RequestParam String setupIntentId,
+            @RequestParam String username
+    ) {
+        try {
+            // Retrieve the setup intent
+            SetupIntent setupIntent = SetupIntent.retrieve(setupIntentId);
+
+            // Extract the payment method ID from the setup intent
+            String paymentMethodId = setupIntent.getPaymentMethod();
+
+            // Check if payment method ID is null
+            if (paymentMethodId == null) {
+                return ResponseEntity.status(400).body(Collections.singletonMap("error", "SetupIntent does not have a PaymentMethod."));
+            }
+
+            // Retrieve the user by username
+            Users user = userRepository.findByUsername(username)
+                    .orElseThrow(() -> new RuntimeException("User not found with this username: " + username));
+
+            // Retrieve the payment method details
+            com.stripe.model.PaymentMethod stripePaymentMethod = com.stripe.model.PaymentMethod.retrieve(paymentMethodId);
+
+            if (stripePaymentMethod.getCard() == null) {
+                return ResponseEntity.status(400).body(Collections.singletonMap("error", "PaymentMethod does not have card details."));
+            }
+
+            // Save payment method details in the database
+            PaymentMethod paymentMethod = new PaymentMethod();
+            paymentMethod.setUser(user);
+            paymentMethod.setStripePaymentMethodId(paymentMethodId);
+            paymentMethod.setCardLast4(stripePaymentMethod.getCard().getLast4());
+            paymentMethod.setCardBrand(stripePaymentMethod.getCard().getBrand());
+            paymentMethodRepository.save(paymentMethod);
+
+            return ResponseEntity.ok(Collections.singletonMap("message", "Card registered successfully"));
+
+        } catch (StripeException e) {
+            return ResponseEntity.status(500).body(Collections.singletonMap("error", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(Collections.singletonMap("error", e.getMessage()));
+        }
+    }
+
+    @GetMapping("/saved-cards")
+    public ResponseEntity<?> getSavedCards(@RequestParam String email) {
+        try {
+            Users user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+            List<PaymentMethod> paymentMethods = paymentMethodRepository.findByUserId(user.getId());
+            List<PaymentMethodDTO> paymentMethodDTOs = paymentMethods.stream()
+                    .map(pm -> new PaymentMethodDTO(pm.getStripePaymentMethodId(), pm.getCardLast4(), pm.getCardBrand()))
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(paymentMethodDTOs);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(Collections.singletonMap("error", e.getMessage()));
+        }
+    }
+    @PostMapping("/charge-saved-card")
+    public ResponseEntity<?> chargeSavedCard(
+            @RequestParam String email,
+            @RequestParam String paymentMethodId,
+            @RequestParam double amount
+    ) {
+        try {
+            Users user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+            String customerId = user.getStripeCustomerId();
+
+            PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                    .setAmount((long) (amount * 100))  // amount in cents
+                    .setCurrency("usd")
+                    .setCustomer(customerId)
+                    .setPaymentMethod(paymentMethodId)
+                    .setConfirm(true)
+                    .setOffSession(true)
+                    .build();
+
+            PaymentIntent paymentIntent = PaymentIntent.create(params);
+            String clientSecret = paymentIntent.getClientSecret();
+
+            return ResponseEntity.ok(Collections.singletonMap("clientSecret", clientSecret));
+        } catch (StripeException e) {
+            return ResponseEntity.status(500).body(Collections.singletonMap("error", e.getMessage()));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(404).body(Collections.singletonMap("error", e.getMessage()));
+        }
     }
 }
 

@@ -86,9 +86,19 @@ public class CRUDFlightController {
         return flightService.calculateTotalPrice(flightId, numberOfTickets, ticketType, isRoundTrip);
     }
     @GetMapping ("/get-flight-by-id")
-    public Flights getFlightById(@RequestParam Long id)
+    public FlightDTO getFlightById(@RequestParam Long id)
     {
-        return flightRepository.findById(id).orElseThrow(() -> new RuntimeException("Flight not found with this id: " + id));
+
+        Flights flights = flightRepository.findById(id).orElseThrow(() -> new RuntimeException("Flight not found with this id: " + id));
+        FlightDTO flightDTO = new FlightDTO();
+        flightDTO.setFlightStatus(flights.getFlightStatus());
+        flightDTO.setDepartureDate(flights.getDepartureDate());
+        flightDTO.setArrivalDate(flights.getArrivalDate());
+        flightDTO.setDepartureAirportId(flights.getDepartureAirportId());
+        flightDTO.setArrivalAirportId(flights.getArrivalAirportId());
+        flightDTO.setDuration(flights.getDuration());
+        flightDTO.setPlaneId(flights.getPlaneId());
+        return  flightDTO;
     }
     // Cai nay la xem thu cai ghe do da duoc dat chua, hay la on hold theo user ID nao
     @GetMapping("/{flightId}/get-seat-status")

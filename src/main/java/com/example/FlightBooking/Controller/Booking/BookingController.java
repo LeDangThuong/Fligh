@@ -38,7 +38,6 @@ public class BookingController {
             return ResponseEntity.status(500).body(null);
         }
     }
-
     @PostMapping("/hold-seat-before-booking")
     public ResponseEntity<?> holdSeat(@RequestBody Set<String>  seatNumbers, @RequestParam Long flightId)
     {
@@ -93,9 +92,5 @@ public class BookingController {
             return new ArrayList<>();
         }
     }
-    @GetMapping("/mobile/get-total-price")
-    public ResponseEntity<Double> getTotalPrice (@RequestParam Long numberPassenger, @RequestParam Long flightId, @RequestParam double seatClassPrice)
-    {
-        return ResponseEntity.ok(0.0);
-    }
+
 }
