@@ -30,6 +30,7 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -93,7 +94,6 @@ public class CRUDFlightController {
     {
         Flights flights = flightRepository.findById(id).orElseThrow(() -> new RuntimeException("Flight not found with this id: " + id));
         Planes planes = planeRepository.findById(flights.getPlaneId()).orElseThrow(()-> new RuntimeException("Plane not found with this id: " + id));
-
         Airlines airlines = airlinesRepository.findByPlanes(planes).orElseThrow(()-> new RuntimeException("Airline not found with this id: " + id));
         FlightDTO flightDTO = new FlightDTO();
         flightDTO.setFlightStatus(flights.getFlightStatus());
@@ -156,7 +156,7 @@ public class CRUDFlightController {
         return popularPlaceRepository.findByFlightId(flightId).orElseThrow(() -> new RuntimeException("Popular place image not found with this id: " + flightId));
     }
     @GetMapping("/filter-flights")
-    public ResponseEntity<List<Flights>> filterFlightsByTimeFrame(
+    public ResponseEntity<List<FlightDTO>> filterFlightsByTimeFrame(
             @RequestParam(defaultValue = "ROUND_TRIP or ONE_WAY") String flightType,
             @RequestParam Long departureAirportId,
             @RequestParam Long arrivalAirportId,
@@ -166,8 +166,9 @@ public class CRUDFlightController {
             @RequestParam(required = false) Integer startMinute,
             @RequestParam(required = false) Integer endHour,
             @RequestParam(required = false) Integer endMinute,
-            @RequestParam( defaultValue ="economy or business or firstclass", required = false) String classType,
-            @RequestParam(defaultValue ="asc (tang dan), dsc (giam dan)",required = false) String order) {
+            @RequestParam(defaultValue ="economy or business or firstclass", required = false) String classType,
+            @RequestParam(defaultValue ="asc (tang dan), dsc (giam dan)",required = false) String order)
+    {
         try {
             List<Flights> flights;
             if ((startHour == null || startMinute == null || endHour == null || endMinute == null) && (classType == null || order == null)) {
@@ -212,8 +213,25 @@ public class CRUDFlightController {
                 LocalTime endTime = LocalTime.of(endHour, endMinute);
                 flights = flightService.filterFlightsByTimeFrameAndPrice(flightType, departureAirportId, arrivalAirportId, departureDate, returnDate, startTime, endTime, classType, order);
             }
-
-            return ResponseEntity.ok(flights);
+            // Add airline ID to each flight
+            // Map flights to FlightWithAirlineDTO
+            List<FlightDTO> flightDTOs = flights.stream().map(flight -> {
+                Planes plane = planeRepository.findById(flight.getPlaneId()).orElseThrow(() -> new RuntimeException("Plane not found with this id: " + flight.getPlaneId()));
+                Airlines airline = airlinesRepository.findByPlanes(plane).orElseThrow(() -> new RuntimeException("Airline not found with this plane id: " + plane.getId()));
+                FlightDTO flightDTO = new FlightDTO();
+                flightDTO.setFlightStatus(flight.getFlightStatus());
+                flightDTO.setDepartureDate(flight.getDepartureDate());
+                flightDTO.setArrivalDate(flight.getArrivalDate());
+                flightDTO.setDepartureAirportId(flight.getDepartureAirportId());
+                flightDTO.setArrivalAirportId(flight.getArrivalAirportId());
+                flightDTO.setDuration(flight.getDuration());
+                flightDTO.setPlaneId(flight.getPlaneId());
+                flightDTO.setAirlineId(airline.getId());
+                flightDTO.setAirlineName(airline.getAirlineName());
+                // Set other necessary fields...
+                return flightDTO;
+            }).collect(Collectors.toList());
+            return ResponseEntity.ok(flightDTOs);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
