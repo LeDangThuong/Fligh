@@ -1,5 +1,6 @@
 package com.example.FlightBooking.Controller.Flights;
 
+import com.example.FlightBooking.DTOs.Request.Flight.FlightDTORequest;
 import com.example.FlightBooking.DTOs.Response.Flight.FlightDTOResponse;
 import com.example.FlightBooking.Models.*;
 import com.example.FlightBooking.Repositories.AirlinesRepository;
@@ -56,9 +57,9 @@ public class CRUDFlightController {
     }
 
     @PostMapping("/create-new-flight")
-    public ResponseEntity<?> createFlight(@Valid @RequestBody FlightDTOResponse flightDTOResponse) throws JsonProcessingException {
+    public ResponseEntity<?> createFlight(@Valid @RequestBody FlightDTORequest flightDTORequest) throws JsonProcessingException {
         try {
-            Flights flight = flightService.createFlight(flightDTOResponse);
+            Flights flight = flightService.createFlight(flightDTORequest);
             return ResponseEntity.ok(flight);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
