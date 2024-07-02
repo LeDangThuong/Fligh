@@ -1,26 +1,22 @@
 package com.example.FlightBooking.Controller.Flights;
 
-import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
-import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
-import com.example.FlightBooking.Models.Booking;
-import com.example.FlightBooking.Models.Flights;
-import com.example.FlightBooking.Models.PopularPlace;
+import com.example.FlightBooking.DTOs.Request.Flight.FlightDTORequest;
+import com.example.FlightBooking.DTOs.Response.Flight.FlightDTOResponse;
+import com.example.FlightBooking.Models.*;
+import com.example.FlightBooking.Repositories.AirlinesRepository;
 import com.example.FlightBooking.Repositories.FlightRepository;
+import com.example.FlightBooking.Repositories.PlaneRepository;
 import com.example.FlightBooking.Repositories.PopularPlaceRepository;
 import com.example.FlightBooking.Services.CloudinaryService.CloudinaryService;
 import com.example.FlightBooking.Services.FlightService.FlightService;
-import com.example.FlightBooking.Services.Planes.PlaneService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -29,7 +25,7 @@ import java.sql.Timestamp;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin
@@ -44,7 +40,10 @@ public class CRUDFlightController {
     private FlightRepository flightRepository;
     @Autowired
     private CloudinaryService cloudinaryService;
-
+    @Autowired
+    private AirlinesRepository airlinesRepository;
+    @Autowired
+    private PlaneRepository planeRepository;
     @Autowired
     private PopularPlaceRepository popularPlaceRepository;
     @PostMapping(value = "/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
@@ -58,9 +57,9 @@ public class CRUDFlightController {
     }
 
     @PostMapping("/create-new-flight")
-    public ResponseEntity<?> createFlight(@Valid @RequestBody FlightDTO flightDTO) throws JsonProcessingException {
+    public ResponseEntity<?> createFlight(@Valid @RequestBody FlightDTORequest flightDTORequest) throws JsonProcessingException {
         try {
-            Flights flight = flightService.createFlight(flightDTO);
+            Flights flight = flightService.createFlight(flightDTORequest);
             return ResponseEntity.ok(flight);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
@@ -86,9 +85,22 @@ public class CRUDFlightController {
         return flightService.calculateTotalPrice(flightId, numberOfTickets, ticketType, isRoundTrip);
     }
     @GetMapping ("/get-flight-by-id")
-    public Flights getFlightById(@RequestParam Long id)
+    public FlightDTOResponse getFlightById(@RequestParam Long id)
     {
-        return flightRepository.findById(id).orElseThrow(() -> new RuntimeException("Flight not found with this id: " + id));
+        Flights flights = flightRepository.findById(id).orElseThrow(() -> new RuntimeException("Flight not found with this id: " + id));
+        Planes planes = planeRepository.findById(flights.getPlaneId()).orElseThrow(()-> new RuntimeException("Plane not found with this id: " + id));
+        Airlines airlines = airlinesRepository.findByPlanes(planes).orElseThrow(()-> new RuntimeException("Airline not found with this id: " + id));
+        FlightDTOResponse flightDTOResponse = new FlightDTOResponse();
+        flightDTOResponse.setFlightStatus(flights.getFlightStatus());
+        flightDTOResponse.setDepartureDate(flights.getDepartureDate());
+        flightDTOResponse.setArrivalDate(flights.getArrivalDate());
+        flightDTOResponse.setDepartureAirportId(flights.getDepartureAirportId());
+        flightDTOResponse.setArrivalAirportId(flights.getArrivalAirportId());
+        flightDTOResponse.setDuration(flights.getDuration());
+        flightDTOResponse.setPlaneId(flights.getPlaneId());
+        flightDTOResponse.setAirlineId(airlines.getId());
+        flightDTOResponse.setAirlineName(airlines.getAirlineName());
+        return flightDTOResponse;
     }
     // Cai nay la xem thu cai ghe do da duoc dat chua, hay la on hold theo user ID nao
     @GetMapping("/{flightId}/get-seat-status")
@@ -139,7 +151,7 @@ public class CRUDFlightController {
         return popularPlaceRepository.findByFlightId(flightId).orElseThrow(() -> new RuntimeException("Popular place image not found with this id: " + flightId));
     }
     @GetMapping("/filter-flights")
-    public ResponseEntity<List<Flights>> filterFlightsByTimeFrame(
+    public ResponseEntity<List<FlightDTOResponse>> filterFlightsByTimeFrame(
             @RequestParam(defaultValue = "ROUND_TRIP or ONE_WAY") String flightType,
             @RequestParam Long departureAirportId,
             @RequestParam Long arrivalAirportId,
@@ -149,8 +161,9 @@ public class CRUDFlightController {
             @RequestParam(required = false) Integer startMinute,
             @RequestParam(required = false) Integer endHour,
             @RequestParam(required = false) Integer endMinute,
-            @RequestParam( defaultValue ="economy or business or firstclass", required = false) String classType,
-            @RequestParam(defaultValue ="asc (tang dan), dsc (giam dan)",required = false) String order) {
+            @RequestParam(defaultValue ="economy or business or firstclass", required = false) String classType,
+            @RequestParam(defaultValue ="asc (tang dan), dsc (giam dan)",required = false) String order)
+    {
         try {
             List<Flights> flights;
             if ((startHour == null || startMinute == null || endHour == null || endMinute == null) && (classType == null || order == null)) {
@@ -195,8 +208,29 @@ public class CRUDFlightController {
                 LocalTime endTime = LocalTime.of(endHour, endMinute);
                 flights = flightService.filterFlightsByTimeFrameAndPrice(flightType, departureAirportId, arrivalAirportId, departureDate, returnDate, startTime, endTime, classType, order);
             }
-
-            return ResponseEntity.ok(flights);
+            // Add airline ID to each flight
+            // Map flights to FlightWithAirlineDTO
+            List<FlightDTOResponse> flightDTOResponses = flights.stream().map(flight -> {
+                Planes plane = planeRepository.findById(flight.getPlaneId()).orElseThrow(() -> new RuntimeException("Plane not found with this id: " + flight.getPlaneId()));
+                Airlines airline = airlinesRepository.findByPlanes(plane).orElseThrow(() -> new RuntimeException("Airline not found with this plane id: " + plane.getId()));
+                FlightDTOResponse flightDTOResponse = new FlightDTOResponse();
+                flightDTOResponse.setId(flight.getId());
+                flightDTOResponse.setFlightStatus(flight.getFlightStatus());
+                flightDTOResponse.setDepartureDate(flight.getDepartureDate());
+                flightDTOResponse.setArrivalDate(flight.getArrivalDate());
+                flightDTOResponse.setDepartureAirportId(flight.getDepartureAirportId());
+                flightDTOResponse.setArrivalAirportId(flight.getArrivalAirportId());
+                flightDTOResponse.setDuration(flight.getDuration());
+                flightDTOResponse.setPlaneId(flight.getPlaneId());
+                flightDTOResponse.setAirlineId(airline.getId());
+                flightDTOResponse.setAirlineName(airline.getAirlineName());
+                flightDTOResponse.setEconomyPrice(flight.getEconomyPrice());
+                flightDTOResponse.setBusinessPrice(flight.getBusinessPrice());
+                flightDTOResponse.setFirstClassPrice(flight.getFirstClassPrice());
+                // Set other necessary fields...
+                return flightDTOResponse;
+            }).collect(Collectors.toList());
+            return ResponseEntity.ok(flightDTOResponses);
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }

@@ -1,4 +1,4 @@
-package com.example.FlightBooking.DTOs.Request.Flight;
+package com.example.FlightBooking.DTOs.Response.Flight;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -10,7 +10,9 @@ import java.sql.Timestamp;
 @Getter
 @Setter
 @Data
-public class FlightDTO {
+public class FlightDTOResponse {
+    @NotNull (message = "Flight id")
+    private Long id;
     @NotNull(message = "Flight status is required")
     private String flightStatus;
     @NotNull(message = "Departure date is required")
@@ -25,4 +27,13 @@ public class FlightDTO {
     private Long arrivalAirportId;
     @NotNull(message = "Plane ID is required")
     private Long planeId;
+
+    @NotNull(message = "Airline ID is required")
+    private Long airlineId;
+
+    @NotNull(message = "Airline name is required")
+    private String airlineName;
+    private Double economyPrice;
+    private Double businessPrice;
+    private Double firstClassPrice;
 }

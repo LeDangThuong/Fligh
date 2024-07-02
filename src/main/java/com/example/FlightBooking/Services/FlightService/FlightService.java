@@ -7,7 +7,8 @@ import com.example.FlightBooking.Components.Strategy.RoundTripFlightSearchStrate
 import com.example.FlightBooking.Components.TemplateMethod.FlightCancelEmailSender;
 import com.example.FlightBooking.Components.TemplateMethod.FlightDelayEmailSender;
 import com.example.FlightBooking.Components.TemplateMethod.FlightScheduleEmailSender;
-import com.example.FlightBooking.DTOs.Request.Flight.FlightDTO;
+import com.example.FlightBooking.DTOs.Request.Flight.FlightDTORequest;
+import com.example.FlightBooking.DTOs.Response.Flight.FlightDTOResponse;
 import com.example.FlightBooking.DTOs.Request.RegulationDTO;
 import com.example.FlightBooking.Enum.FlightStatus;
 import com.example.FlightBooking.Models.*;
@@ -62,9 +63,9 @@ public class FlightService {
     private PlaneRepository planeRepository;
 
     @Transactional
-    public Flights createFlight(FlightDTO flightDTO) throws JsonProcessingException {
+    public Flights createFlight(FlightDTORequest flightDTORequest) throws JsonProcessingException {
         //Ràng buộc dữ liệu
-        validateFlightData(flightDTO);
+        validateFlightData(flightDTORequest);
         Flights flight = new Flights();
         Map<String, Map<String, String>> seatStatuses = new HashMap<>();
         //Using factory to manage seat in a flight
@@ -78,16 +79,16 @@ public class FlightService {
 
         String seatStatusesJson = objectMapper.writeValueAsString(seatStatuses);
 
-        flight.setFlightStatus(flightDTO.getFlightStatus());
-        flight.setDepartureDate(flightDTO.getDepartureDate());
-        flight.setArrivalDate(flightDTO.getArrivalDate());
-        flight.setDuration(flightDTO.getDuration());
-        flight.setDepartureAirportId(flightDTO.getDepartureAirportId());
-        flight.setArrivalAirportId(flightDTO.getArrivalAirportId());
-        flight.setPlaneId(flightDTO.getPlaneId());
+        flight.setFlightStatus(flightDTORequest.getFlightStatus());
+        flight.setDepartureDate(flightDTORequest.getDepartureDate());
+        flight.setArrivalDate(flightDTORequest.getArrivalDate());
+        flight.setDuration(flightDTORequest.getDuration());
+        flight.setDepartureAirportId(flightDTORequest.getDepartureAirportId());
+        flight.setArrivalAirportId(flightDTORequest.getArrivalAirportId());
+        flight.setPlaneId(flightDTORequest.getPlaneId());
 
         // Lấy giá vé từ Regulation của Airlines thông qua planeId
-        Planes planes = planeRepository.findById(flightDTO.getPlaneId()).orElseThrow(() -> new IllegalArgumentException("Invalid plane ID"));
+        Planes planes = planeRepository.findById(flightDTORequest.getPlaneId()).orElseThrow(() -> new IllegalArgumentException("Invalid plane ID"));
         Airlines airlines = airlinesRepository.findByPlanes(planes).orElseThrow(() -> new IllegalArgumentException("Invalid plane"));
         RegulationDTO regulation = regulationService.getRegulationByPlaneId(airlines.getId());
         flight.setEconomyPrice(regulation.getEconomyPrice());
@@ -101,9 +102,9 @@ public class FlightService {
         }
         // Kiểm tra ràng buộc mới: Các chuyến bay của cùng một máy bay phải cách nhau ít nhất 20 tiếng
         List<Flights> conflictingFlights = flightRepository.findConflictingFlights(
-                flightDTO.getPlaneId(),
-                flightDTO.getDepartureDate(),
-                flightDTO.getArrivalDate()
+                flightDTORequest.getPlaneId(),
+                flightDTORequest.getDepartureDate(),
+                flightDTORequest.getArrivalDate()
         );
 
         for (Flights existingFlight : conflictingFlights) {
@@ -183,11 +184,11 @@ public class FlightService {
         workbook.close();
         return flightsList;
     }
-    private void validateFlightData(FlightDTO flightDTO) {
+    private void validateFlightData(FlightDTORequest flightDTORequest) {
         List<Flights> conflictingFlights = flightRepository.findConflictingFlights(
-                flightDTO.getPlaneId(),
-                flightDTO.getDepartureDate(),
-                flightDTO.getArrivalDate()
+                flightDTORequest.getPlaneId(),
+                flightDTORequest.getDepartureDate(),
+                flightDTORequest.getArrivalDate()
         );
         if (!conflictingFlights.isEmpty()) {
             throw new IllegalArgumentException("Flight time conflicts with existing flight(s): " +
@@ -205,7 +206,7 @@ public class FlightService {
         }
     }
 
-    private boolean isConflict(Flights existingFlight, FlightDTO newFlight) {
+    private boolean isConflict(Flights existingFlight, FlightDTOResponse newFlight) {
         long newFlightDeparture = newFlight.getDepartureDate().getTime();
         long newFlightArrival = newFlight.getArrivalDate().getTime();
         long existingFlightDeparture = existingFlight.getDepartureDate().getTime();
