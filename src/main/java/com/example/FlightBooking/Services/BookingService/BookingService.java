@@ -177,6 +177,32 @@ public class BookingService {
 
         return totalPrice;
     }
+    public double getSeatPrice(Long flightId, String seatNumber) throws Exception {
+        Flights flight = flightRepository.findById(flightId)
+                .orElseThrow(() -> new RuntimeException("Flight not found with id: " + flightId));
+        double totalPrice = 0;
+        String seatStatusesJson = flight.getSeatStatuses();
+        JsonNode seatStatusesNode = objectMapper.readTree(seatStatusesJson);
+        JsonNode seatNode = seatStatusesNode.get(seatNumber);
+        if (seatNode == null) {
+            throw new RuntimeException("Seat not found: " + seatNumber);
+        }
+        String seatClass = seatNode.get("class").asText();
+        switch (seatClass) {
+            case "ECONOMY":
+                totalPrice += flight.getEconomyPrice();
+                break;
+            case "BUSINESS":
+                totalPrice += flight.getBusinessPrice();
+                break;
+            case "FIRST_CLASS":
+                totalPrice += flight.getFirstClassPrice();
+                break;
+            default:
+                throw new RuntimeException("Invalid seat class: " + seatClass);
+        }
+        return totalPrice;
+    }
 
     public List<TicketResponse> getAllTicketByUserId(Long userId)
     {
