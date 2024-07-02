@@ -91,6 +91,7 @@ public class CRUDFlightController {
         Planes planes = planeRepository.findById(flights.getPlaneId()).orElseThrow(()-> new RuntimeException("Plane not found with this id: " + id));
         Airlines airlines = airlinesRepository.findByPlanes(planes).orElseThrow(()-> new RuntimeException("Airline not found with this id: " + id));
         FlightDTOResponse flightDTOResponse = new FlightDTOResponse();
+        flightDTOResponse.setId(flights.getId());
         flightDTOResponse.setFlightStatus(flights.getFlightStatus());
         flightDTOResponse.setDepartureDate(flights.getDepartureDate());
         flightDTOResponse.setArrivalDate(flights.getArrivalDate());
@@ -100,6 +101,9 @@ public class CRUDFlightController {
         flightDTOResponse.setPlaneId(flights.getPlaneId());
         flightDTOResponse.setAirlineId(airlines.getId());
         flightDTOResponse.setAirlineName(airlines.getAirlineName());
+        flightDTOResponse.setEconomyPrice(flights.getEconomyPrice());
+        flightDTOResponse.setBusinessPrice(flights.getBusinessPrice());
+        flightDTOResponse.setFirstClassPrice(flights.getFirstClassPrice());
         return flightDTOResponse;
     }
     // Cai nay la xem thu cai ghe do da duoc dat chua, hay la on hold theo user ID nao
