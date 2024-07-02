@@ -3,6 +3,7 @@ package com.example.FlightBooking.Services.PaymentService;
 import com.example.FlightBooking.Components.TemplateMethod.TicketEmailSender;
 import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.Booking.CombineBookingRequestDTO;
+import com.example.FlightBooking.DTOs.Request.Passenger.PassengerDTO;
 import com.example.FlightBooking.Models.Airlines;
 import com.example.FlightBooking.Models.Airports;
 import com.example.FlightBooking.Models.Booking;
@@ -154,18 +155,18 @@ public class PaymentService {
         paymentMethodRepository.save(newPaymentMethod);
     }
 
-    public PaymentIntent createPaymentIntent(String token, Long idVoucher, double amount, Long flightId, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException, MessagingException {
+    public PaymentIntent createPaymentIntent(String token, Long idVoucher, double amount, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException, MessagingException {
         Long discount;
-        if(idVoucher == 0){
+        if (idVoucher == 0) {
             discount = 0L;
-        }else {
+        } else {
             Vouchers voucher = voucherRepository.findById(idVoucher).orElseThrow();
             discount = voucher.getDiscountAmount();
         }
 
         String customerId = getStripeCustomerId(token);
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                .setAmount((long) (amount * (1-discount/100) * 100))  // amount in cents
+                .setAmount((long) (amount * (1 - discount / 100) * 100)) // amount in cents
                 .setCurrency("usd")
                 .setCustomer(customerId)
                 .setPaymentMethod(getPaymentMethodId(token))
@@ -178,78 +179,82 @@ public class PaymentService {
         Users user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found with this username: " + username));
 
-        Booking booking = new Booking();
-        BookingRequestDTO bookingRequestDTO = combineBookingRequestDTO.getBookingRequestDTO();
-        Set<String> seatNumber = combineBookingRequestDTO.getSeatNumber();
-        booking.setFlightId(flightId);
-        booking.setBookerFullName(bookingRequestDTO.getBookerFullName());
-        booking.setBookerEmail(bookingRequestDTO.getBookerEmail());
-        booking.setBookerPhoneNumber(bookingRequestDTO.getBookerPhoneNumber());
-        booking.setUserId(bookingRequestDTO.getUserId());
-        booking.setBookingDate(Timestamp.valueOf(LocalDateTime.now()));
-        List<Passengers> passengers = bookingRequestDTO.getPassengers().stream().map(dto -> {
-            Passengers passenger = new Passengers();
-            passenger.setFullName(dto.getFullName());
-            passenger.setEmail(dto.getEmail());
-            passenger.setPersonalId(dto.getPersonalId());
-            passenger.setSeatNumber(dto.getSeatNumber());
-            passenger.setBooking(booking);
-            return passenger;
-        }).collect(Collectors.toList());
-        booking.setPassengers(passengers);
-        bookingRepository.save(booking);
-        try {
-            bookingService.bookSeats(flightId, seatNumber);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        for (BookingRequestDTO bookingRequestDTO : combineBookingRequestDTO.getBookingRequests()) {
+            Booking booking = new Booking();
+            booking.setFlightId(bookingRequestDTO.getFlightId());
+            booking.setBookerFullName(bookingRequestDTO.getBookerFullName());
+            booking.setBookerEmail(bookingRequestDTO.getBookerEmail());
+            booking.setBookerPhoneNumber(bookingRequestDTO.getBookerPhoneNumber());
+            booking.setUserId(bookingRequestDTO.getUserId());
+            booking.setBookingDate(Timestamp.valueOf(LocalDateTime.now()));
+
+            List<Passengers> passengers = bookingRequestDTO.getPassengers().stream().map(dto -> {
+                Passengers passenger = new Passengers();
+                passenger.setFullName(dto.getFullName());
+                passenger.setEmail(dto.getEmail());
+                passenger.setPersonalId(dto.getPersonalId());
+                passenger.setSeatNumber(dto.getSeatNumber());
+                passenger.setBooking(booking);
+                return passenger;
+            }).collect(Collectors.toList());
+            booking.setPassengers(passengers);
+            bookingRepository.save(booking);
+
+            try {
+                Set<String> seatNumbers = bookingRequestDTO.getPassengers().stream()
+                        .map(PassengerDTO::getSeatNumber)
+                        .collect(Collectors.toSet());
+                bookingService.bookSeats(bookingRequestDTO.getFlightId(), seatNumbers);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            Statistics statistics = new Statistics();
+            statistics.setUserId(user.getId());
+            statistics.setAmount(amount);
+            statistics.setFlightId(bookingRequestDTO.getFlightId());
+            statisticsRepository.save(statistics);
+
+            // Send email tickets
+            sendEmailTickets(bookingRequestDTO);
         }
 
-        Statistics statistics = new Statistics();
-        statistics.setUserId(user.getId());
-        statistics.setAmount(amount);
-        statistics.setFlightId(flightId);
-        statisticsRepository.save(statistics);
+        return paymentIntent;
+    }
 
-        //Lay thong tin ve chuyen bay
+    private void sendEmailTickets(BookingRequestDTO bookingRequestDTO) throws MessagingException {
         String email = bookingRequestDTO.getBookerEmail();
-        Flights flights = flightRepository.findById(flightId).orElseThrow();
+        Flights flights = flightRepository.findById(bookingRequestDTO.getFlightId()).orElseThrow();
         Timestamp arrival = flights.getArrivalDate();
         Timestamp departure = flights.getDepartureDate();
         String arrivalTime = formatTimestamp(arrival);
         String departureTime = formatTimestamp(departure);
         Timestamp boardingTime = subtractHours(departure, 1);
-        String boadingTimeS = formatTimestamp(boardingTime);
-        Long idPlane = flights.getPlaneId();
-        Long idArrivalAirport = flights.getArrivalAirportId();
-        Long idDepartAirport = flights.getDepartureAirportId();
+        String boardingTimeStr = formatTimestamp(boardingTime);
+        Long planeId = flights.getPlaneId();
+        Long arrivalAirportId = flights.getArrivalAirportId();
+        Long departureAirportId = flights.getDepartureAirportId();
 
-
-        //Lay thong tin ve may bay
-        Planes planes = planeRepository.findById(idPlane).orElseThrow();
+        Planes planes = planeRepository.findById(planeId).orElseThrow();
         String flightNumber = planes.getFlightNumber();
         Airlines airline = planes.getAirline();
-
-
-
-        //Lay thong tin hang hang khong
         String airlineName = airline.getAirlineName();
-        //Lay thong tin san bay
-        Airports arrivalAirport = airportsRepository.findById(idArrivalAirport).orElseThrow();
+
+        Airports arrivalAirport = airportsRepository.findById(arrivalAirportId).orElseThrow();
         String arrivalCity = arrivalAirport.getAirportName() + ", " + arrivalAirport.getCity();
         String codeArrival = arrivalAirport.getIataCode();
-        Airports departureAirport = airportsRepository.findById(idDepartAirport).orElseThrow();
+        Airports departureAirport = airportsRepository.findById(departureAirportId).orElseThrow();
         String departureCity = departureAirport.getAirportName() + ", " + departureAirport.getCity();
         String codeDeparture = departureAirport.getIataCode();
 
-        // Gửi email cho từng hành khách
-        for (Passengers passenger : passengers) {
+        for (PassengerDTO passenger : bookingRequestDTO.getPassengers()) {
             ticketEmailSender.sendTicketToEmail(
                     email, departureTime, arrivalTime, airlineName, codeDeparture, departureCity,
-                    codeArrival, passenger.getFullName(), arrivalCity, boadingTimeS, flightNumber, passenger.getSeatNumber()
+                    codeArrival, passenger.getFullName(), arrivalCity, boardingTimeStr, flightNumber, passenger.getSeatNumber()
             );
         }
-        return paymentIntent;
     }
+
 
     public String getPaymentMethodId(String token) throws StripeException {
         String username = jwtService.getUsername(token);
