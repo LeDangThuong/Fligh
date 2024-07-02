@@ -184,7 +184,7 @@ public class PaymentService {
         booking.setFlightId(flightId);
         booking.setBookerFullName(bookingRequestDTO.getBookerFullName());
         booking.setBookerEmail(bookingRequestDTO.getBookerEmail());
-        booking.setBookerPersonalId(bookingRequestDTO.getBookerPersonalId());
+        booking.setBookerPhoneNumber(bookingRequestDTO.getBookerPhoneNumber());
         booking.setUserId(bookingRequestDTO.getUserId());
         booking.setBookingDate(Timestamp.valueOf(LocalDateTime.now()));
         List<Passengers> passengers = bookingRequestDTO.getPassengers().stream().map(dto -> {

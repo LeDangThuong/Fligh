@@ -37,7 +37,7 @@ public class Booking {
     private Long flightId;
     private String bookerFullName;
     private String bookerEmail;
-    private String bookerPersonalId;
+    private String bookerPhoneNumber;
     private Timestamp bookingDate;
     private Long userId;
 

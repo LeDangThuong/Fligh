@@ -46,15 +46,15 @@ public class CRUDFlightController {
     private PlaneRepository planeRepository;
     @Autowired
     private PopularPlaceRepository popularPlaceRepository;
-    @PostMapping(value = "/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<String> uploadFlightData(@RequestPart("file") MultipartFile file, @RequestBody Long planeId) {
-        try {
-            flightService.uploadFlightData(file, planeId);
-            return new ResponseEntity<>("File uploaded successfully!", HttpStatus.OK);
-        } catch (IOException e) {
-            return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+//    @PostMapping(value = "/upload", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE})
+//    public ResponseEntity<String> uploadFlightData(@RequestPart("file") MultipartFile file, @RequestBody Long planeId) {
+//        try {
+//            flightService.uploadFlightData(file, planeId);
+//            return new ResponseEntity<>("File uploaded successfully!", HttpStatus.OK);
+//        } catch (IOException e) {
+//            return new ResponseEntity<>("Failed to upload file", HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
     @PostMapping("/create-new-flight")
     public ResponseEntity<?> createFlight(@Valid @RequestBody FlightDTORequest flightDTORequest) throws JsonProcessingException {
