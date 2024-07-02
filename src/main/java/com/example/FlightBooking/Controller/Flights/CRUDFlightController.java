@@ -219,6 +219,7 @@ public class CRUDFlightController {
                 Planes plane = planeRepository.findById(flight.getPlaneId()).orElseThrow(() -> new RuntimeException("Plane not found with this id: " + flight.getPlaneId()));
                 Airlines airline = airlinesRepository.findByPlanes(plane).orElseThrow(() -> new RuntimeException("Airline not found with this plane id: " + plane.getId()));
                 FlightDTO flightDTO = new FlightDTO();
+                flightDTO.setId(flight.getId());
                 flightDTO.setFlightStatus(flight.getFlightStatus());
                 flightDTO.setDepartureDate(flight.getDepartureDate());
                 flightDTO.setArrivalDate(flight.getArrivalDate());

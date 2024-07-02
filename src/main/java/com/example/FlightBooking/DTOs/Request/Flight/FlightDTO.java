@@ -11,6 +11,8 @@ import java.sql.Timestamp;
 @Setter
 @Data
 public class FlightDTO {
+    @NotNull (message = "Flight id")
+    private Long id;
     @NotNull(message = "Flight status is required")
     private String flightStatus;
     @NotNull(message = "Departure date is required")
