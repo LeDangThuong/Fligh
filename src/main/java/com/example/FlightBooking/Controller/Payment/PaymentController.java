@@ -15,6 +15,7 @@ import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.SetupIntentCreateParams;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -231,6 +232,18 @@ public class PaymentController {
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
+    }
+    @DeleteMapping("/delete-card")
+    public ResponseEntity<String> deleteCard(@RequestParam String email, @RequestParam String paymentMethodId) {
+        Users users = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found for email :" + email));
+        PaymentMethod paymentMethod = paymentMethodRepository.findByUsersAndStripePaymentMethodId(users, paymentMethodId)
+                .orElseThrow(() -> new ResourceNotFoundException("PaymentMethod not found for email :: " + users + " and paymentMethodId :: " + paymentMethodId));
+
+        // Xóa quan hệ trước khi xóa bản ghi chính
+        paymentMethod.setUser(null);
+        paymentMethodRepository.save(paymentMethod);
+        paymentMethodRepository.delete(paymentMethod);
+        return ResponseEntity.ok("Payment method deleted successfully.");
     }
 }
 
