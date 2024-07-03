@@ -1,6 +1,10 @@
 package com.example.FlightBooking.Controller.Statistic;
 
+import com.example.FlightBooking.Models.Airlines;
+import com.example.FlightBooking.Models.Flights;
+import com.example.FlightBooking.Repositories.*;
 import com.example.FlightBooking.Services.Statistic.StatisticService;
+import com.stripe.model.issuing.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,6 +25,16 @@ import java.util.List;
 public class StatisticsController {
     @Autowired
     private StatisticService statisticsService;
+    @Autowired
+    private FlightRepository flightRepository;
+    @Autowired
+    private PlaneRepository planeRepository;
+    @Autowired
+    private AirlinesRepository airlinesRepository;
+    @Autowired
+    private AirportsRepository airportsRepository;
+    @Autowired
+    private BookingRepository bookingRepository;
 
     @GetMapping("/revenue")
     public Double getTotalRevenue() {
@@ -68,5 +82,32 @@ public class StatisticsController {
             dailyRevenue.add(revenue != null ? revenue : 0.0);
         }
         return dailyRevenue;
+    }
+    @GetMapping("/totalFlight")
+    public Long getTotalFilght()
+    {
+        return flightRepository.count();
+    }
+
+    @GetMapping("/totalPlane")
+    public Long getTotalPlane()
+    {
+        return planeRepository.count();
+    }
+
+    @GetMapping("/totalAirline")
+    public Long getTotalAirline()
+    {
+        return airlinesRepository.count();
+    }
+    @GetMapping("/totalAirport")
+    public Long getTotalAirport()
+    {
+        return airportsRepository.count();
+    }
+    @GetMapping("/totalBooking")
+    public Long getTotalBooking()
+    {
+        return bookingRepository.count();
     }
 }
