@@ -64,11 +64,11 @@ public class FlightService {
 
     @Transactional
     public Flights createFlight(FlightDTORequest flightDTORequest) throws JsonProcessingException {
-        //Ràng buộc dữ liệu
+        // Validate flight data
         validateFlightData(flightDTORequest);
         Flights flight = new Flights();
         Map<String, Map<String, String>> seatStatuses = new HashMap<>();
-        //Using factory to manage seat in a flight
+        // Using factory to manage seats in a flight
         SeatCreator firstClassSeatCreator = new FirstClassSeatCreator();
         SeatCreator businessClassSeatCreator = new BusinessClassSeatCreator();
         SeatCreator economyClassSeatCreator = new EconomyClassSeatCreator();
@@ -87,7 +87,7 @@ public class FlightService {
         flight.setArrivalAirportId(flightDTORequest.getArrivalAirportId());
         flight.setPlaneId(flightDTORequest.getPlaneId());
 
-        // Lấy giá vé từ Regulation của Airlines thông qua planeId
+        // Get ticket prices from Regulation
         Planes planes = planeRepository.findById(flightDTORequest.getPlaneId()).orElseThrow(() -> new IllegalArgumentException("Invalid plane ID"));
         Airlines airlines = airlinesRepository.findByPlanes(planes).orElseThrow(() -> new IllegalArgumentException("Invalid plane"));
         RegulationDTO regulation = regulationService.getRegulationByPlaneId(airlines.getId());
@@ -96,25 +96,18 @@ public class FlightService {
         flight.setFirstClassPrice(regulation.getFirstClassPrice());
 
         flight.setSeatStatuses(seatStatusesJson);
-        // Thêm ràng buộc: Thời gian hạ cánh phải cách thời gian cất cánh ít nhất 1 tiếng
-        if (flight.getArrivalDate().getTime() - flight.getDepartureDate().getTime() < 3600000) { // 1 tiếng = 3600000 ms
-            throw new IllegalArgumentException("Thời gian cất cánh và hạ cánh phải cách nhau ít nhất 1 tiếng.");
-        }
-        // Kiểm tra ràng buộc mới: Các chuyến bay của cùng một máy bay phải cách nhau ít nhất 20 tiếng
-        List<Flights> conflictingFlights = flightRepository.findConflictingFlights(
-                flightDTORequest.getPlaneId(),
-                flightDTORequest.getDepartureDate(),
-                flightDTORequest.getArrivalDate()
-        );
 
-        for (Flights existingFlight : conflictingFlights) {
-            if (Math.abs(existingFlight.getDepartureDate().getTime() - flight.getDepartureDate().getTime()) < 72000000 || // 20 tiếng = 72000000 ms
-                    Math.abs(existingFlight.getArrivalDate().getTime() - flight.getArrivalDate().getTime()) < 72000000) {
-                throw new IllegalArgumentException("Chuyến bay mới phải cách chuyến bay cũ ít nhất 20 tiếng.");
-            }
+        // Check for minimum 1-hour gap between departure and arrival
+        if (flight.getArrivalDate().getTime() - flight.getDepartureDate().getTime() < 3600000) {
+            throw new IllegalArgumentException("Departure and arrival time must be at least 1 hour apart.");
         }
+
+        // Check for 10-hour maintenance gap between flights
+        validateFlightIntervals(flightDTORequest);
+
         return flightRepository.save(flight);
     }
+
     @org.springframework.transaction.annotation.Transactional
     public List<Flights> searchFlights(String type, Long departureAirportId, Long arrivalAirportId, Timestamp departureDate, Timestamp returnDate) {
         FlightSearchContext context = new FlightSearchContext();
@@ -146,44 +139,44 @@ public class FlightService {
         int multiplier = isRoundTrip ? 2 : 1;
         return numberOfTickets * ticketPrice * multiplier;
     }
-    public void uploadFlightData(MultipartFile file, Long planeId) throws IOException {
-        List<Flights> flights = parseExcelFile(file, planeId);
-        flightRepository.saveAll(flights);
-    }
+//    public void uploadFlightData(MultipartFile file, Long planeId) throws IOException {
+//        List<Flights> flights = parseExcelFile(file, planeId);
+//        flightRepository.saveAll(flights);
+//    }
 
-    private List<Flights> parseExcelFile(MultipartFile file, Long planeId) throws IOException {
-        List<Flights> flightsList = new ArrayList<>();
-        Workbook workbook = new XSSFWorkbook(file.getInputStream());
-        Sheet sheet = workbook.getSheetAt(0);
-        Iterator<Row> rows = sheet.iterator();
-        rows.next(); // Skip header row
-
-        while (rows.hasNext()) {
-            Row currentRow = rows.next();
-            Flights flight = new Flights();
-            flight.setFlightStatus(currentRow.getCell(0).getStringCellValue());
-            flight.setDepartureDate(new Timestamp(currentRow.getCell(1).getDateCellValue().getTime()));
-            flight.setArrivalDate(new Timestamp(currentRow.getCell(2).getDateCellValue().getTime()));
-            flight.setDuration((long) currentRow.getCell(3).getNumericCellValue());
-            flight.setDepartureAirportId((long) currentRow.getCell(4).getNumericCellValue());
-            flight.setArrivalAirportId((long) currentRow.getCell(5).getNumericCellValue());
-            flight.setEconomyPrice(currentRow.getCell(6).getNumericCellValue());
-            flight.setBusinessPrice(currentRow.getCell(7).getNumericCellValue());
-            flight.setFirstClassPrice(currentRow.getCell(8).getNumericCellValue());
-            Map<String, Map<String, String>> seatStatuses = new HashMap<>();
-            seatStatuses.putAll(new FirstClassSeatFactory().createSeats(flight));
-            seatStatuses.putAll(new BusinessClassSeatFactory().createSeats(flight));
-            seatStatuses.putAll(new EconomyClassSeatFactory().createSeats(flight));
-            String seatStatusesJson = objectMapper.writeValueAsString(seatStatuses);
-            flight.setSeatStatuses(seatStatusesJson);
-            flight.setPlaneId(planeId);
-            // Ràng buộc dữ liệu
-            validateFlightData(flight);
-            flightsList.add(flight);
-        }
-        workbook.close();
-        return flightsList;
-    }
+//    private List<FlightDTORequest> parseExcelFile(MultipartFile file, Long planeId) throws IOException {
+//        List<Flights> flightsList = new ArrayList<>();
+//        Workbook workbook = new XSSFWorkbook(file.getInputStream());
+//        Sheet sheet = workbook.getSheetAt(0);
+//        Iterator<Row> rows = sheet.iterator();
+//        rows.next(); // Skip header row
+//
+//        while (rows.hasNext()) {
+//            Row currentRow = rows.next();
+//            Flights flight = new Flights();
+//            flight.setFlightStatus(currentRow.getCell(0).getStringCellValue());
+//            flight.setDepartureDate(new Timestamp(currentRow.getCell(1).getDateCellValue().getTime()));
+//            flight.setArrivalDate(new Timestamp(currentRow.getCell(2).getDateCellValue().getTime()));
+//            flight.setDuration((long) currentRow.getCell(3).getNumericCellValue());
+//            flight.setDepartureAirportId((long) currentRow.getCell(4).getNumericCellValue());
+//            flight.setArrivalAirportId((long) currentRow.getCell(5).getNumericCellValue());
+//            flight.setEconomyPrice(currentRow.getCell(6).getNumericCellValue());
+//            flight.setBusinessPrice(currentRow.getCell(7).getNumericCellValue());
+//            flight.setFirstClassPrice(currentRow.getCell(8).getNumericCellValue());
+//            Map<String, Map<String, String>> seatStatuses = new HashMap<>();
+//            seatStatuses.putAll(new FirstClassSeatFactory().createSeats(flight));
+//            seatStatuses.putAll(new BusinessClassSeatFactory().createSeats(flight));
+//            seatStatuses.putAll(new EconomyClassSeatFactory().createSeats(flight));
+//            String seatStatusesJson = objectMapper.writeValueAsString(seatStatuses);
+//            flight.setSeatStatuses(seatStatusesJson);
+//            flight.setPlaneId(planeId);
+//            // Ràng buộc dữ liệu
+//            validateFlightData(flight);
+//            flightsList.add(flight);
+//        }
+//        workbook.close();
+//        return flightsList;
+//    }
     private void validateFlightData(FlightDTORequest flightDTORequest) {
         List<Flights> conflictingFlights = flightRepository.findConflictingFlights(
                 flightDTORequest.getPlaneId(),
@@ -196,34 +189,24 @@ public class FlightService {
         }
     }
 
-
-    private void validateFlightData(Flights flight) {
-        List<Flights> existingFlights = flightRepository.findAllByPlaneId(flight.getPlaneId());
+    private void validateFlightIntervals(FlightDTORequest flightDTORequest) {
+        List<Flights> existingFlights = flightRepository.findAllByPlaneId(flightDTORequest.getPlaneId());
         for (Flights existingFlight : existingFlights) {
-            if (isConflict(existingFlight, flight)) {
-                throw new IllegalArgumentException("Flight time conflicts with existing flight: " + existingFlight.getId());
+            if (isIntervalConflict(existingFlight, flightDTORequest)) {
+                throw new IllegalArgumentException("Flight must be scheduled at least 10 hours apart from other flights for maintenance.");
             }
         }
     }
-
-    private boolean isConflict(Flights existingFlight, FlightDTOResponse newFlight) {
+    private boolean isIntervalConflict(Flights existingFlight, FlightDTORequest newFlight) {
         long newFlightDeparture = newFlight.getDepartureDate().getTime();
         long newFlightArrival = newFlight.getArrivalDate().getTime();
         long existingFlightDeparture = existingFlight.getDepartureDate().getTime();
         long existingFlightArrival = existingFlight.getArrivalDate().getTime();
+        long tenHoursInMillis = 10 * 60 * 60 * 1000;
 
-        return (newFlightDeparture < existingFlightArrival && newFlightArrival > existingFlightDeparture);
+        return (Math.abs(existingFlightDeparture - newFlightDeparture) < tenHoursInMillis ||
+                Math.abs(existingFlightArrival - newFlightArrival) < tenHoursInMillis);
     }
-
-    private boolean isConflict(Flights existingFlight, Flights newFlight) {
-        long newFlightDeparture = newFlight.getDepartureDate().getTime();
-        long newFlightArrival = newFlight.getArrivalDate().getTime();
-        long existingFlightDeparture = existingFlight.getDepartureDate().getTime();
-        long existingFlightArrival = existingFlight.getArrivalDate().getTime();
-
-        return (newFlightDeparture < existingFlightArrival && newFlightArrival > existingFlightDeparture);
-    }
-
     public Map<String, Map<String, String>> getSeatStatuses(Long flightId) throws Exception {
         Flights flight = flightRepository.findById(flightId).orElseThrow(() -> new RuntimeException("Plane not found"));
         String seatStatusesJson = flight.getSeatStatuses();

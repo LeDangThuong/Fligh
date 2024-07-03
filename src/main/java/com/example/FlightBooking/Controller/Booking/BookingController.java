@@ -4,6 +4,8 @@ import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.Booking.SelectSeatDTO;
 import com.example.FlightBooking.DTOs.Response.Ticket.TicketResponse;
 import com.example.FlightBooking.Models.Booking;
+import com.example.FlightBooking.Models.Flights;
+import com.example.FlightBooking.Repositories.FlightRepository;
 import com.example.FlightBooking.Services.BookingService.BookingService;
 import com.example.FlightBooking.Services.FlightService.FlightService;
 import com.example.FlightBooking.Services.Planes.PlaneService;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -28,6 +31,8 @@ public class BookingController {
 
     @Autowired
     private BookingService bookingService;
+    @Autowired
+    private FlightRepository flightRepository;
     //Cai nay la cai de tinh so tien khi chon ve ne
     @PostMapping("/calculate-total-price-after-booking")
     public ResponseEntity<Double> calculateTotalPrice(@RequestParam Long flightId, @RequestBody Set<String> seatNumbers) {
@@ -90,6 +95,22 @@ public class BookingController {
         catch(Exception e)
         {
             return new ArrayList<>();
+        }
+    }
+    @GetMapping("/get-seat-price")
+    public ResponseEntity<?> getSeatPrice (@RequestParam Long flightId, @RequestParam String seatNumber)
+    {
+        try {
+            Optional<Flights> flightOptional = flightRepository.findById(flightId);
+            if (flightOptional.isPresent()) {
+                Flights flight = flightOptional.get();
+                double seatPrice = bookingService.getSeatPrice(flightId, seatNumber);
+                return ResponseEntity.ok(seatPrice);
+            } else {
+                return ResponseEntity.status(404).body(null);
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
         }
     }
 

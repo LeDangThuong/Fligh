@@ -13,6 +13,7 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.model.SetupIntent;
 import com.stripe.param.PaymentIntentCreateParams;
 import com.stripe.param.SetupIntentCreateParams;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -130,9 +131,9 @@ public class PaymentController {
     }
     @PostMapping("/create-payment")
     @Transactional
-    public ResponseEntity<?> createPayment(@RequestParam String token, @RequestParam Long idVoucher, @RequestParam double amount, @RequestParam Long flightId, @RequestBody CombineBookingRequestDTO combineBookingRequestDTO) {
+    public ResponseEntity<?> createPayment(@RequestParam String token, @RequestParam Long idVoucher, @RequestParam double amount, @RequestBody CombineBookingRequestDTO combineBookingRequestDTO) {
         try {
-            PaymentIntent paymentIntent = paymentService.createPaymentIntent(token, idVoucher, amount, flightId, combineBookingRequestDTO);
+            PaymentIntent paymentIntent = paymentService.createPaymentIntent(token, idVoucher, amount, combineBookingRequestDTO);
             String clientSecret = paymentIntent.getClientSecret();
             return ResponseEntity.ok(Collections.singletonMap("clientSecret", clientSecret));
         } catch (StripeException e) {
@@ -217,30 +218,18 @@ public class PaymentController {
     public ResponseEntity<?> chargeSavedCard(
             @RequestParam String email,
             @RequestParam String paymentMethodId,
-            @RequestParam double amount
+            @RequestParam double amount,
+            @RequestBody CombineBookingRequestDTO combineBookingRequestDTO
     ) {
         try {
-            Users user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
-            String customerId = user.getStripeCustomerId();
-
-            PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                    .setAmount((long) (amount * 100))  // amount in cents
-                    .setCurrency("usd")
-                    .setCustomer(customerId)
-                    .setPaymentMethod(paymentMethodId)
-                    .setConfirm(true)
-                    .setOffSession(true)
-                    .build();
-
-            PaymentIntent paymentIntent = PaymentIntent.create(params);
-            String clientSecret = paymentIntent.getClientSecret();
-
+            String clientSecret = paymentService.chargeSavedCard(email, paymentMethodId, amount,combineBookingRequestDTO);
             return ResponseEntity.ok(Collections.singletonMap("clientSecret", clientSecret));
         } catch (StripeException e) {
             return ResponseEntity.status(500).body(Collections.singletonMap("error", e.getMessage()));
         } catch (RuntimeException e) {
             return ResponseEntity.status(404).body(Collections.singletonMap("error", e.getMessage()));
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
         }
     }
 }

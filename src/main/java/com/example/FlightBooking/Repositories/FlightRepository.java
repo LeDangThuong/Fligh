@@ -35,14 +35,6 @@ public interface FlightRepository extends JpaRepository<Flights, Long> {
             @Param("departureEndDate") Timestamp departureEndDate
     );
 
-//    @Query("SELECT f FROM Flights f WHERE f.departureAirportId = :departureAirportId AND f.arrivalAirportId = :arrivalAirportId AND f.departureDate BETWEEN :departureStartDate AND :departureEndDate")
-//    List<Flights> searchFlightMulti(
-//            @Param("departureAirportId") Long departureAirportId,
-//            @Param("arrivalAirportId") Long arrivalAirportId,
-//            @Param("departureStartDate") Timestamp departureStartDate,
-//            @Param("departureEndDate") Timestamp departureEndDate
-//    );
-
     @Query("SELECT f FROM Flights f WHERE f.planeId = :planeId")
     List<Flights> findAllByPlaneId(@Param("planeId") Long planeId);
 
@@ -54,16 +46,6 @@ public interface FlightRepository extends JpaRepository<Flights, Long> {
     List<Flights> findConflictingFlights(@Param("planeId") Long planeId,
                                          @Param("departureDate") Timestamp departureDate,
                                          @Param("arrivalDate") Timestamp arrivalDate);
-
-
-    List<Flights> findByOrderByEconomyPriceAsc();
-    List<Flights> findByOrderByEconomyPriceDesc();
-
-    List<Flights> findByOrderByBusinessPriceAsc();
-    List<Flights> findByOrderByBusinessPriceDesc();
-
-    List<Flights> findByOrderByFirstClassPriceAsc();
-    List<Flights> findByOrderByFirstClassPriceDesc();
 
 }
 
