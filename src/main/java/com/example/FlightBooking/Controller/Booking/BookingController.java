@@ -2,6 +2,7 @@ package com.example.FlightBooking.Controller.Booking;
 
 import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
 import com.example.FlightBooking.DTOs.Request.Booking.SelectSeatDTO;
+import com.example.FlightBooking.DTOs.Response.Ticket.TicketDetailResponse;
 import com.example.FlightBooking.DTOs.Response.Ticket.TicketResponse;
 import com.example.FlightBooking.Models.Booking;
 import com.example.FlightBooking.Models.Flights;
@@ -113,5 +114,9 @@ public class BookingController {
             return ResponseEntity.status(500).body(null);
         }
     }
-
+    @GetMapping("/get-ticket-detail-by-booking-id")
+    public TicketDetailResponse getTicketDetail(@RequestParam Long bookingId)
+    {
+        return bookingService.getTicketDetailByBookingId(bookingId);
+    }
 }

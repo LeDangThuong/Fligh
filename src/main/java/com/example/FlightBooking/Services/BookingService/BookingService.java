@@ -2,8 +2,11 @@ package com.example.FlightBooking.Services.BookingService;
 
 import com.example.FlightBooking.DTOs.Request.AirlineAndAirport.AirlineRequest;
 import com.example.FlightBooking.DTOs.Request.Booking.BookingRequestDTO;
+import com.example.FlightBooking.DTOs.Request.Passenger.PassengerDTO;
+import com.example.FlightBooking.DTOs.Response.Ticket.TicketDetailResponse;
 import com.example.FlightBooking.DTOs.Response.Ticket.TicketResponse;
 import com.example.FlightBooking.Enum.SeatStatus;
+import com.example.FlightBooking.Mapper.PassengerMapper;
 import com.example.FlightBooking.Models.*;
 import com.example.FlightBooking.Repositories.*;
 import com.example.FlightBooking.Services.AuthJWT.JwtService;
@@ -236,5 +239,34 @@ public class BookingService {
             ticketResponses.add(ticketResponse);
         }
         return ticketResponses;
+    }
+    @Transactional
+    public TicketDetailResponse getTicketDetailByBookingId(Long bookingId)
+    {
+        Booking booking = bookingRepository.findById(bookingId).orElseThrow(() -> new RuntimeException("Booking not found with id: " + bookingId));
+        Flights flights = flightRepository.findById(booking.getFlightId()).orElseThrow(() -> new RuntimeException("Flight not found with id: " + booking.getFlightId()));
+        Planes planes = planeRepository.findById(flights.getPlaneId()).orElseThrow(() -> new RuntimeException("Plane not found with id: " + flights.getPlaneId()));
+        Airlines airlines = airlinesRepository.findByPlanes(planes).orElseThrow(() -> new RuntimeException("Airlin not found with id: " + planes));
+        Airports departureAirport = airportsRepository.findById(flights.getDepartureAirportId()).orElseThrow(() -> new RuntimeException("Airport not found with id: " + flights.getDepartureAirportId()));
+        Airports arrivalAirport = airportsRepository.findById(flights.getArrivalAirportId()).orElseThrow(() -> new RuntimeException("Airport not found with id: " + flights.getArrivalAirportId()));
+        TicketDetailResponse ticketDetailResponse = new TicketDetailResponse();
+        ticketDetailResponse.setFlightId(flights.getId());
+        ticketDetailResponse.setBookerFullName(booking.getBookerFullName());
+        ticketDetailResponse.setBookerEmail(booking.getBookerEmail());
+        ticketDetailResponse.setBookerPhoneNumber(booking.getBookerPhoneNumber());
+        ticketDetailResponse.setPlaneNumber(planes.getFlightNumber());
+        ticketDetailResponse.setDepartureAirportName(departureAirport.getAirportName());
+        ticketDetailResponse.setIataDepartureCode(departureAirport.getIataCode());
+        ticketDetailResponse.setDepartureDate(flights.getDepartureDate());
+        ticketDetailResponse.setArrivalDate(flights.getArrivalDate());
+        ticketDetailResponse.setIataArrivalCode(arrivalAirport.getIataCode());
+        ticketDetailResponse.setArrivalAirportName(arrivalAirport.getAirportName());
+        ticketDetailResponse.setAirlineLogoUrl(airlines.getLogoUrl());
+        ticketDetailResponse.setAirlineName(airlines.getAirlineName());
+        List<PassengerDTO> passengerDTOList = booking.getPassengers().stream()
+                .map(PassengerMapper::toDTO)
+                .collect(Collectors.toList());
+        ticketDetailResponse.setPassengerDTOList(passengerDTOList);
+        return ticketDetailResponse;
     }
 }
