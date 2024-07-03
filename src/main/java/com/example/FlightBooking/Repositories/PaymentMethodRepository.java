@@ -14,5 +14,5 @@ import java.util.Optional;
 @Hidden
 public interface PaymentMethodRepository extends JpaRepository<PaymentMethod, Long> {
     List<PaymentMethod> findByUserId(Long userId);
-    Optional<PaymentMethod> findByUsersAndStripePaymentMethodId(Users users, String paymentMethodId);
+    Optional<PaymentMethod> findByUserAndStripePaymentMethodId(Users user, String paymentMethodId);
 }

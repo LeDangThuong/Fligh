@@ -236,7 +236,7 @@ public class PaymentController {
     @DeleteMapping("/delete-card")
     public ResponseEntity<String> deleteCard(@RequestParam String email, @RequestParam String paymentMethodId) {
         Users users = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("User not found for email :" + email));
-        PaymentMethod paymentMethod = paymentMethodRepository.findByUsersAndStripePaymentMethodId(users, paymentMethodId)
+        PaymentMethod paymentMethod = paymentMethodRepository.findByUserAndStripePaymentMethodId(users, paymentMethodId)
                 .orElseThrow(() -> new ResourceNotFoundException("PaymentMethod not found for email :: " + users + " and paymentMethodId :: " + paymentMethodId));
 
         // Xóa quan hệ trước khi xóa bản ghi chính
