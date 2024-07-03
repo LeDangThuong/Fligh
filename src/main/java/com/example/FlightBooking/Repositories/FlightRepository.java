@@ -46,6 +46,7 @@ public interface FlightRepository extends JpaRepository<Flights, Long> {
     List<Flights> findConflictingFlights(@Param("planeId") Long planeId,
                                          @Param("departureDate") Timestamp departureDate,
                                          @Param("arrivalDate") Timestamp arrivalDate);
-
+    @Query("SELECT COUNT(f) FROM Flights f WHERE f.createdAt BETWEEN :startDate AND :endDate")
+    Long countFlightsByDateRange(@Param("startDate") Timestamp startDate, @Param("endDate") Timestamp endDate);
 }
 
