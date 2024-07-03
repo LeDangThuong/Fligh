@@ -19,6 +19,7 @@ public class UserResponse {
     private String fullName;
     private Roles role;
     private String avatarUrl;
+    private String gender;
     private Timestamp dayOfBirth;
     private String phoneNumber;
     private String personalId;

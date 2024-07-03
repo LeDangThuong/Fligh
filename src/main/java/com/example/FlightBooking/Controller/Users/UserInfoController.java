@@ -75,6 +75,7 @@ public class UserInfoController {
         }
         UserResponse userResponse = new UserResponse();
         userResponse.setId(user.getId());
+        userResponse.setGender(user.getGender());
         userResponse.setUsername(username);
         userResponse.setEmail(user.getEmail());
         userResponse.setFullName(user.getFullName());
