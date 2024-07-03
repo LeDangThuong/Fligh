@@ -221,7 +221,63 @@ public class PaymentService {
 
         return paymentIntent;
     }
+    public String chargeSavedCard(String email, String paymentMethodId, double amount, CombineBookingRequestDTO combineBookingRequestDTO) throws StripeException, MessagingException {
 
+       Users user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found with this email: " + email));
+        String customerId = user.getStripeCustomerId();
+
+        PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
+                .setAmount((long) (amount * 100))  // amount in cents
+                .setCurrency("usd")
+                .setCustomer(customerId)
+                .setPaymentMethod(paymentMethodId)
+                .setConfirm(true)
+                .setOffSession(true)
+                .build();
+
+        PaymentIntent paymentIntent = PaymentIntent.create(params);
+        for (BookingRequestDTO bookingRequestDTO : combineBookingRequestDTO.getBookingRequests()) {
+            Booking booking = new Booking();
+            booking.setFlightId(bookingRequestDTO.getFlightId());
+            booking.setBookerFullName(bookingRequestDTO.getBookerFullName());
+            booking.setBookerEmail(bookingRequestDTO.getBookerEmail());
+            booking.setBookerPhoneNumber(bookingRequestDTO.getBookerPhoneNumber());
+            booking.setUserId(bookingRequestDTO.getUserId());
+            booking.setBookingDate(Timestamp.valueOf(LocalDateTime.now()));
+
+            List<Passengers> passengers = bookingRequestDTO.getPassengers().stream().map(dto -> {
+                Passengers passenger = new Passengers();
+                passenger.setFullName(dto.getFullName());
+                passenger.setEmail(dto.getEmail());
+                passenger.setPersonalId(dto.getPersonalId());
+                passenger.setSeatNumber(dto.getSeatNumber());
+                passenger.setBooking(booking);
+                return passenger;
+            }).collect(Collectors.toList());
+            booking.setPassengers(passengers);
+            bookingRepository.save(booking);
+
+            try {
+                Set<String> seatNumbers = bookingRequestDTO.getPassengers().stream()
+                        .map(PassengerDTO::getSeatNumber)
+                        .collect(Collectors.toSet());
+                bookingService.bookSeats(bookingRequestDTO.getFlightId(), seatNumbers);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            Statistics statistics = new Statistics();
+            statistics.setUserId(user.getId());
+            statistics.setAmount(amount);
+            statistics.setFlightId(bookingRequestDTO.getFlightId());
+            statisticsRepository.save(statistics);
+
+            // Send email tickets
+            sendEmailTickets(bookingRequestDTO);
+        }
+        return paymentIntent.getClientSecret();
+    }
     private void sendEmailTickets(BookingRequestDTO bookingRequestDTO) throws MessagingException {
         String email = bookingRequestDTO.getBookerEmail();
         Flights flights = flightRepository.findById(bookingRequestDTO.getFlightId()).orElseThrow();
