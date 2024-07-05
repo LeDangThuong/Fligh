@@ -35,12 +35,15 @@ public class PlaneService {
     public PlaneDTO createPlaneWithSeats(Long airlineId) throws Exception {
         Airlines airline = getAirlineById(airlineId);
         String flightNumber = generateUniqueFlightNumber(airline);
+
         Planes plane = new Planes();
         plane.setFlightNumber(flightNumber);
         plane.setAirline(airline);
+
         airline.addPlane(plane);
         Planes savedPlane = planeRepository.save(plane);
-        return convertToDTO(savedPlane );
+
+        return convertToDTO(savedPlane);
     }
     @Transactional
     private String generateUniqueFlightNumber(Airlines airline) {

@@ -38,7 +38,7 @@ public class Airlines implements AirlineComponent {
     private String logoUrl;
 
     @OneToMany(mappedBy = "airline", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private List<Planes> planes = new ArrayList<>();
+    private List<Planes> planes;
 
     private List<String> promoForAirline;
     @CreationTimestamp

@@ -28,7 +28,7 @@ public class Planes implements AirlineComponent {
     @Column(nullable = false)
     private String flightNumber;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "airline_id", nullable = false)
     private Airlines airline;
 
