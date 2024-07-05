@@ -83,6 +83,49 @@ public class StatisticsController {
         }
         return dailyRevenue;
     }
+    @GetMapping("/dailyFlightForMonth")
+    public List<Double> getDailyFlightForMonth(@RequestParam String month, @RequestParam String year) {
+        int yearInt = Integer.parseInt(year);
+        int monthInt = Integer.parseInt(month);
+        LocalDate startOfMonth = LocalDate.of(yearInt, monthInt, 1);
+        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+        List<Double> dailyRevenue = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+
+        for (int i = 0; i < startOfMonth.lengthOfMonth(); i++) {
+            LocalDate day = startOfMonth.plusDays(i);
+            LocalDateTime dayStart = day.atStartOfDay();
+            LocalDateTime dayEnd = day.atTime(23, 59, 59, 999999999);
+            Timestamp startDate = Timestamp.valueOf(dayStart.format(formatter));
+            Timestamp endDate = Timestamp.valueOf(dayEnd.format(formatter));
+            Long revenue = statisticsService.countFlightsByDateRange(startDate, endDate);
+            dailyRevenue.add(revenue != null ? revenue : 0.0);
+        }
+        return dailyRevenue;
+    }
+    @GetMapping("/dailyBookingForMonth")
+    public List<Double> getDailyBookingForMonth(@RequestParam String month, @RequestParam String year) {
+        int yearInt = Integer.parseInt(year);
+        int monthInt = Integer.parseInt(month);
+        LocalDate startOfMonth = LocalDate.of(yearInt, monthInt, 1);
+        LocalDate endOfMonth = startOfMonth.withDayOfMonth(startOfMonth.lengthOfMonth());
+
+        List<Double> dailyRevenue = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+
+        for (int i = 0; i < startOfMonth.lengthOfMonth(); i++) {
+            LocalDate day = startOfMonth.plusDays(i);
+            LocalDateTime dayStart = day.atStartOfDay();
+            LocalDateTime dayEnd = day.atTime(23, 59, 59, 999999999);
+            Timestamp startDate = Timestamp.valueOf(dayStart.format(formatter));
+            Timestamp endDate = Timestamp.valueOf(dayEnd.format(formatter));
+            Long revenue = statisticsService.countBookingsByDateRange(startDate, endDate);
+            dailyRevenue.add(revenue != null ? revenue : 0.0);
+        }
+        return dailyRevenue;
+    }
+
     @GetMapping("/totalFlight")
     public Long getTotalFilght()
     {
@@ -109,5 +152,40 @@ public class StatisticsController {
     public Long getTotalBooking()
     {
         return bookingRepository.count();
+    }
+    @GetMapping("/flightCountForCurrentWeek")
+    public List<Long> getFlightCountForCurrentWeek() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+
+        List<Long> weeklyRevenue = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            LocalDateTime dayStart = startOfWeek.plusDays(i);
+            LocalDateTime dayEnd = dayStart.withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+            Timestamp startDate = Timestamp.valueOf(dayStart);
+            Timestamp endDate = Timestamp.valueOf(dayEnd);
+            Long revenue = statisticsService.countFlightsByDateRange(startDate, endDate);
+            weeklyRevenue.add(revenue != null ? revenue : 0);
+        }
+        return weeklyRevenue;
+    }
+
+    @GetMapping("/bookingCountForCurrentWeek")
+    public List<Long> getBookingCountForCurrentWeek() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfWeek = now.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime endOfWeek = now.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY)).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+
+        List<Long> weeklyRevenue = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
+            LocalDateTime dayStart = startOfWeek.plusDays(i);
+            LocalDateTime dayEnd = dayStart.withHour(23).withMinute(59).withSecond(59).withNano(999999999);
+            Timestamp startDate = Timestamp.valueOf(dayStart);
+            Timestamp endDate = Timestamp.valueOf(dayEnd);
+            Long revenue = statisticsService.countBookingsByDateRange(startDate, endDate);
+            weeklyRevenue.add(revenue != null ? revenue : 0);
+        }
+        return weeklyRevenue;
     }
 }
